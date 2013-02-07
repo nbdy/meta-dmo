@@ -3,7 +3,7 @@
 
 require linux-dmo.inc
 
-SRC_URI = "git://git@192.168.100.52/development/linux;protocol=ssh \
+SRC_URI = "git://git@emb.data-modul.com/development/linux;protocol=ssh \
            file://defconfig \
 "
 KERNEL_PRIORITY = "10000"
