@@ -12,10 +12,23 @@ SRC_URI_append_imx6q-dmo-realq7 = " \
 "
 
 do_configure_prepend_imx6q-dmo-realq7() {
-        # Install barebox environment
-        cp -a ${WORKDIR}/barebox-defaultenv/* ${WORKDIR}/git/arch/arm/boards/dmo-mx6-realq7/env/
+    # Install barebox environment
+    cp -a ${WORKDIR}/barebox-defaultenv/* ${WORKDIR}/git/arch/arm/boards/dmo-mx6-realq7/env/
 
-	# cp ${WORKDIR}/git/arch/arm/configs/${BAREBOX_MACHINE} ${S}/.config
-	oe_runmake -C ${WORKDIR}/git O=${S} ${BAREBOX_MACHINE}
+    for line in ${BAREBOX_ADD_FILES_TO_ENVIRONMENT}
+    do
+
+# It is a little bit ugly, but the next three lines should start at column 0
+IFS=":" read src dst <<EOL
+${line}
+EOL
+
+        cp $src ${WORKDIR}/git/arch/arm/boards/dmo-mx6-realq7/${dst}
+    done
+
+    # cp ${WORKDIR}/git/arch/arm/configs/${BAREBOX_MACHINE} ${S}/.config
+    oe_runmake -C ${WORKDIR}/git O=${S} ${BAREBOX_MACHINE}
 }
+# before we can configure we need the generated dtb
+do_configure[depends] += "virtual/kernel:do_install"
 
