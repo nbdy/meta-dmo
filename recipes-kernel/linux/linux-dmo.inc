@@ -14,3 +14,20 @@ SCMVERSION ?= "y"
 
 S = "${WORKDIR}/git"
 
+do_configure_prepend() {
+    if [ ! -z "${DMO_KERNEL_DEFCONFIG}" ]; then
+        make ${DMO_KERNEL_DEFCONFIG}
+    fi
+}
+
+do_install_append() {
+    if [ ! -z "${DMO_KERNEL_DEVICE_TREE_BLOBS_DEPLOY_DIR}" ]; then
+        for dtb in ${DMO_KERNEL_DEVICE_TREE_BLOBS_DEPLOY_DIR}
+        do
+            oe_runmake ${dtb}
+            cp ${S}/arch/arm/boot/${dtb} ${DEPLOY_DIR_IMAGE}/${MACHINE}-${PV}-${PR}-${dtb}
+            ln -sf ${DEPLOY_DIR_IMAGE}/${MACHINE}-${PV}-${PR}-${dtb} ${DEPLOY_DIR_IMAGE}/${dtb}
+        done
+    fi
+}
+
