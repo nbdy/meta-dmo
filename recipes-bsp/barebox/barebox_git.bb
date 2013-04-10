@@ -5,13 +5,13 @@ SRC_URI = " \
     git://git@emb.data-modul.com/development/barebox;protocol=ssh;tag=sfr/imx6-patches-v2012.11.0 \
 "
 
-COMPATIBLE_MACHINE = "imx6q-dmo-realq7"
+COMPATIBLE_MACHINE = "imx6q-dmo-edm-qmx6"
 
-SRC_URI_append_imx6q-dmo-realq7 = " \
+SRC_URI_append_imx6q-dmo-edm-qmx6 = " \
     file://barebox-defaultenv.tar.gz \
 "
 
-do_configure_prepend_imx6q-dmo-realq7() {
+do_configure_prepend_imx6q-dmo-edm-qmx6() {
     # Install barebox environment
     cp -a ${WORKDIR}/barebox-defaultenv/* ${WORKDIR}/git/arch/arm/boards/dmo-mx6-realq7/env/
 
