@@ -4,7 +4,7 @@
 # with some adaptions for our barebox in git repository
 #
 
-INC_PR = "r4"
+INC_PR = "r5"
 DESCRIPTION = "Barebox - a bootloader that inherits the best of U-Boot and the Linux kernel"
 HOMEPAGE = "http://www.barebox.org/"
 SECTION = "bootloader"
@@ -16,6 +16,7 @@ LIC_FILES_CHKSUM = "file://${WORKDIR}/git/COPYING;md5=057bf9e50e1ca857d0eb97bfe4
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 inherit kernel-arch
+inherit cml1
 
 EXTRA_OEMAKE = "CROSS_COMPILE=${TARGET_PREFIX}"
 
