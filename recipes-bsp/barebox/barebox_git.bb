@@ -1,9 +1,11 @@
 require barebox.inc
 
-PR = "${INC_PR}.1"
+PR = "${INC_PR}.2"
 SRC_URI = " \
-    git://git@emb.data-modul.com/development/barebox;protocol=ssh;tag=sfr/imx6-patches-v2012.11.0 \
+    git://git@emb.data-modul.com/development/barebox;protocol=ssh \
 "
+SRCREV = "29677d889bf8f96a4076c0d3c93ea94265b3becc"
+LOCALVERSION = "-1.1.0+yocto"
 
 COMPATIBLE_MACHINE = "imx6q-dmo-edm-qmx6"
 
@@ -27,7 +29,7 @@ EOL
     done
 
     # cp ${WORKDIR}/git/arch/arm/configs/${BAREBOX_MACHINE} ${S}/.config
-    oe_runmake -C ${WORKDIR}/git O=${S} ${BAREBOX_MACHINE}
+    oe_runmake ${BAREBOX_MACHINE}
 }
 # before we can configure we need the generated dtb
 do_configure[depends] += "virtual/kernel:do_install"
