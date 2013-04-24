@@ -1,10 +1,10 @@
 require barebox.inc
 
-PR = "${INC_PR}.3"
+PR = "${INC_PR}.4"
 SRC_URI = " \
     git://git@emb.data-modul.com/development/barebox;protocol=ssh \
 "
-SRCREV = "2ea3fabd36c32c8df57377f91a7736306f7cdb67"
+SRCREV = "2d05c2c3aa508796bfa4f18e63af637936c1263b"
 LOCALVERSION = "-1.1.0+yocto"
 
 COMPATIBLE_MACHINE = "imx6q-dmo-edm-qmx6"
