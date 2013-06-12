@@ -10,10 +10,18 @@ LICENSE = "GPLv2"
 
 inherit core-image
 
+IMAGE_POSTPROCESS_COMMAND += " dmo_create_developer_directory; "
+
 IMAGE_ROOTFS_SIZE = "8192"
 
-# remove not needed ipkg informations
-ROOTFS_POSTPROCESS_COMMAND += "remove_packaging_data_files ; "
+INC_PR = "r2"
 
-INC_PR = "r1"
+dmo_create_developer_directory () {
+    if [ -n "${DMO_CREATE_NFS_DIR}" ]; then
+        mkdir ${DEPLOY_DIR_IMAGE}/nfs-${IMAGE_NAME}
+        sudo tar -C ${DEPLOY_DIR_IMAGE}/nfs-${IMAGE_NAME} -xvf ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.tar.bz2
+        [ -e ${DEPLOY_DIR_IMAGE}/nfs ] && rm ${DEPLOY_DIR_IMAGE}/nfs
+        ln -sf "nfs-${IMAGE_NAME}" ${DEPLOY_DIR_IMAGE}/nfs
+    fi
+}
 
