@@ -1,7 +1,13 @@
+INC_PR = "r2"
+
 IMAGE_INSTALL = " \
     opkg \
     opkg-config-base \
     packagegroup-core-boot \
+    nfs-utils \
+    nfs-utils-client \
+    kernel-modules \
+    firmware-imx-vpu-imx6q \
     ${ROOTFS_PKGMANAGE_BOOTSTRAP} \
     ${CORE_IMAGE_EXTRA_INSTALL} \
 "
@@ -13,8 +19,6 @@ inherit core-image
 IMAGE_POSTPROCESS_COMMAND += " dmo_create_developer_directory; "
 
 IMAGE_ROOTFS_SIZE = "8192"
-
-INC_PR = "r2"
 
 dmo_create_developer_directory () {
     if [ -n "${DMO_CREATE_NFS_DIR}" ]; then
