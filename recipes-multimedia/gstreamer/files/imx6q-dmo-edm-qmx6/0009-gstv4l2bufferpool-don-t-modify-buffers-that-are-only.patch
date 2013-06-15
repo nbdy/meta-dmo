@@ -1,0 +1,27 @@
+From d48fbcb5c9c2e59deaa8564f743c6f1eaa067a07 Mon Sep 17 00:00:00 2001
+From: Michael Olbrich <m.olbrich@pengutronix.de>
+Date: Thu, 3 May 2012 16:07:27 +0200
+Subject: [PATCH 09/40] gstv4l2bufferpool: don't modify buffers that are only
+ displayed
+
+Signed-off-by: Michael Olbrich <m.olbrich@pengutronix.de>
+---
+ sys/v4l2/gstv4l2bufferpool.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/sys/v4l2/gstv4l2bufferpool.c b/sys/v4l2/gstv4l2bufferpool.c
+index 8875950..e2db865 100644
+--- a/sys/v4l2/gstv4l2bufferpool.c
++++ b/sys/v4l2/gstv4l2bufferpool.c
+@@ -614,8 +614,6 @@ gst_v4l2_buffer_pool_dqbuf (GstV4l2BufferPool * pool, GstBuffer ** buffer)
+   /* this can change at every frame, esp. with jpeg */
+   if (obj->type == V4L2_BUF_TYPE_VIDEO_CAPTURE)
+     gst_buffer_resize (outbuf, 0, vbuffer.bytesused);
+-  else
+-    gst_buffer_resize (outbuf, 0, vbuffer.length);
+ 
+   *buffer = outbuf;
+ 
+-- 
+1.8.3
+

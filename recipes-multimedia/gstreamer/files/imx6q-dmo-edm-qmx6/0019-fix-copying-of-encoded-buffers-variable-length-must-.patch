@@ -1,0 +1,38 @@
+From b3d3a12268be2c5c32d24a7259a6c6c1c436fb19 Mon Sep 17 00:00:00 2001
+From: Philipp Zabel <p.zabel@pengutronix.de>
+Date: Mon, 20 Aug 2012 09:52:34 +0200
+Subject: [PATCH 19/40] fix copying of encoded buffers (variable length, must
+ copy raw bytes)
+
+Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
+Signed-off-by: Michael Olbrich <m.olbrich@pengutronix.de>
+---
+ sys/v4l2/gstv4l2object.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/sys/v4l2/gstv4l2object.c b/sys/v4l2/gstv4l2object.c
+index e48e9c8..f770037 100644
+--- a/sys/v4l2/gstv4l2object.c
++++ b/sys/v4l2/gstv4l2object.c
+@@ -2700,7 +2700,9 @@ gboolean
+ gst_v4l2_object_copy (GstV4l2Object * v4l2object, GstBuffer * dest,
+     GstBuffer * src)
+ {
+-  if (v4l2object->info.finfo) {
++  GstVideoFormatInfo *finfo = v4l2object->info.finfo;
++
++  if (finfo && finfo->format != GST_VIDEO_FORMAT_UNKNOWN) {
+     GstVideoFrame src_frame, dest_frame;
+ 
+     GST_DEBUG_OBJECT (v4l2object->element, "copy video frame");
+@@ -2726,6 +2728,7 @@ gst_v4l2_object_copy (GstV4l2Object * v4l2object, GstBuffer * dest,
+     gst_buffer_map (src, &map, GST_MAP_READ);
+     gst_buffer_fill (dest, 0, map.data, map.size);
+     gst_buffer_unmap (src, &map);
++    gst_buffer_resize (dest, 0, map.size);
+   }
+   GST_CAT_LOG_OBJECT (GST_CAT_PERFORMANCE, v4l2object->element,
+       "slow copy into buffer %p", dest);
+-- 
+1.8.3
+

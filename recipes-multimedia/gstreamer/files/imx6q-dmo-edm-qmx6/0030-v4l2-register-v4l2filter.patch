@@ -1,0 +1,34 @@
+From e9af64308379c115d7cf333757830ffb8dd5a929 Mon Sep 17 00:00:00 2001
+From: Michael Olbrich <m.olbrich@pengutronix.de>
+Date: Wed, 13 Jul 2011 11:28:08 +0200
+Subject: [PATCH 30/40] v4l2: register v4l2filter
+
+Signed-off-by: Michael Olbrich <m.olbrich@pengutronix.de>
+---
+ sys/v4l2/gstv4l2.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/sys/v4l2/gstv4l2.c b/sys/v4l2/gstv4l2.c
+index 22959c6..186b39f 100644
+--- a/sys/v4l2/gstv4l2.c
++++ b/sys/v4l2/gstv4l2.c
+@@ -32,6 +32,7 @@
+ #include "gstv4l2object.h"
+ #include "gstv4l2src.h"
+ #include "gstv4l2sink.h"
++#include "gstv4l2filter.h"
+ #include "gstv4l2radio.h"
+ /* #include "gstv4l2jpegsrc.h" */
+ /* #include "gstv4l2mjpegsrc.h" */
+@@ -51,6 +52,8 @@ plugin_init (GstPlugin * plugin)
+           GST_TYPE_V4L2SRC) ||
+       !gst_element_register (plugin, "v4l2sink", GST_RANK_NONE,
+           GST_TYPE_V4L2SINK) ||
++      !gst_element_register (plugin, "v4l2filter", GST_RANK_NONE,
++          GST_TYPE_V4L2FILTER) ||
+       !gst_element_register (plugin, "v4l2radio", GST_RANK_NONE,
+           GST_TYPE_V4L2RADIO) ||
+       /*       !gst_element_register (plugin, "v4l2jpegsrc", */
+-- 
+1.8.3
+
