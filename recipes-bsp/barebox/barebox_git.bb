@@ -1,11 +1,11 @@
 require barebox.inc
 
 PV = "2013.03.0+git${SRCREV}"
-PR = "${INC_PR}.6"
+PR = "${INC_PR}.7"
 SRC_URI = " \
     git://git@emb.data-modul.com/development/barebox;protocol=ssh \
 "
-SRCREV = "f95c097d3abac4978ede2fc9115b4213587c5bd3"
+SRCREV = "46310b39a3add2e84c239702b6043fc645f9a75a"
 
 COMPATIBLE_MACHINE = "imx6q-dmo-edm-qmx6"
 
