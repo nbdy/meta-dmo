@@ -9,6 +9,8 @@ INC_PR = "r33"
 
 inherit kernel
 
+PARALLEL_MAKE = ""
+
 # Put a local version until we have a true SRCREV to point to
 LOCALVERSION ?= "+yocto"
 SCMVERSION ?= "y"
