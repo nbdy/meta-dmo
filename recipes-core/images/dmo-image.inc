@@ -7,6 +7,7 @@ IMAGE_INSTALL = " \
     nfs-utils \
     nfs-utils-client \
     kernel-modules \
+    udev-extraconf \
     firmware-imx-vpu-imx6q \
     ${ROOTFS_PKGMANAGE_BOOTSTRAP} \
     ${CORE_IMAGE_EXTRA_INSTALL} \
