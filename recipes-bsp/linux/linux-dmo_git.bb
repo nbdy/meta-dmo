@@ -10,6 +10,8 @@ SRC_URI = "git://git@emb.data-modul.com/development/linux;protocol=ssh \
            file://defconfig \
            file://fsl_otp-compile-problem.patch \
 "
+S = "${WORKDIR}/git"
+
 KERNEL_PRIORITY = "10000"
 
 COMPATIBLE_MACHINE = "(mx6)"

@@ -15,8 +15,6 @@ PARALLEL_MAKE = ""
 LOCALVERSION ?= "+yocto"
 SCMVERSION ?= "y"
 
-S = "${WORKDIR}/git"
-
 do_configure_prepend() {
     if [ ! -z "${DMO_KERNEL_DEFCONFIG}" ]; then
         make ${DMO_KERNEL_DEFCONFIG}
