@@ -1,15 +1,14 @@
 require barebox.inc
 
-PV = "2013.03.0+git${SRCREV}"
 PR = "${INC_PR}.21"
 SRC_URI = " \
-    git://git@emb.data-modul.com/development/barebox;protocol=ssh \
+    ${DMOFTP}/${PN}-${PV}.tar.gz \
 "
-SRCREV = "fbbad8cee25a431d17d9a43f91a6c77062bf175d"
+
+SRC_URI[md5sum] = "340535231361ed36877e1d93d4145f05"
+SRC_URI[sha256sum] = "183d665e0cfd337f50fba483712750031dbcfec25b5029f80c5835a6c2986914"
 
 COMPATIBLE_MACHINE = "imx6q-dmo-edm-qmx6"
-
-S = "${WORKDIR}/git"
 
 do_configure_prepend_imx6q-dmo-edm-qmx6() {
     oe_runmake ${BAREBOX_MACHINE}
