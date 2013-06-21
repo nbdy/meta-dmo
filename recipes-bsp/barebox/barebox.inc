@@ -4,17 +4,19 @@
 # with some adaptions for our barebox in git repository
 #
 
+INC_PR = "r5"
 DESCRIPTION = "Barebox - a bootloader that inherits the best of U-Boot and the Linux kernel"
 HOMEPAGE = "http://www.barebox.org/"
 SECTION = "bootloader"
 PROVIDES = "virtual/bootloader"
 PRIORITY = "optional"
 LICENSE = "GPLv2"
-LIC_FILES_CHKSUM = "file://${WORKDIR}/git/COPYING;md5=057bf9e50e1ca857d0eb97bfe4ba8e5d"
+LIC_FILES_CHKSUM = "file://${S}/COPYING;md5=057bf9e50e1ca857d0eb97bfe4ba8e5d"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 inherit kernel-arch
+inherit cml1
 
 EXTRA_OEMAKE = "CROSS_COMPILE=${TARGET_PREFIX}"
 
@@ -25,6 +27,7 @@ BAREBOX_SYMLINK ?= "barebox-${MACHINE}.bin"
 BAREBOXENV_SYMLINK ?= "bareboxenv-${MACHINE}.bin"
 
 INSANE_SKIP_${PN} = "True"
+
 
 do_compile () {
 	if [ "${@base_contains('DISTRO_FEATURES', 'ld-is-gold', 'ld-is-gold', '', d)}" = "ld-is-gold" ] ; then

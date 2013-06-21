@@ -1,0 +1,27 @@
+From 8c4c41373966222a4143ef3804511e8f82a6579d Mon Sep 17 00:00:00 2001
+From: Philipp Zabel <p.zabel@pengutronix.de>
+Date: Mon, 20 Aug 2012 09:52:33 +0200
+Subject: [PATCH 20/40] default to progressive mode if interlace-mode is not
+ set
+
+Signed-off-by: Michael Olbrich <m.olbrich@pengutronix.de>
+---
+ sys/v4l2/gstv4l2object.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/sys/v4l2/gstv4l2object.c b/sys/v4l2/gstv4l2object.c
+index f770037..2723ef5 100644
+--- a/sys/v4l2/gstv4l2object.c
++++ b/sys/v4l2/gstv4l2object.c
+@@ -1590,7 +1590,7 @@ gst_v4l2_object_get_caps_info (GstV4l2Object * v4l2object, GstCaps * caps,
+         goto no_height;
+ 
+       interlace_mode = gst_structure_get_string (structure, "interlace-mode");
+-      if (g_str_equal (interlace_mode, "progressive")) {
++      if (interlace_mode == NULL || g_str_equal (interlace_mode, "progressive")) {
+         info->interlace_mode = GST_VIDEO_INTERLACE_MODE_PROGRESSIVE;
+       } else {
+         info->interlace_mode = GST_VIDEO_INTERLACE_MODE_MIXED;
+-- 
+1.8.3
+

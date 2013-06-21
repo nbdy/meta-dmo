@@ -1,0 +1,283 @@
+From fa69102deaad8c20b6edeadf002dc0663495feb2 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jes=C3=BAs=20Guitarte?= <jguitarte@data-modul.com>
+Date: Thu, 4 Apr 2013 11:25:40 +0200
+Subject: [PATCH 40/40] add flip (vertical and horizontal) options on gstreamer
+ filter and indent corrections
+
+---
+ sys/v4l2/gstv4l2filter.c | 130 ++++++++++++++++++++++++++++++++++++-----------
+ sys/v4l2/gstv4l2object.h |   3 ++
+ 2 files changed, 104 insertions(+), 29 deletions(-)
+
+diff --git a/sys/v4l2/gstv4l2filter.c b/sys/v4l2/gstv4l2filter.c
+index e0f585a..e0d1224 100644
+--- a/sys/v4l2/gstv4l2filter.c
++++ b/sys/v4l2/gstv4l2filter.c
+@@ -38,6 +38,35 @@ GST_DEBUG_CATEGORY (v4l2filter_debug);
+ #define PROP_DEF_ALWAYS_COPY        TRUE
+ #define DEFAULT_PROP_DEVICE   "/dev/video0"
+ 
++static void
++gst_set_properties (GstV4l2Filter * v4l2filter)
++{
++  struct v4l2_control vflip, hflip;
++  gint fd = v4l2filter->src_v4l2object->video_fd;
++
++  if ((v4l2filter->sink_v4l2object->vflip.value == 1) ||
++      (v4l2filter->sink_v4l2object->vflip.value == 0)) {
++    vflip.id = V4L2_CID_VFLIP;
++    vflip.value = v4l2filter->sink_v4l2object->vflip.value;
++    if (v4l2_ioctl (fd, VIDIOC_S_CTRL, &vflip) < 0)
++      GST_WARNING_OBJECT (v4l2filter->sink_v4l2object, "VIDIOC_S_CTRL failed");
++
++  }
++  if ((v4l2filter->sink_v4l2object->hflip.value == 1) ||
++      (v4l2filter->sink_v4l2object->hflip.value == 0)) {
++    hflip.id = V4L2_CID_HFLIP;
++    hflip.value = v4l2filter->sink_v4l2object->hflip.value;
++    if (v4l2_ioctl (fd, VIDIOC_S_CTRL, &hflip) < 0)
++      GST_WARNING_OBJECT (v4l2filter->sink_v4l2object, "VIDIOC_S_CTRL failed");
++  }
++}
++
++enum
++{
++  PROP_VFLIP = 0x81,
++  PROP_HFLIP = 0x82
++};
++
+ #undef GST_VIDEO_SIZE_RANGE
+ #define GST_VIDEO_SIZE_RANGE "(int) [ 1, 32767]"
+ 
+@@ -68,8 +97,8 @@ static GstStateChangeReturn gst_v4l2filter_change_state (GstElement * element,
+ static gboolean gst_v4l2filter_query (GstPad * pad,
+     GstObject * parent, GstQuery * query);
+ static GstCaps *gst_v4l2filter_getcaps (GstPad * pad, GstCaps * filter);
+-static gboolean gst_v4l2filter_activate_mode (GstPad * pad, GstObject * parent,
+-    GstPadMode mode, gboolean active);
++static gboolean gst_v4l2filter_activate_mode (GstPad * pad,
++    GstObject * parent, GstPadMode mode, gboolean active);
+ 
+ 
+ /* sink pad functions */
+@@ -103,16 +132,28 @@ gst_v4l2filter_class_init (GstV4l2FilterClass * klass)
+   gst_v4l2_object_install_properties_helper (gobject_class,
+       DEFAULT_PROP_DEVICE);
+ 
++  g_object_class_install_property (gobject_class, PROP_VFLIP,
++      g_param_spec_int ("vflip", "Vertical Flip",
++          "When this property is 1 a vertical flip is applied",
++          0, 1, 0, G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
++
++  g_object_class_install_property (gobject_class, PROP_HFLIP,
++      g_param_spec_int ("hflip",
++          "Horizontal Flip",
++          "When this property is 1 a horizontal flip is applied",
++          0, 1, 0, G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
++
+   gst_element_class_set_details_simple (element_class,
+-      "V4l2 Video Filter", "Filter/Converter/Video/Scaler",
++      "V4l2 Video Filter",
++      "Filter/Converter/Video/Scaler",
+       "filters Videos", "Michael Olbrich <m.olbrich@pengutronix.de>");
+ 
+   gst_element_class_add_pad_template (element_class,
+-      gst_pad_template_new ("src", GST_PAD_SRC, GST_PAD_ALWAYS,
+-          gst_v4l2_object_get_all_caps ()));
++      gst_pad_template_new ("src",
++          GST_PAD_SRC, GST_PAD_ALWAYS, gst_v4l2_object_get_all_caps ()));
+   gst_element_class_add_pad_template (element_class,
+-      gst_pad_template_new ("sink", GST_PAD_SINK, GST_PAD_ALWAYS,
+-          gst_v4l2_object_get_all_caps ()));
++      gst_pad_template_new ("sink",
++          GST_PAD_SINK, GST_PAD_ALWAYS, gst_v4l2_object_get_all_caps ()));
+ 
+   GST_DEBUG_CATEGORY_INIT (v4l2filter_debug, "v4l2filter", 0,
+       "V4L2 filter element");
+@@ -134,12 +175,14 @@ gst_v4l2filter_init (GstV4l2Filter * v4l2filter)
+   element_class = GST_ELEMENT_GET_CLASS (v4l2filter);
+ 
+   v4l2filter->sink_v4l2object = gst_v4l2_object_new (GST_ELEMENT
+-      (v4l2filter), V4L2_BUF_TYPE_VIDEO_OUTPUT, DEFAULT_PROP_DEVICE,
+-      gst_v4l2_get_output, gst_v4l2_set_output, NULL);
++      (v4l2filter),
++      V4L2_BUF_TYPE_VIDEO_OUTPUT,
++      DEFAULT_PROP_DEVICE, gst_v4l2_get_output, gst_v4l2_set_output, NULL);
+ 
+   v4l2filter->src_v4l2object = gst_v4l2_object_new (GST_ELEMENT
+-      (v4l2filter), V4L2_BUF_TYPE_VIDEO_CAPTURE, DEFAULT_PROP_DEVICE,
+-      gst_v4l2_get_input, gst_v4l2_set_input, NULL);
++      (v4l2filter),
++      V4L2_BUF_TYPE_VIDEO_CAPTURE,
++      DEFAULT_PROP_DEVICE, gst_v4l2_get_input, gst_v4l2_set_input, NULL);
+ 
+   v4l2filter->src_v4l2object->always_copy = PROP_DEF_ALWAYS_COPY;
+ 
+@@ -240,13 +283,22 @@ gst_v4l2filter_set_property (GObject * object, guint prop_id,
+ {
+   GstV4l2Filter *v4l2filter = GST_V4L2FILTER (object);
+ 
++  struct v4l2_control vflip, hflip;
++
+   if (!gst_v4l2_object_set_property_helper (v4l2filter->sink_v4l2object,
+           prop_id, value, pspec)) {
+     switch (prop_id) {
++      case PROP_HFLIP:
++        v4l2filter->sink_v4l2object->hflip.value = g_value_get_int (value);
++        break;
++      case PROP_VFLIP:
++        v4l2filter->sink_v4l2object->vflip.value = g_value_get_int (value);
++        break;
+       default:
+         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+         break;
+     }
++    gst_set_properties (v4l2filter);
+   }
+ }
+ 
+@@ -259,6 +311,14 @@ gst_v4l2filter_get_property (GObject * object, guint prop_id, GValue * value,
+   if (!gst_v4l2_object_get_property_helper (v4l2filter->sink_v4l2object,
+           prop_id, value, pspec)) {
+     switch (prop_id) {
++      case PROP_HFLIP:
++        value = v4l2filter->sink_v4l2object->hflip.value;
++        break;
++
++      case PROP_VFLIP:
++        value = v4l2filter->sink_v4l2object->vflip.value;
++        break;
++
+       default:
+         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+         break;
+@@ -458,6 +518,10 @@ gst_v4l2filter_sink_setcaps (GstPad * pad, GstCaps * caps)
+   if (!gst_v4l2filter_src_update_caps (v4l2filter, caps))
+     return FALSE;
+ 
++
++  printf ("set properties in: gst_v4l2filter_sink_setcaps");
++  gst_set_properties (v4l2filter);
++
+   return TRUE;
+ }
+ 
+@@ -520,6 +584,8 @@ gst_v4l2filter_src_setcaps (GstPad * pad, GstCaps * caps)
+ 
+   gst_pad_push_event (pad, gst_event_new_caps (caps));
+ 
++  printf ("set properties in: gst_v4l2filter_src_setcaps");
++  gst_set_properties (v4l2filter);
+   return TRUE;
+ }
+ 
+@@ -547,25 +613,27 @@ gst_v4l2filter_src_event (GstPad * pad, GstObject * parent, GstEvent * event)
+ }
+ 
+ static gboolean
+-gst_v4l2filter_v4l2_event (GIOChannel * source, GIOCondition condition, gpointer data)
++gst_v4l2filter_v4l2_event (GIOChannel * source, GIOCondition condition,
++    gpointer data)
+ {
+   GstV4l2Filter *v4l2filter = GST_V4L2FILTER (data);
+   struct v4l2_event v4l2_event;
+ 
+-  if (v4l2_ioctl (v4l2filter->src_v4l2object->video_fd, VIDIOC_DQEVENT, &v4l2_event) < 0) {
++  if (v4l2_ioctl
++      (v4l2filter->src_v4l2object->video_fd, VIDIOC_DQEVENT, &v4l2_event) < 0) {
+     GST_DEBUG_OBJECT (v4l2filter, "failed to dequeue v4l2 event\n");
+     return FALSE;
+   }
+ 
+   switch (v4l2_event.type) {
+-  case V4L2_EVENT_EOS:
+-    GST_DEBUG_OBJECT (v4l2filter, "v4l2 event: EOS\n");
+-    v4l2filter->eos = TRUE;
+-    gst_pad_send_event (v4l2filter->sinkpad, gst_event_new_eos ());
+-    break;
+-  default:
+-    GST_LOG_OBJECT (v4l2filter, "ignored v4l2 event\n");
+-    break;
++    case V4L2_EVENT_EOS:
++      GST_DEBUG_OBJECT (v4l2filter, "v4l2 event: EOS\n");
++      v4l2filter->eos = TRUE;
++      gst_pad_send_event (v4l2filter->sinkpad, gst_event_new_eos ());
++      break;
++    default:
++      GST_LOG_OBJECT (v4l2filter, "ignored v4l2 event\n");
++      break;
+   }
+ 
+   return TRUE;
+@@ -587,8 +655,10 @@ gst_v4l2filter_change_state (GstElement * element, GstStateChange transition)
+         GST_V4L2FILTER_PREROLL_UNLOCK (v4l2filter);
+         return GST_STATE_CHANGE_FAILURE;
+       }
+-      v4l2filter->event_channel = g_io_channel_unix_new (v4l2filter->src_v4l2object->video_fd);
+-      g_io_add_watch (v4l2filter->event_channel, G_IO_PRI, gst_v4l2filter_v4l2_event, v4l2filter);
++      v4l2filter->event_channel =
++          g_io_channel_unix_new (v4l2filter->src_v4l2object->video_fd);
++      g_io_add_watch (v4l2filter->event_channel, G_IO_PRI,
++          gst_v4l2filter_v4l2_event, v4l2filter);
+       break;
+     default:
+       break;
+@@ -635,7 +705,8 @@ v4l2_filter_src_task (GstPad * pad)
+   GstV4l2FilterTime *time;
+ 
+   if (G_UNLIKELY (v4l2filter->eos)) {
+-    GST_WARNING_OBJECT (GST_OBJECT (v4l2filter), "src_task tries to push buffer with EOS set\n");
++    GST_WARNING_OBJECT (GST_OBJECT (v4l2filter),
++        "src_task tries to push buffer with EOS set\n");
+     /*
+      * We have to bail out here if EOS is set, otherwise the gst_pad_push below
+      * will lock against the gst_pad_send_event called from
+@@ -676,8 +747,8 @@ out:
+ }
+ 
+ static gboolean
+-gst_v4l2filter_activate_mode (GstPad * pad, GstObject * parent, GstPadMode mode,
+-    gboolean active)
++gst_v4l2filter_activate_mode (GstPad * pad, GstObject * parent,
++    GstPadMode mode, gboolean active)
+ {
+   gboolean result = TRUE;
+   gboolean is_sink = gst_pad_get_direction (pad) == GST_PAD_SINK;
+@@ -695,8 +766,8 @@ gst_v4l2filter_activate_mode (GstPad * pad, GstObject * parent, GstPadMode mode,
+         result = gst_v4l2filter_start_task (v4l2filter);
+       else {
+         g_mutex_lock (&v4l2filter->queue_lock);
+-        g_sequence_remove_range (g_sequence_get_begin_iter (v4l2filter->queue),
+-            g_sequence_get_end_iter (v4l2filter->queue));
++        g_sequence_remove_range (g_sequence_get_begin_iter
++            (v4l2filter->queue), g_sequence_get_end_iter (v4l2filter->queue));
+         g_mutex_unlock (&v4l2filter->queue_lock);
+         /* FIXME: is this correct? */
+         gst_v4l2_object_unlock (v4l2filter->src_v4l2object);
+@@ -755,7 +826,8 @@ gst_v4l2filter_sink_chain (GstPad * pad, GstObject * parent, GstBuffer * buffer)
+   }
+ 
+   if (G_UNLIKELY (v4l2filter->eos)) {
+-    GST_WARNING_OBJECT (GST_OBJECT (v4l2filter), "sink_chain called with EOS set\n");
++    GST_WARNING_OBJECT (GST_OBJECT (v4l2filter),
++        "sink_chain called with EOS set\n");
+     return GST_FLOW_EOS;
+   }
+ 
+diff --git a/sys/v4l2/gstv4l2object.h b/sys/v4l2/gstv4l2object.h
+index 3fa6d85..a7f0793 100644
+--- a/sys/v4l2/gstv4l2object.h
++++ b/sys/v4l2/gstv4l2object.h
+@@ -158,6 +158,9 @@ struct _GstV4l2Object {
+   GstV4l2GetInOutFunction  get_in_out_func;
+   GstV4l2SetInOutFunction  set_in_out_func;
+   GstV4l2UpdateFpsFunction update_fps_func;
++
++  struct v4l2_control vflip;
++  struct v4l2_control hflip;
+ };
+ 
+ struct _GstV4l2ObjectClassHelper {
+-- 
+1.8.3
+

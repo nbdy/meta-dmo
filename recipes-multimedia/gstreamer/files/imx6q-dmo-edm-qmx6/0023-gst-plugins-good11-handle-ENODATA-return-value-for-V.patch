@@ -1,0 +1,31 @@
+From 76bbd49c0eff13543425bb25e97b54ae5f581a6a Mon Sep 17 00:00:00 2001
+From: Philipp Zabel <p.zabel@pengutronix.de>
+Date: Thu, 18 Oct 2012 10:37:35 +0200
+Subject: [PATCH 23/40] gst-plugins-good11: handle ENODATA return value for
+ VIDIOC_ENUMSTD
+
+In kernel v3.7-rc1, VIDIOC_ENUMSTD returns ENODATA if the current input
+does not support the STD API.
+
+Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
+Signed-off-by: Michael Olbrich <m.olbrich@pengutronix.de>
+---
+ sys/v4l2/v4l2_calls.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/sys/v4l2/v4l2_calls.c b/sys/v4l2/v4l2_calls.c
+index 87fdfe9..368fd42 100644
+--- a/sys/v4l2/v4l2_calls.c
++++ b/sys/v4l2/v4l2_calls.c
+@@ -203,7 +203,7 @@ gst_v4l2_fill_lists (GstV4l2Object * v4l2object)
+     standard.index = n;
+ 
+     if (v4l2_ioctl (v4l2object->video_fd, VIDIOC_ENUMSTD, &standard) < 0) {
+-      if (errno == EINVAL || errno == ENOTTY)
++      if (errno == EINVAL || errno == ENOTTY || errno == ENODATA)
+         break;                  /* end of enumeration */
+       else {
+         GST_ELEMENT_ERROR (e, RESOURCE, SETTINGS,
+-- 
+1.8.3
+

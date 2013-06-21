@@ -1,0 +1,113 @@
+From 3ff1700199e3612b3fc62421c87a2effdcd43f03 Mon Sep 17 00:00:00 2001
+From: Michael Olbrich <m.olbrich@pengutronix.de>
+Date: Thu, 10 May 2012 10:32:22 +0200
+Subject: [PATCH 10/40] v4l2: don't stop streaming if set_caps doesn't change
+ anything
+
+Signed-off-by: Michael Olbrich <m.olbrich@pengutronix.de>
+---
+ sys/v4l2/gstv4l2object.c | 26 ++++++++++++++++++++++++++
+ sys/v4l2/gstv4l2object.h |  2 ++
+ sys/v4l2/gstv4l2sink.c   | 11 +----------
+ sys/v4l2/gstv4l2src.c    |  6 +-----
+ 4 files changed, 30 insertions(+), 15 deletions(-)
+
+diff --git a/sys/v4l2/gstv4l2object.c b/sys/v4l2/gstv4l2object.c
+index 6bcbf16..d605a64 100644
+--- a/sys/v4l2/gstv4l2object.c
++++ b/sys/v4l2/gstv4l2object.c
+@@ -2433,6 +2433,32 @@ pool_failed:
+ }
+ 
+ gboolean
++gst_v4l2_object_set_caps (GstV4l2Object * v4l2object, GstCaps * caps)
++{
++  if (v4l2object->pool) {
++    GstStructure *s;
++    const GstCaps *oldcaps;
++
++    s = gst_buffer_pool_get_config (GST_BUFFER_POOL_CAST (v4l2object->pool));
++    gst_buffer_pool_config_get_params (s, &oldcaps, NULL, NULL, NULL);
++    if (gst_caps_is_equal (caps, oldcaps)) {
++      GST_DEBUG_OBJECT (v4l2object->element, "caps unchanged");
++      return TRUE;
++    }
++  }
++
++  /* make sure we stop capturing and dealloc buffers */
++  if (!gst_v4l2_object_stop (v4l2object))
++    return FALSE;
++
++  if (!gst_v4l2_object_set_format (v4l2object, caps))
++    /* error already posted */
++    return FALSE;
++
++  return TRUE;
++}
++
++gboolean
+ gst_v4l2_object_unlock (GstV4l2Object * v4l2object)
+ {
+   GST_LOG_OBJECT (v4l2object->element, "flush poll");
+diff --git a/sys/v4l2/gstv4l2object.h b/sys/v4l2/gstv4l2object.h
+index 1b15627..833cec1 100644
+--- a/sys/v4l2/gstv4l2object.h
++++ b/sys/v4l2/gstv4l2object.h
+@@ -225,6 +225,8 @@ GstStructure* gst_v4l2_object_v4l2fourcc_to_structure (guint32 fourcc);
+ 
+ gboolean      gst_v4l2_object_set_format (GstV4l2Object *v4l2object, GstCaps * caps);
+ 
++gboolean      gst_v4l2_object_set_caps (GstV4l2Object *v4l2object, GstCaps * caps);
++
+ gboolean      gst_v4l2_object_unlock      (GstV4l2Object *v4l2object);
+ gboolean      gst_v4l2_object_unlock_stop (GstV4l2Object *v4l2object);
+ 
+diff --git a/sys/v4l2/gstv4l2sink.c b/sys/v4l2/gstv4l2sink.c
+index ba73c5a..c3f6e7f 100644
+--- a/sys/v4l2/gstv4l2sink.c
++++ b/sys/v4l2/gstv4l2sink.c
+@@ -574,10 +574,7 @@ gst_v4l2sink_set_caps (GstBaseSink * bsink, GstCaps * caps)
+     return FALSE;
+   }
+ 
+-  if (!gst_v4l2_object_stop (obj))
+-    goto stop_failed;
+-
+-  if (!gst_v4l2_object_set_format (v4l2sink->v4l2object, caps))
++  if (!gst_v4l2_object_set_caps (obj, caps))
+     goto invalid_format;
+ 
+   gst_v4l2sink_sync_overlay_fields (v4l2sink);
+@@ -600,12 +597,6 @@ gst_v4l2sink_set_caps (GstBaseSink * bsink, GstCaps * caps)
+ 
+   return TRUE;
+ 
+-  /* ERRORS */
+-stop_failed:
+-  {
+-    GST_DEBUG_OBJECT (v4l2sink, "failed to stop streaming");
+-    return FALSE;
+-  }
+ invalid_format:
+   {
+     /* error already posted */
+diff --git a/sys/v4l2/gstv4l2src.c b/sys/v4l2/gstv4l2src.c
+index 2a06a7b..00538a7 100644
+--- a/sys/v4l2/gstv4l2src.c
++++ b/sys/v4l2/gstv4l2src.c
+@@ -491,11 +491,7 @@ gst_v4l2src_set_caps (GstBaseSrc * src, GstCaps * caps)
+   v4l2src = GST_V4L2SRC (src);
+   obj = v4l2src->v4l2object;
+ 
+-  /* make sure we stop capturing and dealloc buffers */
+-  if (!gst_v4l2_object_stop (obj))
+-    return FALSE;
+-
+-  if (!gst_v4l2_object_set_format (obj, caps))
++  if (!gst_v4l2_object_set_caps (obj, caps))
+     /* error already posted */
+     return FALSE;
+ 
+-- 
+1.8.3
+

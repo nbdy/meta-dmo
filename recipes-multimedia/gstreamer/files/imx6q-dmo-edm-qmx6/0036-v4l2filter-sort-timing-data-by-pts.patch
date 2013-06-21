@@ -1,0 +1,124 @@
+From 2a5c571fa42072ec4a9f8b853bc79feb7ddb1ae1 Mon Sep 17 00:00:00 2001
+From: Michael Olbrich <m.olbrich@pengutronix.de>
+Date: Thu, 1 Nov 2012 17:51:23 +0100
+Subject: [PATCH 36/40] v4l2filter: sort timing data by pts
+
+Signed-off-by: Michael Olbrich <m.olbrich@pengutronix.de>
+---
+ sys/v4l2/gstv4l2filter.c | 44 +++++++++++++++++++++++++++++++++++---------
+ sys/v4l2/gstv4l2filter.h |  3 ++-
+ 2 files changed, 37 insertions(+), 10 deletions(-)
+
+diff --git a/sys/v4l2/gstv4l2filter.c b/sys/v4l2/gstv4l2filter.c
+index d43b987..177458f 100644
+--- a/sys/v4l2/gstv4l2filter.c
++++ b/sys/v4l2/gstv4l2filter.c
+@@ -201,7 +201,8 @@ gst_v4l2filter_init (GstV4l2Filter * v4l2filter)
+   v4l2filter->probed_sinkcaps = NULL;
+   v4l2filter->probed_srccaps = NULL;
+ 
+-  v4l2filter->queue = g_async_queue_new_full (v4l2_filter_free_time);
++  g_mutex_init (&v4l2filter->queue_lock);
++  v4l2filter->queue = g_sequence_new (v4l2_filter_free_time);
+ }
+ 
+ static void
+@@ -216,7 +217,8 @@ gst_v4l2filter_dispose (GObject * object)
+     gst_caps_unref (v4l2filter->probed_srccaps);
+   }
+ 
+-  g_async_queue_unref (v4l2filter->queue);
++  g_sequence_free (v4l2filter->queue);
++  g_mutex_clear (&v4l2filter->queue_lock);
+ 
+   G_OBJECT_CLASS (parent_class)->dispose (object);
+ }
+@@ -596,15 +598,20 @@ v4l2_filter_src_task (GstPad * pad)
+   if (G_UNLIKELY (ret != GST_FLOW_OK))
+     goto out;
+ 
+-  time = (GstV4l2FilterTime *) g_async_queue_try_pop (v4l2filter->queue);
+-  if (time) {
++  g_mutex_lock (&v4l2filter->queue_lock);
++  GSequenceIter *iter = g_sequence_get_iter_at_pos (v4l2filter->queue, 0);
++  if (!g_sequence_iter_is_end (iter)) {
++    time = (GstV4l2FilterTime *) g_sequence_get (iter);
++
+     GST_BUFFER_PTS (buffer) = time->pts;
+     GST_BUFFER_DTS (buffer) = time->dts;
+     GST_BUFFER_DURATION (buffer) = time->duration;
+     GST_BUFFER_OFFSET (buffer) = time->offset;
+     GST_BUFFER_OFFSET_END (buffer) = time->offset_end;
+-    v4l2_filter_free_time (time);
++
++    g_sequence_remove (iter);
+   }
++  g_mutex_unlock (&v4l2filter->queue_lock);
+ 
+   gst_pad_push (pad, buffer);
+   return;
+@@ -631,9 +638,10 @@ gst_v4l2filter_activate_mode (GstPad * pad, GstObject * parent, GstPadMode mode,
+       if (active)
+         result = gst_v4l2filter_start_task (v4l2filter);
+       else {
+-        gpointer mem;
+-        while ((mem = g_async_queue_try_pop (v4l2filter->queue)))
+-          v4l2_filter_free_time (mem);
++        g_mutex_lock (&v4l2filter->queue_lock);
++        g_sequence_remove_range (g_sequence_get_begin_iter (v4l2filter->queue),
++            g_sequence_get_end_iter (v4l2filter->queue));
++        g_mutex_unlock (&v4l2filter->queue_lock);
+         /* FIXME: is this correct? */
+         gst_v4l2_object_unlock (v4l2filter->src_v4l2object);
+         if (v4l2filter->src_v4l2object->pool) {
+@@ -652,6 +660,21 @@ gst_v4l2filter_activate_mode (GstPad * pad, GstObject * parent, GstPadMode mode,
+   return result;
+ }
+ 
++static gint
++v4l2filter_time_sort (gconstpointer a, gconstpointer b, gpointer userdata)
++{
++  GstV4l2FilterTime *atime = (GstV4l2FilterTime *) a;
++  GstV4l2FilterTime *btime = (GstV4l2FilterTime *) b;
++
++  /* we need to do this because pts is 64 bit */
++  if (atime->pts < btime->pts)
++    return -1;
++  else if (atime->pts > btime->pts)
++    return 1;
++  else
++    return 0;
++}
++
+ static GstFlowReturn
+ gst_v4l2filter_sink_chain (GstPad * pad, GstObject * parent, GstBuffer * buffer)
+ {
+@@ -681,7 +704,10 @@ gst_v4l2filter_sink_chain (GstPad * pad, GstObject * parent, GstBuffer * buffer)
+   time->duration = GST_BUFFER_DURATION (buffer);
+   time->offset = GST_BUFFER_OFFSET (buffer);
+   time->offset_end = GST_BUFFER_OFFSET_END (buffer);
+-  g_async_queue_push (v4l2filter->queue, time);
++
++  g_mutex_lock (&v4l2filter->queue_lock);
++  g_sequence_insert_sorted (v4l2filter->queue, time, v4l2filter_time_sort, 0);
++  g_mutex_unlock (&v4l2filter->queue_lock);
+ 
+   ret =
+       gst_v4l2_buffer_pool_process (GST_V4L2_BUFFER_POOL_CAST (obj->pool),
+diff --git a/sys/v4l2/gstv4l2filter.h b/sys/v4l2/gstv4l2filter.h
+index 14f1250..fd24e01 100644
+--- a/sys/v4l2/gstv4l2filter.h
++++ b/sys/v4l2/gstv4l2filter.h
+@@ -70,7 +70,8 @@ struct _GstV4l2Filter {
+   GstV4l2Object * src_v4l2object;
+   GstV4l2Object * sink_v4l2object;
+ 
+-  GAsyncQueue *queue;
++  GSequence *queue;
++  GMutex queue_lock;
+ };
+ 
+ struct _GstV4l2FilterClass {
+-- 
+1.8.3
+

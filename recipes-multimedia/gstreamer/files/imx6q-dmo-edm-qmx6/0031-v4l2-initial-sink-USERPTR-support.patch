@@ -1,0 +1,266 @@
+From 17169d7f0afa3f0350a2ee492aebd03df5476bad Mon Sep 17 00:00:00 2001
+From: Michael Olbrich <m.olbrich@pengutronix.de>
+Date: Mon, 23 Apr 2012 18:00:01 +0200
+Subject: [PATCH 31/40] v4l2: initial sink USERPTR support
+
+Signed-off-by: Michael Olbrich <m.olbrich@pengutronix.de>
+---
+ sys/v4l2/gstv4l2bufferpool.c | 142 +++++++++++++++++++++++++++++++++++++++++--
+ sys/v4l2/gstv4l2object.c     |   3 +-
+ sys/v4l2/gstv4l2object.h     |   3 +-
+ sys/v4l2/gstv4l2src.c        |   1 +
+ 4 files changed, 141 insertions(+), 8 deletions(-)
+
+diff --git a/sys/v4l2/gstv4l2bufferpool.c b/sys/v4l2/gstv4l2bufferpool.c
+index dad3188..f0bfbbc 100644
+--- a/sys/v4l2/gstv4l2bufferpool.c
++++ b/sys/v4l2/gstv4l2bufferpool.c
+@@ -214,6 +214,8 @@ gst_v4l2_buffer_pool_alloc_buffer (GstBufferPool * bpool, GstBuffer ** buffer,
+       break;
+     }
+     case GST_V4L2_IO_USERPTR:
++      return GST_FLOW_ERROR;
++
+     default:
+       g_assert_not_reached ();
+       break;
+@@ -351,6 +353,9 @@ gst_v4l2_buffer_pool_start (GstBufferPool * bpool)
+ 
+   max_buffers = pool->max_buffers;
+ 
++  if (obj->mode == GST_V4L2_IO_STREAM)
++    obj->mode = GST_V4L2_IO_MMAP;
++
+   switch (obj->mode) {
+     case GST_V4L2_IO_RW:
+     {
+@@ -387,6 +392,35 @@ gst_v4l2_buffer_pool_start (GstBufferPool * bpool)
+       break;
+     }
+     case GST_V4L2_IO_USERPTR:
++    {
++      /* first, lets request buffers, and see how many we can get: */
++      GST_DEBUG_OBJECT (pool, "starting, requesting %d USERPTR buffers",
++          max_buffers);
++
++      if (max_buffers == 0)
++        max_buffers = 4;
++
++      memset (&breq, 0, sizeof (struct v4l2_requestbuffers));
++      breq.type = obj->type;
++      breq.count = max_buffers;
++      breq.memory = V4L2_MEMORY_USERPTR;
++
++      if (v4l2_ioctl (pool->video_fd, VIDIOC_REQBUFS, &breq) < 0)
++        goto reqbufs_failed;
++
++      GST_LOG_OBJECT (pool, " count:  %u", breq.count);
++      GST_LOG_OBJECT (pool, " type:   %d", breq.type);
++      GST_LOG_OBJECT (pool, " memory: %d", breq.memory);
++
++      if (breq.count < GST_V4L2_MIN_BUFFERS)
++        goto no_buffers;
++
++      if (max_buffers != breq.count) {
++        GST_WARNING_OBJECT (pool, "using %u buffers instead", breq.count);
++        max_buffers = breq.count;
++      }
++      break;
++    }
+     default:
+       g_assert_not_reached ();
+       break;
+@@ -467,9 +501,14 @@ gst_v4l2_buffer_pool_stop (GstBufferPool * bpool)
+   ret = GST_BUFFER_POOL_CLASS (parent_class)->stop (bpool);
+ 
+   /* then free the remaining buffers */
+-  for (n = 0; n < pool->num_allocated; n++) {
+-    if (pool->buffers[n])
+-      gst_v4l2_buffer_pool_free_buffer (bpool, pool->buffers[n]);
++  for (n = 0; n < pool->max_buffers; n++) {
++    GstBuffer *buf = pool->buffers[n];
++    if (!buf)
++      continue;
++    if (pool->obj->mode == GST_V4L2_IO_MMAP)
++      gst_v4l2_buffer_pool_free_buffer (bpool, buf);
++    else
++      gst_buffer_unref (buf);
+   }
+   g_free (pool->buffers);
+   pool->buffers = NULL;
+@@ -529,6 +568,8 @@ gst_v4l2_buffer_pool_qbuf (GstV4l2BufferPool * pool, GstBuffer * buf)
+   gint index;
+ 
+   meta = GST_V4L2_META_GET (buf);
++  if ((pool->obj->mode == GST_V4L2_IO_USERPTR) && meta == NULL)
++    return GST_FLOW_ERROR;
+   g_assert (meta != NULL);
+ 
+   index = meta->vbuffer.index;
+@@ -539,8 +580,21 @@ gst_v4l2_buffer_pool_qbuf (GstV4l2BufferPool * pool, GstBuffer * buf)
+   if (pool->buffers[index] != NULL)
+     goto already_queued;
+ 
+-  if (v4l2_ioctl (pool->video_fd, VIDIOC_QBUF, &meta->vbuffer) < 0)
+-    goto queue_failed;
++  if (pool->obj->mode == GST_V4L2_IO_MMAP) {
++    if (v4l2_ioctl (pool->video_fd, VIDIOC_QBUF, &meta->vbuffer) < 0)
++      goto queue_failed;
++  } else {
++    struct v4l2_buffer vbuffer;
++
++    vbuffer.type = pool->obj->type;
++    vbuffer.index = index;
++    vbuffer.memory = V4L2_MEMORY_USERPTR;
++    vbuffer.m.userptr = (unsigned long) meta->mem;
++    vbuffer.length = meta->vbuffer.length;
++
++    if (v4l2_ioctl (pool->video_fd, VIDIOC_QBUF, &vbuffer) < 0)
++      goto queue_failed;
++  }
+ 
+   pool->buffers[index] = buf;
+   pool->num_queued++;
+@@ -574,7 +628,8 @@ gst_v4l2_buffer_pool_dqbuf (GstV4l2BufferPool * pool, GstBuffer ** buffer)
+ 
+   memset (&vbuffer, 0x00, sizeof (vbuffer));
+   vbuffer.type = obj->type;
+-  vbuffer.memory = V4L2_MEMORY_MMAP;
++  vbuffer.memory = (obj->mode == GST_V4L2_IO_MMAP)
++      ? V4L2_MEMORY_MMAP : V4L2_MEMORY_USERPTR;
+ 
+   GST_LOG_OBJECT (pool, "doing DQBUF");
+   if (v4l2_ioctl (pool->video_fd, VIDIOC_DQBUF, &vbuffer) < 0)
+@@ -1105,7 +1160,82 @@ gst_v4l2_buffer_pool_process (GstV4l2BufferPool * pool, GstBuffer * buf)
+           break;
+         }
+ 
++        case GST_V4L2_IO_STREAM:
+         case GST_V4L2_IO_USERPTR:
++        {
++          GstStructure *config;
++          const GstCaps *caps;
++          guint size, old_min, old_max;
++
++          gboolean retry = FALSE;
++
++          if (!gst_buffer_pool_is_active (bpool)) {
++            guint max;
++
++            if (buf->pool) {
++              config = gst_buffer_pool_get_config (buf->pool);
++              gst_buffer_pool_config_get_params (config,
++                  NULL, NULL, NULL, &max);
++            } else {
++              max = 0;
++            }
++
++            /* this pool was not activated, configure and activate */
++            GST_DEBUG_OBJECT (pool, "activating pool");
++
++            config = gst_buffer_pool_get_config (bpool);
++            gst_buffer_pool_config_add_option (config,
++                GST_BUFFER_POOL_OPTION_VIDEO_META);
++            gst_buffer_pool_config_get_params (config, &caps, &size, &old_min,
++                &old_max);
++            /* We want the same number of max buffers as the source
++             * and 0 min buffers to avoid allocating buffers */
++            gst_buffer_pool_config_set_params (config, caps, size, 0, max);
++            gst_buffer_pool_set_config (bpool, config);
++
++            retry = (obj->mode == GST_V4L2_IO_STREAM);
++            obj->mode = GST_V4L2_IO_USERPTR;
++
++            if (!gst_buffer_pool_set_active (bpool, TRUE))
++              goto activate_failed;
++          }
++          if ((ret = gst_v4l2_buffer_pool_qbuf (pool, buf)) != GST_FLOW_OK) {
++            if (!retry)
++              goto done;
++
++            if (!gst_buffer_pool_set_active (bpool, FALSE))
++              goto activate_failed;
++
++            config = gst_buffer_pool_get_config (bpool);
++            gst_buffer_pool_config_set_params (config, caps, size, old_min,
++                old_max);
++            gst_buffer_pool_set_config (bpool, config);
++
++            obj->mode = GST_V4L2_IO_MMAP;
++            return gst_v4l2_buffer_pool_process (pool, buf);
++          }
++          gst_buffer_ref (buf);
++
++          /* if we are not streaming yet (this is the first buffer, start
++           * streaming now */
++          if (!pool->streaming)
++            if (!start_streaming (pool))
++              goto start_failed;
++
++          if (pool->num_queued > 1) {
++            /* >1 buffer are queued, try to dequeue one and release it back
++             * into the pool so that _acquire can get to it again. */
++            ret = gst_v4l2_buffer_pool_dqbuf (pool, &buf);
++            if (ret != GST_FLOW_OK)
++              goto done;
++
++            /* release the rendered buffer back into the pool. This wakes up any
++             * thread waiting for a buffer in _acquire() */
++            gst_buffer_unref (buf);
++          }
++          break;
++        }
++
+         default:
+           g_assert_not_reached ();
+           break;
+diff --git a/sys/v4l2/gstv4l2object.c b/sys/v4l2/gstv4l2object.c
+index daf20df..652037f 100644
+--- a/sys/v4l2/gstv4l2object.c
++++ b/sys/v4l2/gstv4l2object.c
+@@ -390,6 +390,7 @@ gst_v4l2_io_mode_get_type (void)
+       {GST_V4L2_IO_RW, "GST_V4L2_IO_RW", "rw"},
+       {GST_V4L2_IO_MMAP, "GST_V4L2_IO_MMAP", "mmap"},
+       {GST_V4L2_IO_USERPTR, "GST_V4L2_IO_USERPTR", "userptr"},
++      {GST_V4L2_IO_STREAM, "GST_V4L2_IO_STREAM", "streaming"},
+ 
+       {0, NULL, NULL}
+     };
+@@ -2309,7 +2310,7 @@ gst_v4l2_object_setup_pool (GstV4l2Object * v4l2object, GstCaps * caps)
+ 
+   if (v4l2object->vcap.capabilities & V4L2_CAP_STREAMING) {
+     if (v4l2object->req_mode == GST_V4L2_IO_AUTO)
+-      mode = GST_V4L2_IO_MMAP;
++      mode = GST_V4L2_IO_STREAM;
+   } else if (v4l2object->req_mode == GST_V4L2_IO_MMAP)
+     goto method_not_supported;
+ 
+diff --git a/sys/v4l2/gstv4l2object.h b/sys/v4l2/gstv4l2object.h
+index b7467b4..24f3894 100644
+--- a/sys/v4l2/gstv4l2object.h
++++ b/sys/v4l2/gstv4l2object.h
+@@ -73,7 +73,8 @@ typedef enum {
+   GST_V4L2_IO_AUTO    = 0,
+   GST_V4L2_IO_RW      = 1,
+   GST_V4L2_IO_MMAP    = 2,
+-  GST_V4L2_IO_USERPTR = 3
++  GST_V4L2_IO_USERPTR = 3,
++  GST_V4L2_IO_STREAM  = 4
+ } GstV4l2IOMode;
+ 
+ typedef gboolean  (*GstV4l2GetInOutFunction)  (GstV4l2Object * v4l2object, gint * input);
+diff --git a/sys/v4l2/gstv4l2src.c b/sys/v4l2/gstv4l2src.c
+index d53b629..5275c17 100644
+--- a/sys/v4l2/gstv4l2src.c
++++ b/sys/v4l2/gstv4l2src.c
+@@ -555,6 +555,7 @@ gst_v4l2src_decide_allocation (GstBaseSrc * bsrc, GstQuery * query)
+       break;
+     case GST_V4L2_IO_MMAP:
+     case GST_V4L2_IO_USERPTR:
++    case GST_V4L2_IO_STREAM:
+       /* in streaming mode, prefer our own pool */
+       pool = GST_BUFFER_POOL_CAST (obj->pool);
+       size = obj->sizeimage;
+-- 
+1.8.3
+

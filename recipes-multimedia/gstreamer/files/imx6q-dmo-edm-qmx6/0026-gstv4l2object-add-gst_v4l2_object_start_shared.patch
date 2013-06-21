@@ -1,0 +1,53 @@
+From 315f64a6e0e324aba496417d0f8cd1f858d7d39a Mon Sep 17 00:00:00 2001
+From: Michael Olbrich <m.olbrich@pengutronix.de>
+Date: Thu, 19 Apr 2012 11:23:29 +0200
+Subject: [PATCH 26/40] gstv4l2object: add gst_v4l2_object_start_shared
+
+Signed-off-by: Michael Olbrich <m.olbrich@pengutronix.de>
+---
+ sys/v4l2/gstv4l2object.c | 15 +++++++++++++++
+ sys/v4l2/gstv4l2object.h |  2 ++
+ 2 files changed, 17 insertions(+)
+
+diff --git a/sys/v4l2/gstv4l2object.c b/sys/v4l2/gstv4l2object.c
+index 41832b4..8ec811f 100644
+--- a/sys/v4l2/gstv4l2object.c
++++ b/sys/v4l2/gstv4l2object.c
+@@ -931,6 +931,21 @@ gst_v4l2_object_open (GstV4l2Object * v4l2object)
+ }
+ 
+ gboolean
++gst_v4l2_object_open_shared (GstV4l2Object * v4l2object, GstV4l2Object * other)
++{
++  if (gst_v4l2_clone (v4l2object, other))
++    gst_v4l2_set_defaults (v4l2object);
++  else
++    return FALSE;
++
++#ifdef HAVE_XVIDEO
++  gst_v4l2_video_overlay_start (v4l2object);
++#endif
++
++  return TRUE;
++}
++
++gboolean
+ gst_v4l2_object_close (GstV4l2Object * v4l2object)
+ {
+ #ifdef HAVE_XVIDEO
+diff --git a/sys/v4l2/gstv4l2object.h b/sys/v4l2/gstv4l2object.h
+index 20ecc73..47af672 100644
+--- a/sys/v4l2/gstv4l2object.h
++++ b/sys/v4l2/gstv4l2object.h
+@@ -204,6 +204,8 @@ gboolean  gst_v4l2_object_get_property_helper       (GstV4l2Object *v4l2object,
+ 						     GParamSpec * pspec);
+ /* open/close */
+ gboolean  gst_v4l2_object_open               (GstV4l2Object *v4l2object);
++gboolean  gst_v4l2_object_open_shared        (GstV4l2Object *v4l2object,
++                                              GstV4l2Object * other);
+ gboolean  gst_v4l2_object_close              (GstV4l2Object *v4l2object);
+ 
+ /* probing */
+-- 
+1.8.3
+

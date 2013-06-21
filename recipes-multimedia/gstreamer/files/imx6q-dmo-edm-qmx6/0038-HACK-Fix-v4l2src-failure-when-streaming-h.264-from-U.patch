@@ -1,0 +1,29 @@
+From ef10d30cd51896bff1268acf4e1df8893643f5f3 Mon Sep 17 00:00:00 2001
+From: Philipp Zabel <p.zabel@pengutronix.de>
+Date: Fri, 26 Oct 2012 14:26:53 +0200
+Subject: [PATCH 38/40] HACK: Fix v4l2src failure when streaming h.264 from UVC
+
+Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
+---
+ sys/v4l2/gstv4l2bufferpool.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/sys/v4l2/gstv4l2bufferpool.c b/sys/v4l2/gstv4l2bufferpool.c
+index cf08bc6..e739909 100644
+--- a/sys/v4l2/gstv4l2bufferpool.c
++++ b/sys/v4l2/gstv4l2bufferpool.c
+@@ -273,8 +273,11 @@ gst_v4l2_buffer_pool_set_config (GstBufferPool * bpool, GstStructure * config)
+     GST_DEBUG_OBJECT (pool, "no videometadata, checking strides %d and %u",
+         stride, obj->bytesperline);
+ 
++#if 0
++    /* FIXME: v4l2source fails here when streaming h.264 data from UVC: */
+     if (stride != obj->bytesperline)
+       goto missing_video_api;
++#endif
+   }
+ 
+   /* parse the config and keep around */
+-- 
+1.8.3
+

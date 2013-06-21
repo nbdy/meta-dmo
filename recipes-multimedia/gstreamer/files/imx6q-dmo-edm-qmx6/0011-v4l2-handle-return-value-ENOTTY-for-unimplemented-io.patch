@@ -1,0 +1,45 @@
+From 95a9af3aa5e0079a5159054538c0a00974a78da8 Mon Sep 17 00:00:00 2001
+From: Philipp Zabel <p.zabel@pengutronix.de>
+Date: Thu, 5 Jul 2012 18:02:27 +0200
+Subject: [PATCH 11/40] v4l2: handle return value -ENOTTY for unimplemented
+ ioctls
+
+Newer kernels return -ENOTTY, older kernels return -EINVAL if the ioctl
+is not implemented. With this patch, GStreamer handles both cases.
+
+Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
+Signed-off-by: Michael Olbrich <m.olbrich@pengutronix.de>
+---
+ sys/v4l2/gstv4l2object.c | 2 +-
+ sys/v4l2/v4l2_calls.c    | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/sys/v4l2/gstv4l2object.c b/sys/v4l2/gstv4l2object.c
+index d605a64..3ee60ac 100644
+--- a/sys/v4l2/gstv4l2object.c
++++ b/sys/v4l2/gstv4l2object.c
+@@ -2410,7 +2410,7 @@ invalid_pixelformat:
+ get_parm_failed:
+   {
+     /* it's possible that this call is not supported */
+-    if (errno != EINVAL) {
++    if (errno != EINVAL && errno != ENOTTY) {
+       GST_ELEMENT_WARNING (v4l2object->element, RESOURCE, SETTINGS,
+           (_("Could not get parameters on device '%s'"),
+               v4l2object->videodev), GST_ERROR_SYSTEM);
+diff --git a/sys/v4l2/v4l2_calls.c b/sys/v4l2/v4l2_calls.c
+index 62c03ee..594aabc 100644
+--- a/sys/v4l2/v4l2_calls.c
++++ b/sys/v4l2/v4l2_calls.c
+@@ -129,7 +129,7 @@ gst_v4l2_fill_lists (GstV4l2Object * v4l2object)
+ 
+     input.index = n;
+     if (v4l2_ioctl (v4l2object->video_fd, VIDIOC_ENUMINPUT, &input) < 0) {
+-      if (errno == EINVAL)
++      if (errno == EINVAL || errno == ENOTTY)
+         break;                  /* end of enumeration */
+       else {
+         GST_ELEMENT_ERROR (e, RESOURCE, SETTINGS,
+-- 
+1.8.3
+

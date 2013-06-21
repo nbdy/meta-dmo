@@ -1,0 +1,112 @@
+From c821adc4800a1596a2321b481477892b0a68593f Mon Sep 17 00:00:00 2001
+From: Michael Olbrich <m.olbrich@pengutronix.de>
+Date: Mon, 14 May 2012 16:44:07 +0200
+Subject: [PATCH 32/40] gstv4l2bufferpool: make number of queued output buffers
+ configurable for USERPTR
+
+Signed-off-by: Michael Olbrich <m.olbrich@pengutronix.de>
+---
+ sys/v4l2/gstv4l2bufferpool.c |  2 +-
+ sys/v4l2/gstv4l2object.c     | 17 ++++++++++++++++-
+ sys/v4l2/gstv4l2object.h     |  2 ++
+ 3 files changed, 19 insertions(+), 2 deletions(-)
+
+diff --git a/sys/v4l2/gstv4l2bufferpool.c b/sys/v4l2/gstv4l2bufferpool.c
+index f0bfbbc..1407014 100644
+--- a/sys/v4l2/gstv4l2bufferpool.c
++++ b/sys/v4l2/gstv4l2bufferpool.c
+@@ -1222,7 +1222,7 @@ gst_v4l2_buffer_pool_process (GstV4l2BufferPool * pool, GstBuffer * buf)
+             if (!start_streaming (pool))
+               goto start_failed;
+ 
+-          if (pool->num_queued > 1) {
++          if (pool->num_queued > pool->obj->min_queued) {
+             /* >1 buffer are queued, try to dequeue one and release it back
+              * into the pool so that _acquire can get to it again. */
+             ret = gst_v4l2_buffer_pool_dqbuf (pool, &buf);
+diff --git a/sys/v4l2/gstv4l2object.c b/sys/v4l2/gstv4l2object.c
+index 652037f..cfa64c1 100644
+--- a/sys/v4l2/gstv4l2object.c
++++ b/sys/v4l2/gstv4l2object.c
+@@ -63,6 +63,7 @@ GST_DEBUG_CATEGORY_EXTERN (GST_CAT_PERFORMANCE);
+ #define DEFAULT_PROP_DEVICE_NAME 	NULL
+ #define DEFAULT_PROP_DEVICE_FD          -1
+ #define DEFAULT_PROP_FLAGS              0
++#define DEFAULT_PROP_MIN_QUEUED         1
+ #define DEFAULT_PROP_TV_NORM            0
+ #define DEFAULT_PROP_CHANNEL            NULL
+ #define DEFAULT_PROP_FREQUENCY          0
+@@ -419,6 +420,11 @@ gst_v4l2_object_install_properties_helper (GObjectClass * gobject_class,
+           GST_TYPE_V4L2_DEVICE_FLAGS, DEFAULT_PROP_FLAGS,
+           G_PARAM_READABLE | G_PARAM_STATIC_STRINGS));
+ 
++  g_object_class_install_property (gobject_class, PROP_MIN_QUEUED,
++      g_param_spec_int ("min-queued", "min queued",
++          "minimum number of queued v4l2 buffers", 0,
++          G_MAXINT, DEFAULT_PROP_MIN_QUEUED,
++          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+   /**
+    * GstV4l2Src:brightness
+    *
+@@ -583,6 +589,8 @@ gst_v4l2_object_new (GstElement * element,
+   v4l2object->active = FALSE;
+   v4l2object->videodev = g_strdup (default_device);
+ 
++  v4l2object->min_queued = DEFAULT_PROP_MIN_QUEUED;
++
+   v4l2object->norms = NULL;
+   v4l2object->channels = NULL;
+   v4l2object->colors = NULL;
+@@ -696,6 +704,9 @@ gst_v4l2_object_set_property_helper (GstV4l2Object * v4l2object,
+       g_free (v4l2object->videodev);
+       v4l2object->videodev = g_value_dup_string (value);
+       break;
++    case PROP_MIN_QUEUED:
++      v4l2object->min_queued = g_value_get_int (value);
++      break;
+     case PROP_BRIGHTNESS:
+     case PROP_CONTRAST:
+     case PROP_SATURATION:
+@@ -815,6 +826,9 @@ gst_v4l2_object_get_property_helper (GstV4l2Object * v4l2object,
+       g_value_set_flags (value, flags);
+       break;
+     }
++    case PROP_MIN_QUEUED:
++      g_value_set_int (value, v4l2object->min_queued);
++      break;
+     case PROP_BRIGHTNESS:
+     case PROP_CONTRAST:
+     case PROP_SATURATION:
+@@ -2862,7 +2876,8 @@ gst_v4l2_object_propose_allocation (GstV4l2Object * v4l2object,
+     gst_structure_free (config);
+   }
+   /* we need at least 2 buffers to operate */
+-  gst_query_add_allocation_pool (query, pool, size, 2, 0);
++  gst_query_add_allocation_pool (query, pool, size,
++      v4l2object->min_queued + 1, 0);
+ 
+   /* we also support various metadata */
+   gst_query_add_allocation_meta (query, GST_VIDEO_META_API_TYPE);
+diff --git a/sys/v4l2/gstv4l2object.h b/sys/v4l2/gstv4l2object.h
+index 24f3894..3fa6d85 100644
+--- a/sys/v4l2/gstv4l2object.h
++++ b/sys/v4l2/gstv4l2object.h
+@@ -108,6 +108,7 @@ struct _GstV4l2Object {
+   GstV4l2IOMode mode;
+   GstPoll * poll;
+   gboolean can_poll_device;
++  gint min_queued;
+ 
+   gboolean active;
+   gboolean streaming;
+@@ -171,6 +172,7 @@ GType gst_v4l2_object_get_type (void);
+     PROP_DEVICE_NAME,			\
+     PROP_DEVICE_FD,			\
+     PROP_FLAGS,                         \
++    PROP_MIN_QUEUED,                    \
+     PROP_BRIGHTNESS,			\
+     PROP_CONTRAST,			\
+     PROP_SATURATION,			\
+-- 
+1.8.3
+
