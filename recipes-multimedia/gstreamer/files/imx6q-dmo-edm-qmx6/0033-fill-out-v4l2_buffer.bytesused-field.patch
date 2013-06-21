@@ -1,0 +1,38 @@
+From 70152506ed7acc7594742f3fedfdf40633b9cb85 Mon Sep 17 00:00:00 2001
+From: Philipp Zabel <p.zabel@pengutronix.de>
+Date: Mon, 20 Aug 2012 09:52:32 +0200
+Subject: [PATCH 33/40] fill out v4l2_buffer.bytesused field
+
+Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
+---
+ sys/v4l2/gstv4l2bufferpool.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/sys/v4l2/gstv4l2bufferpool.c b/sys/v4l2/gstv4l2bufferpool.c
+index 1407014..9893bfa 100644
+--- a/sys/v4l2/gstv4l2bufferpool.c
++++ b/sys/v4l2/gstv4l2bufferpool.c
+@@ -573,9 +573,10 @@ gst_v4l2_buffer_pool_qbuf (GstV4l2BufferPool * pool, GstBuffer * buf)
+   g_assert (meta != NULL);
+ 
+   index = meta->vbuffer.index;
++  meta->vbuffer.bytesused = gst_buffer_get_size (buf);
+ 
+-  GST_LOG_OBJECT (pool, "enqueue buffer %p, index:%d, queued:%d", buf,
+-      index, pool->num_queued);
++  GST_LOG_OBJECT (pool, "enqueue buffer %p, index:%d, queued:%d, used:%d", buf,
++      index, pool->num_queued, meta->vbuffer.bytesused);
+ 
+   if (pool->buffers[index] != NULL)
+     goto already_queued;
+@@ -591,6 +592,7 @@ gst_v4l2_buffer_pool_qbuf (GstV4l2BufferPool * pool, GstBuffer * buf)
+     vbuffer.memory = V4L2_MEMORY_USERPTR;
+     vbuffer.m.userptr = (unsigned long) meta->mem;
+     vbuffer.length = meta->vbuffer.length;
++    vbuffer.bytesused = meta->vbuffer.bytesused;
+ 
+     if (v4l2_ioctl (pool->video_fd, VIDIOC_QBUF, &vbuffer) < 0)
+       goto queue_failed;
+-- 
+1.8.3
+

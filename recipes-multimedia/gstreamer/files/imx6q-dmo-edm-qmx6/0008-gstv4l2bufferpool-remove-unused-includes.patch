@@ -1,0 +1,26 @@
+From 23233a777d9a3852c1dba141f5220e76fc75a22c Mon Sep 17 00:00:00 2001
+From: Michael Olbrich <m.olbrich@pengutronix.de>
+Date: Fri, 20 Apr 2012 09:53:35 +0200
+Subject: [PATCH 08/40] gstv4l2bufferpool: remove unused includes
+
+Signed-off-by: Michael Olbrich <m.olbrich@pengutronix.de>
+---
+ sys/v4l2/gstv4l2bufferpool.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/sys/v4l2/gstv4l2bufferpool.c b/sys/v4l2/gstv4l2bufferpool.c
+index ded0e9e..8875950 100644
+--- a/sys/v4l2/gstv4l2bufferpool.c
++++ b/sys/v4l2/gstv4l2bufferpool.c
+@@ -36,8 +36,6 @@
+ 
+ #include <gstv4l2bufferpool.h>
+ 
+-#include "gstv4l2src.h"
+-#include "gstv4l2sink.h"
+ #include "v4l2_calls.h"
+ #include "gst/gst-i18n-plugin.h"
+ #include <gst/glib-compat-private.h>
+-- 
+1.8.3
+

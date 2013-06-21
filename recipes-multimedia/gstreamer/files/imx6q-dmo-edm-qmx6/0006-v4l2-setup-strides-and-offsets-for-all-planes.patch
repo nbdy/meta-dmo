@@ -1,0 +1,54 @@
+From c92efbdaaf8fbc622a6677f8d790dfc19b26452b Mon Sep 17 00:00:00 2001
+From: Wim Taymans <wim.taymans@collabora.co.uk>
+Date: Tue, 26 Jun 2012 11:14:59 +0200
+Subject: [PATCH 06/40] v4l2: setup strides and offsets for all planes
+
+[mol: backport]
+
+Signed-off-by: Michael Olbrich <m.olbrich@pengutronix.de>
+---
+ sys/v4l2/gstv4l2bufferpool.c | 24 ++++++++++++++++++------
+ 1 file changed, 18 insertions(+), 6 deletions(-)
+
+diff --git a/sys/v4l2/gstv4l2bufferpool.c b/sys/v4l2/gstv4l2bufferpool.c
+index 038ce51..624eeee 100644
+--- a/sys/v4l2/gstv4l2bufferpool.c
++++ b/sys/v4l2/gstv4l2bufferpool.c
+@@ -190,16 +190,28 @@ gst_v4l2_buffer_pool_alloc_buffer (GstBufferPool * bpool, GstBuffer ** buffer,
+ 
+       /* add metadata to raw video buffers */
+       if (pool->add_videometa && info->finfo) {
++        const GstVideoFormatInfo *finfo = info->finfo;
+         gsize offset[GST_VIDEO_MAX_PLANES];
+-        gint stride[GST_VIDEO_MAX_PLANES];
++        gint width, height, n_planes, offs, i, stride[GST_VIDEO_MAX_PLANES];
+ 
+-        offset[0] = 0;
+-        stride[0] = obj->bytesperline;
++        width = GST_VIDEO_INFO_WIDTH (info);
++        height = GST_VIDEO_INFO_HEIGHT (info);
++        n_planes = GST_VIDEO_INFO_N_PLANES (info);
+ 
+-        GST_DEBUG_OBJECT (pool, "adding video meta, stride %d", stride[0]);
++        GST_DEBUG_OBJECT (pool, "adding video meta, bytesperline %d",
++            obj->bytesperline);
++
++        offs = 0;
++        for (i = 0; i < n_planes; i++) {
++          offset[i] = offs;
++          stride[i] =
++              GST_VIDEO_FORMAT_INFO_SCALE_WIDTH (finfo, i, obj->bytesperline);
++
++          offs +=
++              stride[i] * GST_VIDEO_FORMAT_INFO_SCALE_HEIGHT (finfo, i, height);
++        }
+         gst_buffer_add_video_meta_full (newbuf, info->flags,
+-            GST_VIDEO_INFO_FORMAT (info), GST_VIDEO_INFO_WIDTH (info),
+-            GST_VIDEO_INFO_HEIGHT (info), GST_VIDEO_INFO_N_PLANES (info),
++            GST_VIDEO_INFO_FORMAT (info), width, height, n_planes,
+             offset, stride);
+       }
+       break;
+-- 
+1.8.3
+

@@ -1,0 +1,86 @@
+From 7bec11d0b491240c71c8b03abcf97ff82b2ecf8e Mon Sep 17 00:00:00 2001
+From: Michael Olbrich <m.olbrich@pengutronix.de>
+Date: Wed, 22 Aug 2012 15:39:40 +0200
+Subject: [PATCH 17/40] cache CIDs until the device is opened
+
+Signed-off-by: Michael Olbrich <m.olbrich@pengutronix.de>
+---
+ sys/v4l2/gstv4l2object.c | 21 +++++++++++++++++++++
+ sys/v4l2/gstv4l2object.h |  1 +
+ 2 files changed, 22 insertions(+)
+
+diff --git a/sys/v4l2/gstv4l2object.c b/sys/v4l2/gstv4l2object.c
+index 59518ec..e48e9c8 100644
+--- a/sys/v4l2/gstv4l2object.c
++++ b/sys/v4l2/gstv4l2object.c
+@@ -547,6 +547,8 @@ gst_v4l2_object_new (GstElement * element,
+ 
+   v4l2object->xwindow_id = 0;
+ 
++  v4l2object->cached_cids = g_queue_new ();
++
+   return v4l2object;
+ }
+ 
+@@ -571,6 +573,8 @@ gst_v4l2_object_destroy (GstV4l2Object * v4l2object)
+     gst_v4l2_object_clear_format_list (v4l2object);
+   }
+ 
++  g_queue_free_full (v4l2object->cached_cids, g_free);
++
+   g_free (v4l2object);
+ }
+ 
+@@ -617,6 +621,11 @@ gst_v4l2_object_prop_to_cid (guint prop_id)
+   return cid;
+ }
+ 
++struct GstV4l2Cid
++{
++  gint cid;
++  gint value;
++};
+ 
+ gboolean
+ gst_v4l2_object_set_property_helper (GstV4l2Object * v4l2object,
+@@ -637,6 +646,11 @@ gst_v4l2_object_set_property_helper (GstV4l2Object * v4l2object,
+       gint cid = gst_v4l2_object_prop_to_cid (prop_id);
+ 
+       if (cid != -1) {
++        struct GstV4l2Cid *c = g_new0 (struct GstV4l2Cid, 1);
++        c->cid = cid;
++        c->value = g_value_get_int (value);
++        g_queue_push_tail (v4l2object->cached_cids, c);
++
+         if (GST_V4L2_IS_OPEN (v4l2object)) {
+           gst_v4l2_set_attribute (v4l2object, cid, g_value_get_int (value));
+         }
+@@ -776,6 +790,13 @@ gst_v4l2_set_defaults (GstV4l2Object * v4l2object)
+   GstTunerNorm *norm = NULL;
+   GstTunerChannel *channel = NULL;
+   GstTuner *tuner;
++  struct GstV4l2Cid *cid;
++  gint i;
++
++  for (i = 0; i < g_queue_get_length (v4l2object->cached_cids); ++i) {
++    cid = g_queue_peek_nth (v4l2object->cached_cids, i);
++    gst_v4l2_set_attribute (v4l2object, cid->cid, cid->value);
++  }
+ 
+   if (!GST_IS_TUNER (v4l2object->element))
+     return;
+diff --git a/sys/v4l2/gstv4l2object.h b/sys/v4l2/gstv4l2object.h
+index 4b67d06..d06a16c 100644
+--- a/sys/v4l2/gstv4l2object.h
++++ b/sys/v4l2/gstv4l2object.h
+@@ -146,6 +146,7 @@ struct _GstV4l2Object {
+   v4l2_std_id tv_norm;
+   gchar *channel;
+   gulong frequency;
++  GQueue *cached_cids;
+ 
+   /* X-overlay */
+   GstV4l2Xv *xv;
+-- 
+1.8.3
+

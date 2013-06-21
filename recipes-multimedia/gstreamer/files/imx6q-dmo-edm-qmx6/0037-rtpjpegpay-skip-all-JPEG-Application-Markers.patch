@@ -1,0 +1,80 @@
+From 04ea25a12388aaea81b0e0e2dbc5f4eb19d15948 Mon Sep 17 00:00:00 2001
+From: Philipp Zabel <p.zabel@pengutronix.de>
+Date: Tue, 9 Oct 2012 14:55:50 +0200
+Subject: [PATCH 37/40] rtpjpegpay: skip all JPEG Application Markers
+
+The CODA JPEG encoder produces 4-byte APP9 markers containing a
+16-bit sequence number after the header size.
+If any header contains 0xFF bytes, it will confuse the JPEG marker
+parser. Therefore, skip all APPn markers, as those are not needed
+to reconstruct the image.
+
+Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
+Signed-off-by: Michael Olbrich <m.olbrich@pengutronix.de>
+---
+ gst/rtp/gstrtpjpegpay.c | 35 ++++++++++++++++++++++++++++++++---
+ 1 file changed, 32 insertions(+), 3 deletions(-)
+
+diff --git a/gst/rtp/gstrtpjpegpay.c b/gst/rtp/gstrtpjpegpay.c
+index 94bd39b..de0c4fb 100644
+--- a/gst/rtp/gstrtpjpegpay.c
++++ b/gst/rtp/gstrtpjpegpay.c
+@@ -89,7 +89,7 @@ typedef enum _RtpJpegMarker RtpJpegMarker;
+  * @JPEG_MARKER_SOS: Start of Scan marker
+  * @JPEG_MARKER_EOI: End of Image marker
+  * @JPEG_MARKER_DRI: Define Restart Interval marker
+- * @JPEG_MARKER_H264: H264 marker
++ * @JPEG_MARKER_APPn: Application Markers
+  *
+  * Identifers for markers in JPEG header
+  */
+@@ -105,7 +105,22 @@ enum _RtpJpegMarker
+   JPEG_MARKER_SOS = 0xDA,
+   JPEG_MARKER_EOI = 0xD9,
+   JPEG_MARKER_DRI = 0xDD,
+-  JPEG_MARKER_H264 = 0xE4
++  JPEG_MARKER_APP0 = 0xE0,
++  JPEG_MARKER_APP1 = 0xE1,
++  JPEG_MARKER_APP2 = 0xE2,
++  JPEG_MARKER_APP3 = 0xE3,
++  JPEG_MARKER_APP4 = 0xE4,
++  JPEG_MARKER_APP5 = 0xE5,
++  JPEG_MARKER_APP6 = 0xE6,
++  JPEG_MARKER_APP7 = 0xE7,
++  JPEG_MARKER_APP8 = 0xE8,
++  JPEG_MARKER_APP9 = 0xE9,
++  JPEG_MARKER_APP10 = 0xEA,
++  JPEG_MARKER_APP11 = 0xEB,
++  JPEG_MARKER_APP12 = 0xEC,
++  JPEG_MARKER_APP13 = 0xED,
++  JPEG_MARKER_APP14 = 0xEE,
++  JPEG_MARKER_APP15 = 0xEF,
+ };
+ 
+ #define DEFAULT_JPEG_QUANT    255
+@@ -643,7 +658,21 @@ gst_rtp_jpeg_pay_handle_buffer (GstRTPBasePayload * basepayload,
+       case JPEG_MARKER_JFIF:
+       case JPEG_MARKER_CMT:
+       case JPEG_MARKER_DHT:
+-      case JPEG_MARKER_H264:
++      case JPEG_MARKER_APP1:
++      case JPEG_MARKER_APP2:
++      case JPEG_MARKER_APP3:
++      case JPEG_MARKER_APP4:
++      case JPEG_MARKER_APP5:
++      case JPEG_MARKER_APP6:
++      case JPEG_MARKER_APP7:
++      case JPEG_MARKER_APP8:
++      case JPEG_MARKER_APP9:
++      case JPEG_MARKER_APP10:
++      case JPEG_MARKER_APP11:
++      case JPEG_MARKER_APP12:
++      case JPEG_MARKER_APP13:
++      case JPEG_MARKER_APP14:
++      case JPEG_MARKER_APP15:
+         GST_LOG_OBJECT (pay, "skipping marker");
+         offset += gst_rtp_jpeg_pay_header_size (data, offset);
+         break;
+-- 
+1.8.3
+
