@@ -9,6 +9,9 @@ IMAGE_INSTALL = " \
     kernel-modules \
     udev-extraconf \
     firmware-imx-vpu-imx6q \
+    e2fsprogs-e2fsck \
+    e2fsprogs-mke2fs \
+    e2fsprogs-tune2fs \
     ${ROOTFS_PKGMANAGE_BOOTSTRAP} \
     ${CORE_IMAGE_EXTRA_INSTALL} \
 "
