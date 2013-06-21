@@ -1,0 +1,4 @@
+
+export HOME="/home/root"
+export XDG_CONFIG_HOME="$HOME/.config"
+

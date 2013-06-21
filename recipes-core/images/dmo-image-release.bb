@@ -38,5 +38,6 @@ IMAGE_INSTALL += " \
     xserver-xorg \
     xserver-xorg-extension-dbe \
     xserver-xorg-extension-extmod \
+    xset \
 "
 
