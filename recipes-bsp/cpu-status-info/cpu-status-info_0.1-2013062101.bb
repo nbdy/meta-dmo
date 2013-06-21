@@ -2,17 +2,15 @@ DESCRIPTION = "cpu status information"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COREBASE}/LICENSE;md5=3f40d7994397109285ec7b81fdeb3b58"
 
-PV = "0.1+git${SRCREV}"
 PR = "r1"
 
 SRC_URI = " \
-    git://git@emb.data-modul.com/userrepos/jgp/cpu-status-info;protocol=ssh \
+    ${DMOFTP}/${PN}-${PV}.tar.gz \
 "
-SRCREV = "8fbc58d5c92422f9c928509b43a6b9b8ca49be66"
+SRC_URI[md5sum] = "b956b9a87040f6159d891941e70870f4"
+SRC_URI[sha256sum] = "53538485e615ef6fe3f2da9983226900c36037b10f43b1c301365d245ec1920b"
 
 CROSS_COMPILER = "${HOST_PREFIX}"
-
-S = "${WORKDIR}/git"
 
 do_install () {
     install -d ${D}/usr/bin
