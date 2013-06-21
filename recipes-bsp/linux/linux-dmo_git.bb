@@ -2,7 +2,7 @@
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 PV = "3.9rc7+git${SRCREV}"
-PR = "${INC_PR}.6"
+PR = "${INC_PR}.8"
 
 require linux-dmo.inc
 
@@ -14,6 +14,5 @@ KERNEL_PRIORITY = "10000"
 
 COMPATIBLE_MACHINE = "(mx6)"
 
-# Revision of 1.1.0 tag
-SRCREV = "340ccdb3590980574aa1a6ad1091972d8bf2435f"
+SRCREV = "d0128be0e4e8435df49209ad8a505edbaf32c1fb"
 
