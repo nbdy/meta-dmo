@@ -1,0 +1,6 @@
+
+meta-dmo has currently two image-recipies
+
+	* dmo-image-release
+	* dmo-image-minimal
+
