@@ -16,6 +16,9 @@
 ## structure for nfs - development if we build a complete image.
 # DMO_CREATE_NFS_DIR = "True"
 
+## Read meta-fsl-arm/EULA and agree
+#ACCEPT_FSL_EULA = "1"
+
 #
 # Parallelism Options
 #
