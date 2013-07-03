@@ -16,6 +16,7 @@ IMAGE_INSTALL += " \
     gst-meta-debug \
     gst-meta-video \
     gst-meta-unsorted \
+    firefox \
     i2c-tools \
     icu \
     kmod \
