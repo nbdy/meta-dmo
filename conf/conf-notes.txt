@@ -1,4 +1,15 @@
 
+To build a image with the vivante gpu driver you need to accept the FSL EULA.
+You can find the EULA in meta-fsl-arm layer in the EULA - textfile.
+
+To agree this you have to need to add a 
+
+	ACCEPT_FSL_EULA = "1"
+
+in your conf/local.conf.
+
+
+
 meta-dmo has currently two image-recipies
 
 	* dmo-image-release

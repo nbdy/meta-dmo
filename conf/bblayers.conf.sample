@@ -11,6 +11,7 @@ BBLAYERS ?= " \
 	##COREBASE##/meta-yocto \
 	##COREBASE##/meta-yocto-bsp \
 	##COREBASE##/meta-fsl-arm \
+	##COREBASE##/meta-browser \
 	##COREBASE##/meta-openembedded/meta-oe \
 	##COREBASE##/meta-openembedded/meta-gnome \
 	##COREBASE##/meta-openembedded/meta-xfce \
@@ -20,4 +21,4 @@ BBLAYERS ?= " \
 BBLAYERS_NON_REMOVABLE ?= " \
 	##COREBASE##/meta \
 	##COREBASE##/meta-yocto \
-  "
+"
