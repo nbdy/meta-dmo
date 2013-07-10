@@ -1,4 +1,4 @@
-INC_PR = "r2"
+INC_PR = "r3"
 
 IMAGE_INSTALL = " \
     opkg \
@@ -14,6 +14,7 @@ IMAGE_INSTALL = " \
     e2fsprogs-tune2fs \
     start-stop-daemon \
     tslib \
+    iputils \
     ${ROOTFS_PKGMANAGE_BOOTSTRAP} \
     ${CORE_IMAGE_EXTRA_INSTALL} \
 "
