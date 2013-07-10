@@ -22,6 +22,7 @@ LICENSE = "GPLv2"
 
 inherit core-image
 
+ROOTFS_POSTINSTALL_COMMAND += " create_homefs_and_image; "
 IMAGE_POSTPROCESS_COMMAND += " dmo_create_developer_directory; "
 
 IMAGE_ROOTFS_SIZE = "8192"
@@ -33,5 +34,20 @@ dmo_create_developer_directory () {
         [ -e ${DEPLOY_DIR_IMAGE}/nfs ] && rm ${DEPLOY_DIR_IMAGE}/nfs
         ln -sf "nfs-${IMAGE_NAME}" ${DEPLOY_DIR_IMAGE}/nfs
     fi
+}
+
+HOMEFS_SPACE ?= "1048576"
+HOMEFS_IMAGE ?= "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.homefs.ext3"
+create_homefs_and_image () {
+    HOMEFS="${WORKDIR}/homefs"
+
+    [ -e ${HOMEFS} ] && rm -rf ${HOMEFS}
+    mkdir ${HOMEFS}
+
+    mv ${WORKDIR}/rootfs/home/* ${HOMEFS}
+
+    printf "genext2fs -b ${HOMEFS_SIZE} -d ${HOMEFS} -i 8192 ${HOMEFS_IMAGE}\n"
+    genext2fs -b ${HOMEFS_SPACE} -d ${HOMEFS} -i 8192 ${HOMEFS_IMAGE}
+    tune2fs -j ${HOMEFS_IMAGE}
 }
 
