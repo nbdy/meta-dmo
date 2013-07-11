@@ -2,11 +2,12 @@ DESCRIPTION = "A small image just capable of allowing a device to boot."
 
 require dmo-image.inc
 
-PR = "${INC_PR}.20130620.1"
+PR = "${INC_PR}.20130710.1"
 
 IMAGE_INSTALL += " \
     bash \
     cpu-status-info \
+    canutils \
     dmo-gst-videoscripts \
     gpu-viv-bin-mx6q \
     gstreamer \
@@ -16,6 +17,7 @@ IMAGE_INSTALL += " \
     gst-meta-debug \
     gst-meta-video \
     gst-meta-unsorted \
+    firefox \
     i2c-tools \
     icu \
     kmod \
