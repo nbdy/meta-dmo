@@ -23,9 +23,9 @@ IMAGE_INSTALL += " \
     kmod \
     mesa-driver-swrast \
     mtools \
+    obexd \
     openssh \
-    opkg \
-    opkg-config-base \
+    openobex \
     packagegroup-xfce-base \
     procps \
     strace \
