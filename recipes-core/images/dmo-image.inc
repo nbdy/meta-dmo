@@ -1,6 +1,7 @@
 INC_PR = "r3"
 
 IMAGE_INSTALL = " \
+    dmo-base-user \
     bluez4 \
     bluez-hcidump \
     iw \
