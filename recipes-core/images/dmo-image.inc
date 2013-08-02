@@ -3,6 +3,10 @@ INC_PR = "r3"
 IMAGE_INSTALL = " \
     bluez4 \
     bluez-hcidump \
+    iw \
+    wireless-tools \
+    wpa-supplicant \
+    linux-firmware \
     opkg \
     opkg-config-base \
     packagegroup-core-boot \
