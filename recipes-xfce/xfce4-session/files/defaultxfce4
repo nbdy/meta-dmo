@@ -1,5 +1,0 @@
-
-export HOME="/home/root"
-export XDG_CONFIG_HOME="$HOME/.config"
-export ICEAUTHORITY="/tmp/iceauthority"
-

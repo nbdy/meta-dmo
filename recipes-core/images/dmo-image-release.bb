@@ -29,6 +29,7 @@ IMAGE_INSTALL += " \
     packagegroup-xfce-base \
     procps \
     strace \
+    slim \
     sudo \
     util-linux \
     wget \

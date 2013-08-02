@@ -1,16 +1,12 @@
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+PRINC := "${@int(PRINC) + 1}"
 
-SRC_URI += "file://rcstartxfce4.sh \
-            file://defaultxfce4"
+pkg_postinst_${PN}() {
+#!/bin/bash
 
-do_install_append () {
-    install -d ${D}/${sysconfdir}/{default,{rc5,init}.d}
-
-    install ${WORKDIR}/rcstartxfce4.sh ${D}/${sysconfdir}/init.d/startxfce.sh
-    ln -sf ../init.d/startxfce.sh ${D}/${sysconfdir}/rc5.d/S99startxfce4.sh
-
-    install ${WORKDIR}/defaultxfce4 ${D}/${sysconfdir}/default/xfce4
+for i in /etc/default/xfce4 /etc/init.d/startxfce.sh /etc/rc5.d/S99startxfce4.sh
+do
+    [ -e $i ] && rm $i
+done
 }
-
 

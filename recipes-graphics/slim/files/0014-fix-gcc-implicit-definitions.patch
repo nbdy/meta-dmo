@@ -1,0 +1,38 @@
+From 085c7228cea0cbce14a6909906cdaddd0a4cc1b0 Mon Sep 17 00:00:00 2001
+From: madanyang <toganm@opensuse.org>
+Date: Wed, 24 Apr 2013 13:43:44 +0200
+Subject: [PATCH 14/24] fix gcc-implicit-definitions
+
+Program is using implicit definitions of special functions.
+these functions need to use their correct prototypes to
+allow the lightweight buffer overflow checking to work.
+
+ - Implicit memory/string functions need #include <string.h>
+ - Implicit *printf functions need #include <stdio.h>
+ - Implicit *printf functions need #include <stdio.h>
+ - Implicit *read* functions need #include <unistd.h>
+ - Implicit *recv* functions need #include <sys/socket.h>
+
+Signed-off-by: madanyang <toganm@opensuse.org>
+Signed-off-by: Nobuhiro Iwamatsu <iwamatsu@nigauri.org>
+---
+ png.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/png.c b/png.c
+index f16a8f5..dd8cc14 100644
+--- a/png.c
++++ b/png.c
+@@ -21,6 +21,9 @@
+ #include <stdio.h>
+ #include <stdlib.h>
+ 
++#include <string.h>
++#include <unistd.h>
++#include <sys/socket.h>
+ #include <png.h>
+ #include "const.h"
+ 
+-- 
+1.8.3.4
+

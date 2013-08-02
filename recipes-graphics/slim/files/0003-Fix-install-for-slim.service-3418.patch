@@ -1,0 +1,25 @@
+From 3de8891b9d6c17100e180d9c47ca836e68fb67c3 Mon Sep 17 00:00:00 2001
+From: Nobuhiro Iwamatsu <iwamatsu@nigauri.org>
+Date: Mon, 18 Feb 2013 06:59:50 +0900
+Subject: [PATCH 03/24] Fix install for slim.service #3418
+
+Signed-off-by: Nobuhiro Iwamatsu <iwamatsu@nigauri.org>
+---
+ CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 705fd2f..b1d0a17 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -171,6 +171,6 @@ install(FILES slim.1 DESTINATION ${MANDIR}/man1/)
+ # configure
+ install(FILES slim.conf DESTINATION ${SYSCONFDIR})
+ # systemd service file
+-install(FILES slim.service DESTINATION /usr/lib/systemd/system)
++install(FILES slim.service DESTINATION ${CMAKE_INSTALL_PREFIX}/systemd/system)
+ # themes directory
+ subdirs(themes)
+-- 
+1.8.3.4
+

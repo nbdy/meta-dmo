@@ -1,0 +1,25 @@
+From 98bbe5a59cefe1d9e0221f35987d9789a241f4b9 Mon Sep 17 00:00:00 2001
+From: Nobuhiro Iwamatsu <iwamatsu@nigauri.org>
+Date: Fri, 22 Mar 2013 00:07:45 +0900
+Subject: [PATCH 06/24] Add CMAKE_CXX_FLAGS
+
+Signed-off-by: Nobuhiro Iwamatsu <iwamatsu@nigauri.org>
+---
+ CMakeLists.txt | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 0294b28..5aaf114 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -44,6 +44,7 @@ set(SLIM_DEFINITIONS ${SLIM_DEFINITIONS} "-DSYSCONFDIR=\"${SYSCONFDIR}\"")
+ # Flags
+ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -g -O2" )
+ set(CMAKE_CPP_FLAGS "${CMAKE_CPP_FLAGS} -Wall -g -O2" )
++set(CMAKE_CXX_FLAGS "${CMAKE_CPP_FLAGS} -Wall -g -O2" )
+ 
+ # source 
+ set(slim_srcs
+-- 
+1.8.3.4
+

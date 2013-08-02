@@ -1,0 +1,30 @@
+From 030c86870ff8991bc40ff8110ad735b589ae4edf Mon Sep 17 00:00:00 2001
+From: Nobuhiro Iwamatsu <iwamatsu@nigauri.org>
+Date: Fri, 22 Mar 2013 13:00:11 +0900
+Subject: [PATCH 07/24] Fix typo in CMakefile
+
+Signed-off-by: Nobuhiro Iwamatsu <iwamatsu@nigauri.org>
+---
+ CMakeLists.txt | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 5aaf114..3e01c76 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -42,9 +42,9 @@ set(SLIM_DEFINITIONS ${SLIM_DEFINITIONS} "-DPKGDATADIR=\"${PKGDATADIR}\"")
+ set(SLIM_DEFINITIONS ${SLIM_DEFINITIONS} "-DSYSCONFDIR=\"${SYSCONFDIR}\"")
+ 
+ # Flags
+-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -g -O2" )
+-set(CMAKE_CPP_FLAGS "${CMAKE_CPP_FLAGS} -Wall -g -O2" )
+-set(CMAKE_CXX_FLAGS "${CMAKE_CPP_FLAGS} -Wall -g -O2" )
++set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -g -O2")
++set(CMAKE_CPP_FLAGS "${CMAKE_CPP_FLAGS} -Wall -g -O2")
++set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -O2")
+ 
+ # source 
+ set(slim_srcs
+-- 
+1.8.3.4
+

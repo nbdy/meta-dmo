@@ -1,0 +1,24 @@
+From e64c67fcb953da3b9b69917c8947ce1005f42970 Mon Sep 17 00:00:00 2001
+From: Kevin Sopp <baraclese@googlemail.com>
+Date: Mon, 28 Jan 2013 20:30:02 +0100
+Subject: [PATCH 01/24] Fix systemd service install path.
+
+---
+ CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 0a9f31d..705fd2f 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -171,6 +171,6 @@ install(FILES slim.1 DESTINATION ${MANDIR}/man1/)
+ # configure
+ install(FILES slim.conf DESTINATION ${SYSCONFDIR})
+ # systemd service file
+-install(FILES slim.service DESTINATION usr/lib/systemd/system)
++install(FILES slim.service DESTINATION /usr/lib/systemd/system)
+ # themes directory
+ subdirs(themes)
+-- 
+1.8.3.4
+

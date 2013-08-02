@@ -1,0 +1,74 @@
+From ea681f011632351e95bd319ec4e98e6d0ce1bf64 Mon Sep 17 00:00:00 2001
+From: Nobuhiro Iwamatsu <iwamatsu@nigauri.org>
+Date: Wed, 20 Feb 2013 04:16:30 +0900
+Subject: [PATCH 04/24] Fix save root window pixmap id when setting background
+ (#3353)
+
+Patch provided by sl4mmy. Thank you.
+
+Signed-off-by: Nobuhiro Iwamatsu <iwamatsu@nigauri.org>
+---
+ app.cpp | 7 ++++++-
+ app.h   | 2 ++
+ 2 files changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/app.cpp b/app.cpp
+index 1cfac41..ba50615 100644
+--- a/app.cpp
++++ b/app.cpp
+@@ -16,12 +16,12 @@
+ #include <stdint.h>
+ #include <cstring>
+ #include <cstdio>
+-
+ #include <iostream>
+ #include <fstream>
+ #include <sstream>
+ #include <vector>
+ #include <algorithm>
++
+ #include "app.h"
+ #include "numlock.h"
+ #include "util.h"
+@@ -299,6 +299,9 @@ void App::Run() {
+ 	Scr = DefaultScreen(Dpy);
+ 	Root = RootWindow(Dpy, Scr);
+ 
++	// Intern _XROOTPMAP_ID property
++	BackgroundPixmapId = XInternAtom(Dpy, "_XROOTPMAP_ID", False);
++
+ 	/* for tests we use a standard window */
+ 	if (testing) {
+ 		Window RealRoot = RootWindow(Dpy, Scr);
+@@ -1075,6 +1078,8 @@ void App::setBackground(const string& themedir) {
+ 		}
+ 		Pixmap p = image->createPixmap(Dpy, Scr, Root);
+ 		XSetWindowBackgroundPixmap(Dpy, Root, p);
++		XChangeProperty(Dpy, Root, BackgroundPixmapId, XA_PIXMAP, 32,
++			PropModeReplace, (unsigned char *)&p, 1);
+ 	}
+ 	XClearWindow(Dpy, Root);
+ 
+diff --git a/app.h b/app.h
+index e52dd07..0bbd7ac 100644
+--- a/app.h
++++ b/app.h
+@@ -13,6 +13,7 @@
+ #define _APP_H_
+ 
+ #include <X11/Xlib.h>
++#include <X11/Xatom.h>
+ #include <signal.h>
+ #include <unistd.h>
+ #include <sys/wait.h>
+@@ -99,6 +100,7 @@ private:
+ 
+ 	void blankScreen();
+ 	Image *image;
++	Atom BackgroundPixmapId;
+ 	void setBackground(const std::string &themedir);
+ 
+ 	bool firstlogin;
+-- 
+1.8.3.4
+
