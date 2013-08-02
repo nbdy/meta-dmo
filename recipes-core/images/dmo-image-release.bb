@@ -6,6 +6,7 @@ PR = "${INC_PR}.20130710.1"
 
 IMAGE_INSTALL += " \
     bash \
+    chromium \
     cpu-status-info \
     canutils \
     dmo-gst-videoscripts \
@@ -17,7 +18,6 @@ IMAGE_INSTALL += " \
     gst-meta-debug \
     gst-meta-video \
     gst-meta-unsorted \
-    firefox \
     i2c-tools \
     icu \
     kmod \
