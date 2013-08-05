@@ -37,6 +37,7 @@ IMAGE_INSTALL += " \
     xf86-dri-vivante \
     xf86-input-evdev \
     xf86-video-fbdev \
+    xhost \
     xmodmap \
     xrdb \
     xserver-xorg \
