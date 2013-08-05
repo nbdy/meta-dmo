@@ -31,6 +31,7 @@ IMAGE_INSTALL += " \
     strace \
     slim \
     sudo \
+    unclutter \
     util-linux \
     wget \
     xf86-dri-vivante \
