@@ -38,6 +38,7 @@ IMAGE_INSTALL += " \
     xf86-input-evdev \
     xf86-video-fbdev \
     xhost \
+    xinput-calibrator \
     xmodmap \
     xrdb \
     xserver-xorg \
