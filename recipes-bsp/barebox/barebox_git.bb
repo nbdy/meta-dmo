@@ -20,9 +20,10 @@ do_deploy_prepend () {
 
     ${S}/scripts/bareboxenv -l ${S}/manipulate_bb_env ${S}/common/barebox_default_env
 
-    install ${DEPLOY_DIR_IMAGE}/imx6q-dmo-realq7-1920x1080.dtb ${S}/manipulate_bb_env/imx6q-dmo-realq7-1920x1080.dtb
-    install ${DEPLOY_DIR_IMAGE}/imx6q-dmo-realq7-800x480.dtb ${S}/manipulate_bb_env/imx6q-dmo-realq7-800x480.dtb
-    ln -sf imx6q-dmo-realq7-800x480.dtb ${S}/manipulate_bb_env/deviceTreeFile
+    install ${DEPLOY_DIR_IMAGE}/imx6q-dmo-realq7-1920x1080.dtb \
+            ${DEPLOY_DIR_IMAGE}/imx6q-dmo-realq7-800x480.dtb \
+            ${S}/manipulate_bb_env/
+    ln -sf imx6q-dmo-edmqmx6-auo-g104sn03.dtb ${S}/manipulate_bb_env/deviceTreeFile
 
     ${S}/scripts/bareboxenv -s ${S}/manipulate_bb_env ${S}/common/barebox_default_env
 }
