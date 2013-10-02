@@ -1,0 +1,29 @@
+require recipes-graphics/xorg-driver/xorg-driver-input.inc
+
+DESCRIPTION = "dmctouch: X.Org X server -- dmc touch input driver"
+LICENSE = "GPLv2"
+LIC_FILES_CHKSUM = "file://${S}/usb26/COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
+PR = "r1"
+
+DEPENDS = "xproto xserver-xorg pixman"
+
+SRC_URI = "file://tsc_213_121126.tgz \
+           file://xorgdriver--make-compileable.patch \
+"
+
+S = "${WORKDIR}/TSC10LD_V213"
+
+FILES_${PN} += "/usr/lib/xorg"
+
+do_compile () {
+    cd driver
+    ${CC} -I${STAGING_INCDIR}/X11 -I${STAGING_INCDIR}/xorg -I${STAGING_INCDIR}/pixman-1 -c xf86DMC.c -o xf86DMC.o
+    ${LD} -r xf86DMC.o -o dmc_drv.o
+}
+
+do_install () {
+    cd driver
+    install -d ${D}/usr/lib/xorg/modules/input
+    install dmc_drv.o ${D}/usr/lib/xorg/modules/input
+}
+

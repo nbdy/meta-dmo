@@ -1,0 +1,26 @@
+From 3393ca05005b4c2cc707bf1838d7d51ac83e0999 Mon Sep 17 00:00:00 2001
+From: "S. Fricke" <sfricke@data-modul.com>
+Date: Mon, 30 Sep 2013 15:31:30 +0200
+Subject: [PATCH 2/2] add a modules-install target
+
+---
+ usb26/Makefile | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/usb26/Makefile b/usb26/Makefile
+index 66df1cc..f0b2e1d 100644
+--- a/usb26/Makefile
++++ b/usb26/Makefile
+@@ -60,6 +60,9 @@ clean:
+ 	make -C $(KDIR) M=`pwd` clean
+ 	@echo "############## COMPLETE!! ##############"
+ 
++modules_install:
++	make -C $(KDIR) M=`pwd` modules_install
++
+ obj-m:=usbdmc.o tpdmc.o
+ 
+ clean-files:=*.o *.ko *.mod.[co] *~
+-- 
+1.8.4
+

@@ -1,0 +1,25 @@
+From 00a31d9edf9720ffbf4601b73b9867bbbea29feb Mon Sep 17 00:00:00 2001
+From: "S. Fricke" <sfricke@data-modul.com>
+Date: Mon, 30 Sep 2013 15:18:31 +0200
+Subject: [PATCH 1/2] remove KDIR
+
+---
+ usb26/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/usb26/Makefile b/usb26/Makefile
+index 66df1cc..cd8e1f2 100644
+--- a/usb26/Makefile
++++ b/usb26/Makefile
+@@ -15,7 +15,7 @@ TARGET:=usbdmc.ko tpdmc.ko
+ #---FC6---
+ #KDIR=/usr/src/kernels/2.6.18-1.2798.fc6-i686
+ #---FC7---
+-KDIR=/usr/src/kernels/2.6.21-1.3194.fc7-i686
++#KDIR=/usr/src/kernels/2.6.21-1.3194.fc7-i686
+ #KDIR=/usr/src/kernels/2.6.23-17.88.fc7-i686
+ #---FC8---
+ #KDIR=/usr/src/kernels/2.6.23.1-42.fc8-i686
+-- 
+1.8.4
+

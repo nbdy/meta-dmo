@@ -1,0 +1,20 @@
+Index: TSC10LD_V213/usb26/usbtest.c
+===================================================================
+--- TSC10LD_V213.orig/usb26/usbtest.c
++++ TSC10LD_V213/usb26/usbtest.c
+@@ -6,15 +6,7 @@
+ #include <errno.h>
+ #include "usbdmc.h"
+ 
+-#if 1
+-#define	DEVNAME		"/dev/touch0"
+-#else
+-#if KER26
+ #define	DEVNAME		"/dev/dmc0"
+-#else
+-#define	DEVNAME		"/dev/usb/dmc0"
+-#endif
+-#endif
+ 
+ typedef int Bool;
+ #define	true	1

@@ -1,0 +1,20 @@
+Index: TSC10LD_V213/driver/xf86DMC.c
+===================================================================
+--- TSC10LD_V213.orig/driver/xf86DMC.c
++++ TSC10LD_V213/driver/xf86DMC.c
+@@ -42,11 +42,11 @@
+ /* XORG_NEWVERV112 = 1 :fedora-core-17(xorg release1.12.0) */
+ /* CHG_SCR_RESOLUTION = 1 :fedora-core-5->8/12(for change screen resolution) */
+ /* ADJ_CALIB_DEFSCR = 1 :fedora-core-9->11 */
+-#if 0
++#if 1
+ #define	XORG_NEWVERS0		0
+-#define	XORG_NEWVERS		1
+-#define	XORG_NEWVERS14		0
+-#define	XORG_NEWVERS110		0
++#define	XORG_NEWVERS		0
++#define	XORG_NEWVERS14		1
++#define	XORG_NEWVERS110		1
+ #define XORG_NEWVERV112		0
+ #define	CHG_SCR_RESOLUTION	1
+ #define ADJ_CALIB_DEFSCR	0
