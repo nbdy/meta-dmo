@@ -21,7 +21,6 @@ IMAGE_INSTALL += " \
     i2c-tools \
     icu \
     kmod \
-    mesa-driver-swrast \
     mtools \
     obexd \
     openssh \
