@@ -32,18 +32,8 @@ LICENSE = "GPLv2"
 inherit core-image
 
 ROOTFS_POSTINSTALL_COMMAND += " create_homefs_and_image; "
-IMAGE_POSTPROCESS_COMMAND += " dmo_create_developer_directory; "
 
 IMAGE_ROOTFS_SIZE = "8192"
-
-dmo_create_developer_directory () {
-    if [ -n "${DMO_CREATE_NFS_DIR}" ]; then
-        mkdir ${DEPLOY_DIR_IMAGE}/nfs-${IMAGE_NAME}
-        sudo tar -C ${DEPLOY_DIR_IMAGE}/nfs-${IMAGE_NAME} -xvf ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.tar.bz2
-        [ -e ${DEPLOY_DIR_IMAGE}/nfs ] && rm ${DEPLOY_DIR_IMAGE}/nfs
-        ln -sf "nfs-${IMAGE_NAME}" ${DEPLOY_DIR_IMAGE}/nfs
-    fi
-}
 
 HOMEFS_SPACE ?= "1048576"
 HOMEFS_IMAGE ?= "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.homefs.ext3"

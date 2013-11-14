@@ -11,11 +11,6 @@
 # the option is a question of removing the # character and making any change to the
 # variable as required.
 
-### Some DMO-Layer settings
-## if DMO_CREATE_NFS_DIR is set we create in ${DEPOLYDIR} a complete directory
-## structure for nfs - development if we build a complete image.
-# DMO_CREATE_NFS_DIR = "True"
-
 ## Read meta-fsl-arm/EULA and agree
 #ACCEPT_FSL_EULA = "1"
 
