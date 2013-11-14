@@ -33,7 +33,7 @@ IMAGE_INSTALL += " \
     unclutter \
     util-linux \
     wget \
-    xf86-dri-vivante \
+    xf86-video-imxfb-vivante \
     xf86-input-evdev \
     xf86-video-fbdev \
     xhost \
