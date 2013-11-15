@@ -45,6 +45,7 @@ SRC_URI += " \
 	file://0038-HACK-Fix-v4l2src-failure-when-streaming-h.264-from-U.patch \
 	file://0039-v4l2filter-add-support-for-V4L2_EVENT_EOS.patch \
 	file://0040-add-flip-vertical-and-horizontal-options-on-gstreame.patch \
+        file://0041-v4l2_calls-remove-some-defines-which-removed-from-ke.patch \
 "
 
 PR = "r11"
