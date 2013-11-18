@@ -5,7 +5,7 @@ PR = "${INC_PR}.21"
 SRC_URI = " \
     git://git@emb.data-modul.com/development/barebox;protocol=ssh \
 "
-SRCREV = "fbbad8cee25a431d17d9a43f91a6c77062bf175d"
+SRCREV = "2e3742fcdb068ad012630772ad4057c02955f326"
 
 COMPATIBLE_MACHINE = "imx6q-dmo-edm-qmx6"
 
