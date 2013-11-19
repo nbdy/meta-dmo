@@ -15,6 +15,3 @@ SRC_URI[archive.sha256sum] = "3ceb7d1eca1721ffe16de7b3a6f1ffd04acbeec88d88b0ae37
 KERNEL_PRIORITY = "10000"
 
 COMPATIBLE_MACHINE = "(mx6)"
-
-SRCREV = "d0128be0e4e8435df49209ad8a505edbaf32c1fb"
-
