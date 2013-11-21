@@ -1,29 +1,29 @@
 INC_PR = "r3"
 
 IMAGE_INSTALL = " \
-    dmo-base-user \
-    root-user-homedir \
-    bluez4 \
     bluez-hcidump \
-    iw \
-    wireless-tools \
-    wpa-supplicant \
-    iperf \
-    linux-firmware \
-    opkg \
-    opkg-config-base \
-    packagegroup-core-boot \
-    nfs-utils \
-    nfs-utils-client \
-    kernel-modules \
-    udev-extraconf \
-    firmware-imx-vpu-imx6q \
+    bluez4 \
+    dmo-base-user \
     e2fsprogs-e2fsck \
     e2fsprogs-mke2fs \
     e2fsprogs-tune2fs \
+    firmware-imx-vpu-imx6q \
+    iperf \
+    iputils \
+    iw \
+    kernel-modules \
+    linux-firmware \
+    nfs-utils \
+    nfs-utils-client \
+    opkg \
+    opkg-config-base \
+    packagegroup-core-boot \
+    root-user-homedir \
     start-stop-daemon \
     tslib \
-    iputils \
+    udev-extraconf \
+    wireless-tools \
+    wpa-supplicant \
     ${ROOTFS_PKGMANAGE_BOOTSTRAP} \
     ${CORE_IMAGE_EXTRA_INSTALL} \
 "
