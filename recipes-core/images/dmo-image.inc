@@ -8,6 +8,7 @@ IMAGE_INSTALL = " \
     iw \
     wireless-tools \
     wpa-supplicant \
+    iperf \
     linux-firmware \
     opkg \
     opkg-config-base \
