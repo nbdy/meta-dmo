@@ -4,7 +4,7 @@
 # with some adaptions for our barebox in git repository
 #
 
-INC_PR = "r5"
+INC_PR = "r6"
 DESCRIPTION = "Barebox - a bootloader that inherits the best of U-Boot and the Linux kernel"
 HOMEPAGE = "http://www.barebox.org/"
 SECTION = "bootloader"
@@ -40,10 +40,25 @@ do_compile () {
 }
 
 do_deploy () {
+        # manipulate environment
+        [ -e ${S}/manipulate_bb_env ] && rm -rf ${S}/manipulate_bb_env
+
+        ${S}/scripts/bareboxenv -l ${S}/manipulate_bb_env ${S}/common/barebox_default_env
+
+        install ${DEPLOY_DIR_IMAGE}/imx6q-dmo-edmqmx6-auo-g173hw01.dtb \
+                ${DEPLOY_DIR_IMAGE}/imx6q-dmo-edmqmx6-chimei-g070y2.dtb \
+                ${S}/manipulate_bb_env/
+        ln -sf imx6q-dmo-edmqmx6-chimei-g070y2.dtb ${S}/manipulate_bb_env/deviceTreeFile
+
+        ${S}/scripts/set_env_version.sh ${S}/manipulate_bb_env/version
+
+        ${S}/scripts/bareboxenv -s ${S}/manipulate_bb_env ${S}/common/barebox_default_env
+
 	install -d ${DEPLOY_DIR_IMAGE}
 	install ${S}/${BAREBOX_BINARY} ${DEPLOY_DIR_IMAGE}/${BAREBOX_IMAGE}
 	install ${S}/common/barebox_default_env ${DEPLOY_DIR_IMAGE}/${BAREBOXENV_BIN}
 
+        # deploy ...
 	cd ${DEPLOY_DIR_IMAGE}
 	rm -f ${BAREBOX_SYMLINK}
 	rm -f ${BAREBOXENV_SYMLINK}
@@ -55,6 +70,8 @@ do_deploy () {
 	install -m 755 scripts/mkimage ${STAGING_BINDIR_NATIVE}/
 	install -m 755 scripts/bareboxenv ${STAGING_BINDIR_NATIVE}/
 }
+# before we can configure we need the generated dtb
+do_deploy[depends] += "virtual/kernel:do_install"
 
 do_deploy[dirs] = "${S}"
 addtask deploy before do_build after do_compile
