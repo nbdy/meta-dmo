@@ -18,6 +18,7 @@ IMAGE_INSTALL = " \
     nfs-utils-client \
     opkg \
     opkg-config-base \
+    powertop \
     packagegroup-core-boot \
     root-user-homedir \
     start-stop-daemon \
