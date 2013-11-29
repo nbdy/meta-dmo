@@ -10,6 +10,7 @@ IMAGE_INSTALL = " \
     fb-test \
     firmware-imx-vpu-imx6q \
     iperf \
+    iproute2 \
     iputils \
     iw \
     kernel-modules \
