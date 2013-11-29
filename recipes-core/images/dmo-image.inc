@@ -7,6 +7,7 @@ IMAGE_INSTALL = " \
     e2fsprogs-e2fsck \
     e2fsprogs-mke2fs \
     e2fsprogs-tune2fs \
+    fb-test \
     firmware-imx-vpu-imx6q \
     iperf \
     iputils \
