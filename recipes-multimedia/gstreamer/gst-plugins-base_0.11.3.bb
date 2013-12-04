@@ -11,7 +11,7 @@ DEPENDS += "alsa-lib freetype liboil libogg libvorbis libtheora util-linux tremo
 SRC_URI[md5sum] = "d403bdb5eac3bff7808c972877ea8e35"
 SRC_URI[sha256sum] = "d2ab63dc5af6f1759a5619c9838cb3a2371b2fb37b953cc85db8c5fa28dcd6d5"
 
-PR = "r2"
+PR = "${INC_PR}.2"
 
 inherit gettext
 

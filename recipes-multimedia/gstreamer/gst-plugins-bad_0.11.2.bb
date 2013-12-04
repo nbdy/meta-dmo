@@ -8,7 +8,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=0636e73ff0215e8d672dc4c32c317bb3 \
 
 DEPENDS += "gst-plugins-base tremor curl"
 
-PR = "r5"
+PR = "${INC_PR}.5"
 
 inherit gettext
 

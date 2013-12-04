@@ -48,7 +48,7 @@ SRC_URI += " \
         file://0041-v4l2_calls-remove-some-defines-which-removed-from-ke.patch \
 "
 
-PR = "r11"
+PR = "${INC_PR}.11"
 
 PACKAGECONFIG ??= "${@base_contains('DISTRO_FEATURES', 'pulseaudio', 'pulseaudio', '', d)}"
 PACKAGECONFIG[pulseaudio] = "--enable-pulse,--disable-pulse,pulseaudio"

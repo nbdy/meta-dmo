@@ -1,3 +1,4 @@
+INC_PR = "r1"
 
 GSTREAMER_BASE_CONFIG = "--disable-nls --disable-rpath \
                 --disable-fatal-warnings --disable-debug --disable-profiling \

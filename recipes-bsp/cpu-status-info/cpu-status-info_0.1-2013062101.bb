@@ -1,6 +1,6 @@
 include cpu-status-info.inc
 
-PR = "r1"
+PR = "${INC_PR}.1"
 
 SRC_URI = " \
     ${DMOFTP}/${PN}-${PV}.tar.gz \

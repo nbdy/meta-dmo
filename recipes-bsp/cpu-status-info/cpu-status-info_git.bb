@@ -1,7 +1,7 @@
 include cpu-status-info.inc
 
 PV = "0.1+git${SRCREV}"
-PR = "r1"
+PR = "${INC_PR}.1"
 
 SRC_URI = " \
     git://git@emb.data-modul.com/userrepos/jgp/cpu-status-info;protocol=ssh \

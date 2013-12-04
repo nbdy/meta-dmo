@@ -4,6 +4,8 @@ BUGTRACKER = "https://bugzilla.gnome.org/enter_bug.cgi?product=Gstreamer"
 SECTION = "multimedia"
 DEPENDS = "gstreamer"
 
+INC_PR = "r1"
+
 require gstreamer.inc
 inherit autotools pkgconfig
 
