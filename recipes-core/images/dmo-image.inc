@@ -1,5 +1,6 @@
 INC_PR = "r4"
 
+# hardware independent packages
 IMAGE_INSTALL = " \
     bluez-hcidump \
     bluez4 \
@@ -8,7 +9,6 @@ IMAGE_INSTALL = " \
     e2fsprogs-mke2fs \
     e2fsprogs-tune2fs \
     fb-test \
-    firmware-imx-vpu-imx6q \
     iperf \
     iproute2 \
     iputils \
@@ -30,6 +30,11 @@ IMAGE_INSTALL = " \
     ${ROOTFS_PKGMANAGE_BOOTSTRAP} \
     ${CORE_IMAGE_EXTRA_INSTALL} \
 "
+# Hardware depend packages
+IMAGE_INSTALL_append_mx6 = " \
+    firmware-imx-vpu-imx6q \
+"
+
 IMAGE_LINGUAS = " "
 LICENSE = "GPLv2"
 

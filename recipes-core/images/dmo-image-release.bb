@@ -4,13 +4,12 @@ require dmo-image.inc
 
 PR = "${INC_PR}.20131203.1"
 
-IMAGE_INSTALL += " \
+# hardware independent
+IMAGE_INSTALL_append = " \
     bash \
     chromium \
-    cpu-status-info \
     canutils \
     dmo-gst-videoscripts \
-    gpu-viv-bin-mx6q \
     gstreamer \
     gst-meta-base \
     gst-meta-x11-base \
@@ -33,7 +32,6 @@ IMAGE_INSTALL += " \
     unclutter \
     util-linux \
     wget \
-    xf86-video-imxfb-vivante \
     xf86-input-evdev \
     xf86-video-fbdev \
     xhost \
@@ -45,4 +43,11 @@ IMAGE_INSTALL += " \
     xserver-xorg-extension-extmod \
     xset \
 "
+IMAGE_INSTALL_append_mx6 += " \
+    cpu-status-info \
+    gpu-viv-bin-mx6q \
+    xf86-video-imxfb-vivante \
+"
+
+# hardware depent packages
 
