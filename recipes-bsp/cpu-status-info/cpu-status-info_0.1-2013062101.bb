@@ -12,6 +12,8 @@ SRC_URI[sha256sum] = "53538485e615ef6fe3f2da9983226900c36037b10f43b1c301365d245e
 
 CROSS_COMPILER = "${HOST_PREFIX}"
 
+COMPATIBLE_MACHINE = "(mx6)"
+
 do_install () {
     install -d ${D}/usr/bin
 

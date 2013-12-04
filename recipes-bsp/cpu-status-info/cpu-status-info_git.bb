@@ -12,6 +12,8 @@ SRCREV = "8fbc58d5c92422f9c928509b43a6b9b8ca49be66"
 
 CROSS_COMPILER = "${HOST_PREFIX}"
 
+COMPATIBLE_MACHINE = "(mx6)"
+
 S = "${WORKDIR}/git"
 
 do_install () {
