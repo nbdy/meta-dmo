@@ -2,7 +2,7 @@ DESCRIPTION = "A small image just capable of allowing a device to boot."
 
 require dmo-image.inc
 
-PR = "${INC_PR}.20130710.1"
+PR = "${INC_PR}.20131203.1"
 
 IMAGE_INSTALL += " \
     bash \

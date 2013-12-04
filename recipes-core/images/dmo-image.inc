@@ -1,4 +1,4 @@
-INC_PR = "r3"
+INC_PR = "r4"
 
 IMAGE_INSTALL = " \
     bluez-hcidump \
@@ -34,13 +34,21 @@ IMAGE_LINGUAS = " "
 LICENSE = "GPLv2"
 
 inherit core-image
+inherit dmo-images
+
+DEPENDS += "genext2fs-native"
+
+SDCARD = "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.without-homefs.img"
+SDCARD_HOME = "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.with-homefs.img"
 
 ROOTFS_POSTINSTALL_COMMAND += " create_homefs_and_image; "
 
-IMAGE_ROOTFS_SIZE = "8192"
+# set size and factor of ROOTFS
+IMAGE_ROOTFS_SIZE = "819200"
+IMAGE_OVERHEAD_FACTOR = "1"
 
-HOMEFS_SPACE ?= "1048576"
-HOMEFS_IMAGE ?= "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.homefs.ext3"
+HOMEFS_SPACE = "786431"
+HOMEFS_IMAGE = "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.homefs.ext3"
 create_homefs_and_image () {
     HOMEFS="${WORKDIR}/homefs"
 
@@ -49,8 +57,8 @@ create_homefs_and_image () {
 
     mv ${WORKDIR}/rootfs/home/* ${HOMEFS}
 
-    printf "genext2fs -b ${HOMEFS_SIZE} -d ${HOMEFS} -i 8192 ${HOMEFS_IMAGE}\n"
+    # generate ext2
     genext2fs -b ${HOMEFS_SPACE} -d ${HOMEFS} -i 8192 ${HOMEFS_IMAGE}
+    # convert to ext3
     tune2fs -j ${HOMEFS_IMAGE}
 }
-
