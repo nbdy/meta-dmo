@@ -17,8 +17,6 @@ IMAGE_INSTALL = " \
     linux-firmware \
     nfs-utils \
     nfs-utils-client \
-    opkg \
-    opkg-config-base \
     powertop \
     packagegroup-core-boot \
     root-user-homedir \
