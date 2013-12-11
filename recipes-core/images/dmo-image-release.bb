@@ -26,6 +26,7 @@ IMAGE_INSTALL_append = " \
     openobex \
     packagegroup-xfce-base \
     procps \
+    psplash \
     strace \
     slim \
     sudo \
