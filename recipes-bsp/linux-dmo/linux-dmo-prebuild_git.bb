@@ -7,7 +7,7 @@ DESCRIPTION = "Linux kernel for imx based data-modul platforms - prebuild"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/COPYING.MIT;md5=3da9cfbcb788c80a0384361b4de20420"
 
-KERNELVERSION = "v3.9-rc7-958-g9971099-dirty"
+KERNELVERSION = "v3.9-rc7-959-gd58ac5a7-dirty"
 TOOLCHAINVERSION = "oselas-tc-2011.11.1"
 
 PV = "prebuild-${KERNELVERSION}-${TOOLCHAINVERSION}+git${SRCREV}"
@@ -20,7 +20,7 @@ KERNEL_PRIORITY = "10000"
 
 COMPATIBLE_MACHINE = "(mx6)"
 
-SRCREV = "992a721ca91bea2490d640de5af3896e3f609eaa"
+SRCREV = "66e26f0dde6b6b7cbf2c8a6b116661824ac3079f"
 DEPENDS_${PN}_remove = "kernel-modules"
 RDEPENDS_${PN}_remove = "kernel-modules"
 PROVIDES += " \
