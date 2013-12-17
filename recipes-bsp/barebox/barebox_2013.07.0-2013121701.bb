@@ -5,8 +5,8 @@ SRC_URI = " \
     ${DMOFTP}/${PN}-${PV}.tar.gz \
 "
 
-SRC_URI[md5sum] = "340535231361ed36877e1d93d4145f05"
-SRC_URI[sha256sum] = "183d665e0cfd337f50fba483712750031dbcfec25b5029f80c5835a6c2986914"
+SRC_URI[md5sum] = "cebc3a1419c1c99e93a8bfa1f3991e65"
+SRC_URI[sha256sum] = "7a4a3d7fc6d1b526a7aed2d25ed0eacbdb11098897ecf63f4d946b25e3a7c884"
 
 COMPATIBLE_MACHINE = "imx6q-dmo-edm-qmx6"
 
