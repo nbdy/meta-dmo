@@ -4,7 +4,7 @@
 # with some adaptions for our barebox in git repository
 #
 
-INC_PR = "r6"
+INC_PR = "r7"
 DESCRIPTION = "Barebox - a bootloader that inherits the best of U-Boot and the Linux kernel"
 HOMEPAGE = "http://www.barebox.org/"
 SECTION = "bootloader"
@@ -49,8 +49,6 @@ do_deploy () {
                 ${DEPLOY_DIR_IMAGE}/imx6q-dmo-edmqmx6-chimei-g070y2.dtb \
                 ${S}/manipulate_bb_env/
         ln -sf imx6q-dmo-edmqmx6-chimei-g070y2.dtb ${S}/manipulate_bb_env/deviceTreeFile
-
-        ${S}/scripts/set_env_version.sh ${S}/manipulate_bb_env/version
 
         ${S}/scripts/bareboxenv -s ${S}/manipulate_bb_env ${S}/common/barebox_default_env
 
