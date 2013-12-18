@@ -5,15 +5,15 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/COPYING.MIT;md5=3da9cfbcb788c80a0384
 DWLNAME = "linuxdmo-prebuild"
 PR = "r0"
 
-KERNELVERSION = "v3.9-rc7-959-gd58ac5a7-dirty"
+KERNELVERSION = "v3.9-rc7-959-gda5ab8a-dirty"
 TOOLCHAINVERSION = "oselas-tc-2011.11.1"
 
 SRC_URI = "${DMOFTP}/prebuild/${DWLNAME}-${PV}.tar.gz"
 
 COMPATIBLE_MACHINE = "(mx6)"
 
-SRC_URI[md5sum] = "bc394ba6ed1ffd4c4e7c21013ba8056f"
-SRC_URI[sha256sum] = "79065dde4ecfdef0eaf6764bc52620e51c5cee66fa935aacae0b3470883f7e78"
+SRC_URI[md5sum] = "f725df1b5bbb84331d38fc3a7df8dffd"
+SRC_URI[sha256sum] = "3851a8fbfcd01c37dbbeb1074fa5a1c2e002f0115f1c549ca7a3fe6b75f50e4a"
 
 S = "${WORKDIR}/${DWLNAME}-${PV}"
 
