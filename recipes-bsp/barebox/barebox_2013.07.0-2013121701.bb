@@ -1,12 +1,12 @@
 require barebox.inc
 
-PR = "${INC_PR}.21"
+PR = "${INC_PR}.22"
 SRC_URI = " \
     ${DMOFTP}/${PN}-${PV}.tar.gz \
 "
 
-SRC_URI[md5sum] = "cebc3a1419c1c99e93a8bfa1f3991e65"
-SRC_URI[sha256sum] = "7a4a3d7fc6d1b526a7aed2d25ed0eacbdb11098897ecf63f4d946b25e3a7c884"
+SRC_URI[md5sum] = "7671f49da3850b1c7a64e62cf78fce76"
+SRC_URI[sha256sum] = "94762712e1534ae11089e5f2372842915503fb374a42c1e7a2f651d7eaf1596a"
 
 COMPATIBLE_MACHINE = "imx6q-dmo-edm-qmx6"
 
