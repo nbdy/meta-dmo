@@ -12,13 +12,8 @@ IMAGE_INSTALL_append = " \
     cinematicexperience \
     dmo-gst-videoscripts \
     dmo-base-user \
-    gstreamer \
-    gst-meta-base \
-    gst-meta-x11-base \
-    gst-meta-audio \
-    gst-meta-debug \
-    gst-meta-video \
-    gst-meta-unsorted \
+    gstreamer1.0 \
+    gstreamer1.0-plugins-good-meta \
     i2c-tools \
     icu \
     kmod \
