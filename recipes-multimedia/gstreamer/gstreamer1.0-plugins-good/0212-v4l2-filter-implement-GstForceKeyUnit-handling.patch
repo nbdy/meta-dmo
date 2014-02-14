@@ -1,0 +1,111 @@
+From: Michael Olbrich <m.olbrich@pengutronix.de>
+Date: Thu, 21 Nov 2013 09:40:26 +0100
+Subject: [PATCH] v4l2: filter: implement GstForceKeyUnit handling
+
+Signed-off-by: Michael Olbrich <m.olbrich@pengutronix.de>
+---
+ sys/v4l2/gstv4l2bufferpool.c |  7 +++++++
+ sys/v4l2/gstv4l2filter.c     | 25 ++++++++++++++++++++++++-
+ sys/v4l2/gstv4l2filter.h     |  1 +
+ sys/v4l2/gstv4l2object.h     |  1 +
+ 4 files changed, 33 insertions(+), 1 deletion(-)
+
+diff --git a/sys/v4l2/gstv4l2bufferpool.c b/sys/v4l2/gstv4l2bufferpool.c
+index f347344..42de9d4 100644
+--- a/sys/v4l2/gstv4l2bufferpool.c
++++ b/sys/v4l2/gstv4l2bufferpool.c
+@@ -737,6 +737,13 @@ gst_v4l2_buffer_pool_qbuf (GstV4l2BufferPool * pool, GstBuffer * buf)
+       (pool->obj->type == V4L2_BUF_TYPE_VIDEO_OUTPUT))
+     GST_TIME_TO_TIMEVAL (GST_BUFFER_TIMESTAMP (buf), meta->vbuffer.timestamp);
+ 
++  if (pool->obj->force_keyframe) {
++    meta->vbuffer.flags |= V4L2_BUF_FLAG_KEYFRAME;
++    pool->obj->force_keyframe = FALSE;
++  } else {
++    meta->vbuffer.flags &= ~V4L2_BUF_FLAG_KEYFRAME;
++  }
++
+   GST_LOG_OBJECT (pool,
+       "enqueue buffer %p, index:%d, queued:%d, flags:%08x mem:%p used:%d",
+       buf, index, pool->num_queued, meta->vbuffer.flags,
+diff --git a/sys/v4l2/gstv4l2filter.c b/sys/v4l2/gstv4l2filter.c
+index 039c764..d84580d 100644
+--- a/sys/v4l2/gstv4l2filter.c
++++ b/sys/v4l2/gstv4l2filter.c
+@@ -219,6 +219,7 @@ gst_v4l2filter_init (GstV4l2Filter * v4l2filter)
+   g_mutex_init (&v4l2filter->queue_lock);
+   v4l2filter->queue = g_sequence_new (v4l2_filter_free_time);
+ 
++  v4l2filter->next_keyframe = GST_CLOCK_TIME_NONE;
+   v4l2filter->earliest_time = GST_CLOCK_TIME_NONE;
+ 
+   v4l2filter->min_latency = 0;
+@@ -637,6 +638,21 @@ gst_v4l2filter_src_event (GstPad * pad, GstObject * parent, GstEvent * event)
+       GST_OBJECT_UNLOCK (v4l2filter);
+       /* fall-through */
+     }
++    case GST_EVENT_CUSTOM_UPSTREAM:{
++      GstV4l2Object *obj = v4l2filter->src_v4l2object;
++      if (GST_VIDEO_INFO_FORMAT (&obj->info) == GST_VIDEO_FORMAT_ENCODED) {
++        if (gst_video_event_is_force_key_unit (event)) {
++          GstClockTime running_time;
++          gst_video_event_parse_upstream_force_key_unit (event,
++              &running_time, NULL, NULL);
++          GST_OBJECT_LOCK (v4l2filter);
++          v4l2filter->next_keyframe = GST_CLOCK_TIME_IS_VALID (running_time) ?
++              running_time : 0;
++          GST_OBJECT_UNLOCK (v4l2filter);
++          break;
++        }
++      }
++    }
+     default:
+       ret = gst_pad_event_default (pad, parent, event);
+       break;
+@@ -818,7 +834,7 @@ gst_v4l2filter_sink_chain (GstPad * pad, GstObject * parent, GstBuffer * buffer)
+   GstV4l2Filter *v4l2filter = GST_V4L2FILTER (parent);
+   GstV4l2Object *obj = v4l2filter->sink_v4l2object;
+   GstV4l2FilterTime *time;
+-  GstClockTime deadline;
++  GstClockTime deadline, running_time;
+   GstClock *clock;
+   gboolean can_drop;
+ 
+@@ -852,6 +868,13 @@ gst_v4l2filter_sink_chain (GstPad * pad, GstObject * parent, GstBuffer * buffer)
+       return GST_FLOW_OK;
+     }
+   }
++  running_time = gst_segment_to_running_time (&v4l2filter->segment,
++      GST_FORMAT_TIME, GST_BUFFER_PTS (buffer));
++  if (GST_CLOCK_TIME_IS_VALID (v4l2filter->next_keyframe) &&
++      (running_time >= v4l2filter->next_keyframe)) {
++    v4l2filter->sink_v4l2object->force_keyframe = TRUE;
++    v4l2filter->next_keyframe = GST_CLOCK_TIME_NONE;
++  }
+   GST_OBJECT_UNLOCK (v4l2filter);
+ 
+   if (G_UNLIKELY (obj->pool == NULL))
+diff --git a/sys/v4l2/gstv4l2filter.h b/sys/v4l2/gstv4l2filter.h
+index af24c69..f243e4c 100644
+--- a/sys/v4l2/gstv4l2filter.h
++++ b/sys/v4l2/gstv4l2filter.h
+@@ -73,6 +73,7 @@ struct _GstV4l2Filter {
+ 
+   GstSegment segment;
+ 
++  GstClockTime next_keyframe; /* OBJECT_LOCK */
+   GstClockTime earliest_time; /* OBJECT_LOCK */
+   gint64 min_latency; /* OBJECT_LOCK */
+   gint64 max_latency; /* OBJECT_LOCK */
+diff --git a/sys/v4l2/gstv4l2object.h b/sys/v4l2/gstv4l2object.h
+index 3c993fb..d20ebf3 100644
+--- a/sys/v4l2/gstv4l2object.h
++++ b/sys/v4l2/gstv4l2object.h
+@@ -115,6 +115,7 @@ struct _GstV4l2Object {
+ 
+   gboolean active;
+   gboolean streaming;
++  gboolean force_keyframe;
+ 
+   /* the current format */
+   struct v4l2_fmtdesc *fmtdesc;

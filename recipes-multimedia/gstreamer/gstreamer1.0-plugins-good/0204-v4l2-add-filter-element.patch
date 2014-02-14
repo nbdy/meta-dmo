@@ -1,0 +1,850 @@
+From: Michael Olbrich <m.olbrich@pengutronix.de>
+Date: Thu, 7 Jul 2011 13:08:36 +0200
+Subject: [PATCH] v4l2: add filter element
+
+Signed-off-by: Michael Olbrich <m.olbrich@pengutronix.de>
+---
+ sys/v4l2/Makefile.am     |   2 +
+ sys/v4l2/gstv4l2.c       |   3 +
+ sys/v4l2/gstv4l2filter.c | 701 +++++++++++++++++++++++++++++++++++++++++++++++
+ sys/v4l2/gstv4l2filter.h |  82 ++++++
+ 4 files changed, 788 insertions(+)
+ create mode 100644 sys/v4l2/gstv4l2filter.c
+ create mode 100644 sys/v4l2/gstv4l2filter.h
+
+diff --git a/sys/v4l2/Makefile.am b/sys/v4l2/Makefile.am
+index da138ae..5edb7ee 100644
+--- a/sys/v4l2/Makefile.am
++++ b/sys/v4l2/Makefile.am
+@@ -14,6 +14,7 @@ libgstvideo4linux2_la_SOURCES = gstv4l2.c \
+ 				gstv4l2colorbalance.c \
+ 				gstv4l2object.c \
+ 				gstv4l2bufferpool.c \
++				gstv4l2filter.c \
+ 				gstv4l2sink.c \
+ 				gstv4l2src.c \
+ 				gstv4l2radio.c \
+@@ -48,6 +49,7 @@ noinst_HEADERS = \
+ 	gstv4l2bufferpool.h \
+ 	gstv4l2colorbalance.h \
+ 	gstv4l2object.h \
++	gstv4l2filter.h \
+ 	gstv4l2sink.h \
+ 	gstv4l2src.h \
+ 	gstv4l2radio.h \
+diff --git a/sys/v4l2/gstv4l2.c b/sys/v4l2/gstv4l2.c
+index a61d6ab..e43bcb4 100644
+--- a/sys/v4l2/gstv4l2.c
++++ b/sys/v4l2/gstv4l2.c
+@@ -32,6 +32,7 @@
+ #include "gstv4l2object.h"
+ #include "gstv4l2src.h"
+ #include "gstv4l2sink.h"
++#include "gstv4l2filter.h"
+ #include "gstv4l2radio.h"
+ /* #include "gstv4l2jpegsrc.h" */
+ /* #include "gstv4l2mjpegsrc.h" */
+@@ -49,6 +50,8 @@ plugin_init (GstPlugin * plugin)
+           GST_TYPE_V4L2SRC) ||
+       !gst_element_register (plugin, "v4l2sink", GST_RANK_NONE,
+           GST_TYPE_V4L2SINK) ||
++      !gst_element_register (plugin, "v4l2filter", GST_RANK_NONE,
++          GST_TYPE_V4L2FILTER) ||
+       !gst_element_register (plugin, "v4l2radio", GST_RANK_NONE,
+           GST_TYPE_V4L2RADIO) ||
+       /*       !gst_element_register (plugin, "v4l2jpegsrc", */
+diff --git a/sys/v4l2/gstv4l2filter.c b/sys/v4l2/gstv4l2filter.c
+new file mode 100644
+index 0000000..b074ba2
+--- /dev/null
++++ b/sys/v4l2/gstv4l2filter.c
+@@ -0,0 +1,701 @@
++/* GStreamer
++ * Copyright (C) 2011 Michael Olbrich <m.olbrich@pengutronix.de>
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Library General Public
++ * License as published by the Free Software Foundation; either
++ * version 2 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Library General Public License for more details.
++ *
++ * You should have received a copy of the GNU Library General Public
++ * License along with this library; if not, write to the
++ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
++ * Boston, MA 02111-1307, USA.
++ */
++
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#endif
++
++#include <gst/video/gstvideometa.h>
++#include <gst/video/gstvideopool.h>
++
++#include "v4l2_calls.h"
++
++#include <string.h>
++#include <unistd.h>
++
++#include "gstv4l2filter.h"
++#include <gst/gst-i18n-plugin.h>
++
++GST_DEBUG_CATEGORY (v4l2filter_debug);
++#define GST_CAT_DEFAULT v4l2filter_debug
++
++#define DEFAULT_PROP_DEVICE   "/dev/video0"
++
++#undef GST_VIDEO_SIZE_RANGE
++#define GST_VIDEO_SIZE_RANGE "(int) [ 1, 32767]"
++
++typedef struct _GstV4l2FilterTime
++{
++  GstClockTime pts;
++  GstClockTime dts;
++  GstClockTime duration;
++  guint64 offset;
++  guint64 offset_end;
++} GstV4l2FilterTime;
++
++#define gst_v4l2filter_parent_class parent_class
++G_DEFINE_TYPE (GstV4l2Filter, gst_v4l2filter, GST_TYPE_ELEMENT);
++
++static void gst_v4l2filter_dispose (GObject * object);
++static void gst_v4l2filter_finalize (GstV4l2Filter * v4l2filter);
++
++static void gst_v4l2filter_set_property (GObject * object, guint prop_id,
++    const GValue * value, GParamSpec * pspec);
++static void gst_v4l2filter_get_property (GObject * object, guint prop_id,
++    GValue * value, GParamSpec * pspec);
++
++static GstStateChangeReturn gst_v4l2filter_change_state (GstElement * element,
++    GstStateChange transition);
++
++/* shared pad functions */
++static gboolean gst_v4l2filter_query (GstPad * pad,
++    GstObject * parent, GstQuery * query);
++static GstCaps *gst_v4l2filter_getcaps (GstPad * pad, GstCaps * filter);
++static gboolean gst_v4l2filter_activate_mode (GstPad * pad, GstObject * parent,
++    GstPadMode mode, gboolean active);
++
++
++/* sink pad functions */
++static gboolean gst_v4l2filter_sink_setcaps (GstPad * pad, GstCaps * caps);
++static gboolean gst_v4l2filter_sink_event (GstPad * pad, GstObject * parent,
++    GstEvent * event);
++static GstFlowReturn gst_v4l2filter_sink_chain (GstPad * pad,
++    GstObject * parent, GstBuffer * buffer);
++/* src pad functions */
++static gboolean gst_v4l2filter_src_setcaps (GstPad * pad, GstCaps * caps);
++static gboolean gst_v4l2filter_src_event (GstPad * pad, GstObject * parent,
++    GstEvent * event);
++static void v4l2_filter_src_task (GstPad * pad);
++
++static void
++gst_v4l2filter_class_init (GstV4l2FilterClass * klass)
++{
++  GObjectClass *gobject_class;
++  GstElementClass *element_class;
++
++  gobject_class = G_OBJECT_CLASS (klass);
++  element_class = GST_ELEMENT_CLASS (klass);
++
++  gobject_class->dispose = gst_v4l2filter_dispose;
++  gobject_class->finalize = (GObjectFinalizeFunc) gst_v4l2filter_finalize;
++  gobject_class->set_property = gst_v4l2filter_set_property;
++  gobject_class->get_property = gst_v4l2filter_get_property;
++
++  element_class->change_state = gst_v4l2filter_change_state;
++
++  gst_v4l2_object_install_properties_helper (gobject_class,
++      DEFAULT_PROP_DEVICE);
++
++  gst_element_class_set_details_simple (element_class,
++      "V4l2 Video Filter", "Filter/Converter/Video/Scaler",
++      "filters Videos", "Michael Olbrich <m.olbrich@pengutronix.de>");
++
++  gst_element_class_add_pad_template (element_class,
++      gst_pad_template_new ("src", GST_PAD_SRC, GST_PAD_ALWAYS,
++          gst_v4l2_object_get_all_caps ()));
++  gst_element_class_add_pad_template (element_class,
++      gst_pad_template_new ("sink", GST_PAD_SINK, GST_PAD_ALWAYS,
++          gst_v4l2_object_get_all_caps ()));
++
++  GST_DEBUG_CATEGORY_INIT (v4l2filter_debug, "v4l2filter", 0,
++      "V4L2 filter element");
++}
++
++static void
++v4l2_filter_free_time (gpointer mem)
++{
++  g_slice_free (GstV4l2FilterTime, mem);
++}
++
++
++static void
++gst_v4l2filter_init (GstV4l2Filter * v4l2filter)
++{
++  GstElementClass *element_class;
++  GstPadTemplate *pad_template;
++
++  element_class = GST_ELEMENT_GET_CLASS (v4l2filter);
++
++  v4l2filter->sink_v4l2object = gst_v4l2_object_new (GST_ELEMENT
++      (v4l2filter), V4L2_BUF_TYPE_VIDEO_OUTPUT, DEFAULT_PROP_DEVICE,
++      gst_v4l2_get_output, gst_v4l2_set_output, NULL);
++
++  v4l2filter->src_v4l2object = gst_v4l2_object_new (GST_ELEMENT
++      (v4l2filter), V4L2_BUF_TYPE_VIDEO_CAPTURE, DEFAULT_PROP_DEVICE,
++      gst_v4l2_get_input, gst_v4l2_set_input, NULL);
++
++  pad_template = gst_element_class_get_pad_template (element_class, "sink");
++  g_return_if_fail (pad_template != NULL);
++  v4l2filter->sinkpad = gst_pad_new_from_template (pad_template, "sink");
++
++  gst_pad_set_query_function (v4l2filter->sinkpad,
++      GST_DEBUG_FUNCPTR (gst_v4l2filter_query));
++/*
++  gst_pad_set_acceptcaps_function (v4l2filter->sinkpad,
++      GST_DEBUG_FUNCPTR (gst_v4l2filter_sink_acceptcaps));
++*/
++  gst_pad_set_event_function (v4l2filter->sinkpad,
++      GST_DEBUG_FUNCPTR (gst_v4l2filter_sink_event));
++  gst_pad_set_chain_function (v4l2filter->sinkpad,
++      GST_DEBUG_FUNCPTR (gst_v4l2filter_sink_chain));
++  gst_pad_set_activatemode_function (v4l2filter->sinkpad,
++      GST_DEBUG_FUNCPTR (gst_v4l2filter_activate_mode));
++/*
++  gst_pad_set_query_function (v4l2filter->sinkpad,
++      GST_DEBUG_FUNCPTR (gst_v4l2filter_sink_query));
++  gst_pad_set_query_type_function (v4l2filter->sinkpad,
++      GST_DEBUG_FUNCPTR (gst_v4l2filter_sink_query_type));
++*/
++  gst_element_add_pad (GST_ELEMENT (v4l2filter), v4l2filter->sinkpad);
++
++
++  pad_template = gst_element_class_get_pad_template (element_class, "src");
++  g_return_if_fail (pad_template != NULL);
++  v4l2filter->srcpad = gst_pad_new_from_template (pad_template, "src");
++
++  gst_pad_set_query_function (v4l2filter->srcpad,
++      GST_DEBUG_FUNCPTR (gst_v4l2filter_query));
++/*
++  gst_pad_set_acceptcaps_function (v4l2filter->srcpad,
++      GST_DEBUG_FUNCPTR (gst_v4l2filter_src_acceptcaps));
++*/
++  gst_pad_set_event_function (v4l2filter->srcpad,
++      GST_DEBUG_FUNCPTR (gst_v4l2filter_src_event));
++/*
++  gst_pad_set_checkgetrange_function (v4l2filter->srcpad,
++      GST_DEBUG_FUNCPTR (gst_v4l2filter_src_check_get_range));
++  gst_pad_set_getrange_function (v4l2filter->srcpad,
++      GST_DEBUG_FUNCPTR (gst_v4l2filter_src_getrange));
++*/
++  gst_pad_set_activatemode_function (v4l2filter->srcpad,
++      GST_DEBUG_FUNCPTR (gst_v4l2filter_activate_mode));
++/*
++  gst_pad_set_query_function (v4l2filter->srcpad,
++      GST_DEBUG_FUNCPTR (gst_v4l2filter_src_query));
++  gst_pad_set_query_type_function (v4l2filter->srcpad,
++      GST_DEBUG_FUNCPTR (gst_v4l2filter_src_query_type));
++*/
++  gst_element_add_pad (GST_ELEMENT (v4l2filter), v4l2filter->srcpad);
++
++  g_mutex_init (&v4l2filter->preroll_lock);
++
++  v4l2filter->queue = g_async_queue_new_full (v4l2_filter_free_time);
++}
++
++static void
++gst_v4l2filter_dispose (GObject * object)
++{
++  GstV4l2Filter *v4l2filter = GST_V4L2FILTER (object);
++
++  g_async_queue_unref (v4l2filter->queue);
++
++  G_OBJECT_CLASS (parent_class)->dispose (object);
++}
++
++static void
++gst_v4l2filter_finalize (GstV4l2Filter * v4l2filter)
++{
++  g_mutex_clear (&v4l2filter->preroll_lock);
++
++  gst_v4l2_object_destroy (v4l2filter->src_v4l2object);
++  gst_v4l2_object_destroy (v4l2filter->sink_v4l2object);
++
++  G_OBJECT_CLASS (parent_class)->finalize (G_OBJECT (v4l2filter));
++}
++
++static void
++gst_v4l2filter_set_property (GObject * object, guint prop_id,
++    const GValue * value, GParamSpec * pspec)
++{
++  GstV4l2Filter *v4l2filter = GST_V4L2FILTER (object);
++
++  if (!gst_v4l2_object_set_property_helper (v4l2filter->sink_v4l2object,
++          prop_id, value, pspec)) {
++    switch (prop_id) {
++      default:
++        G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
++        break;
++    }
++  }
++}
++
++static void
++gst_v4l2filter_get_property (GObject * object, guint prop_id, GValue * value,
++    GParamSpec * pspec)
++{
++  GstV4l2Filter *v4l2filter = GST_V4L2FILTER (object);
++
++  if (!gst_v4l2_object_get_property_helper (v4l2filter->sink_v4l2object,
++          prop_id, value, pspec)) {
++    switch (prop_id) {
++      default:
++        G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
++        break;
++    }
++  }
++}
++
++static gboolean
++gst_v4l2filter_start_task (GstV4l2Filter * v4l2filter)
++{
++  GstV4l2Object *obj = v4l2filter->src_v4l2object;
++
++  if (!obj->pool)
++    return TRUE;
++
++  if (!gst_buffer_pool_set_active (obj->pool, TRUE))
++    return FALSE;
++
++  return gst_pad_start_task (v4l2filter->srcpad,
++      (GstTaskFunction) v4l2_filter_src_task, v4l2filter->srcpad, NULL);
++}
++
++static GstCaps *
++gst_v4l2filter_getcaps (GstPad * pad, GstCaps * filter)
++{
++  GstV4l2Filter *v4l2filter = GST_V4L2FILTER (GST_OBJECT_PARENT (pad));
++  GstV4l2Object *v4l2object = (pad == v4l2filter->sinkpad) ?
++      v4l2filter->sink_v4l2object : v4l2filter->src_v4l2object;
++
++  if (!GST_V4L2_IS_OPEN (v4l2object)) {
++    GST_DEBUG_OBJECT (v4l2filter, "device is not open");
++    return gst_caps_copy (gst_pad_get_pad_template_caps (pad));
++  }
++
++  /* HACK: the source caps can change base on the sink state */
++  if (pad == v4l2filter->srcpad)
++    gst_caps_replace (&v4l2object->probed_caps, NULL);
++
++  return gst_v4l2_object_get_caps (v4l2object, filter);
++}
++
++static gboolean
++gst_v4l2filter_query (GstPad * pad, GstObject * parent, GstQuery * query)
++{
++  gboolean res = FALSE;
++
++  switch (GST_QUERY_TYPE (query)) {
++    case GST_QUERY_ALLOCATION:
++    {
++      GstV4l2Filter *v4l2filter = GST_V4L2FILTER (parent);
++      res = gst_v4l2_object_propose_allocation (v4l2filter->sink_v4l2object,
++          query);
++      break;
++    }
++    case GST_QUERY_CAPS:
++    {
++      GstCaps *filter, *caps;
++
++      gst_query_parse_caps (query, &filter);
++      caps = gst_v4l2filter_getcaps (pad, filter);
++      gst_query_set_caps_result (query, caps);
++      gst_caps_unref (caps);
++      res = TRUE;
++      break;
++    }
++    case GST_QUERY_ACCEPT_CAPS:
++    {
++      GstCaps *allowed, *caps;
++
++      gst_query_parse_accept_caps (query, &caps);
++      allowed = gst_pad_query_caps (pad, NULL);
++      gst_query_set_accept_caps_result (query,
++          gst_caps_can_intersect (caps, allowed));
++      gst_caps_unref (allowed);
++      res = TRUE;
++      break;
++    }
++    default:
++      res = gst_pad_query_default (pad, parent, query);
++      break;
++  }
++  return res;
++}
++
++static gboolean
++gst_v4l2filter_src_update_caps (GstV4l2Filter * v4l2filter, GstCaps * sinkcaps)
++{
++  GstCaps *thiscaps;
++  GstCaps *peercaps;
++  GstStructure *s1, *s2;
++  gint n, d;
++
++  thiscaps = gst_pad_query_caps (v4l2filter->srcpad, NULL);
++  GST_DEBUG_OBJECT (v4l2filter, "caps of src: %" GST_PTR_FORMAT, thiscaps);
++
++  /* get the peer caps */
++  peercaps = gst_pad_peer_query_caps (v4l2filter->srcpad, thiscaps);
++  GST_DEBUG_OBJECT (v4l2filter, "caps of peer: %" GST_PTR_FORMAT, peercaps);
++
++  gst_caps_unref (thiscaps);
++
++  if (gst_caps_is_empty (peercaps)) {
++    GST_WARNING_OBJECT (v4l2filter, "cannot set caps");
++    return FALSE;
++  }
++
++  s1 = gst_caps_get_structure (sinkcaps, 0);
++  if (!gst_structure_get_fraction (s1, "framerate", &n, &d))
++    n = d = 0;
++
++  if (!gst_caps_is_fixed (peercaps)) {
++    const GValue *v;
++    GstCaps *caps = gst_caps_copy_nth (peercaps, 0);
++
++    gst_caps_unref (peercaps);
++    peercaps = caps;
++    s2 = gst_caps_get_structure (peercaps, 0);
++
++    if (d) {
++      v = gst_structure_get_value (s2, "framerate");
++      if (v && !gst_value_is_fixed (v))
++        gst_structure_fixate_field_nearest_fraction (s2, "framerate", n, d);
++    }
++    v = gst_structure_get_value (s2, "width");
++    if (v && !gst_value_is_fixed (v)) {
++      gint w;
++      gst_structure_get_int (s1, "width", &w);
++      gst_structure_fixate_field_nearest_int (s2, "width", w);
++    }
++    v = gst_structure_get_value (s2, "height");
++    if (v && !gst_value_is_fixed (v)) {
++      gint w;
++      gst_structure_get_int (s1, "height", &w);
++      gst_structure_fixate_field_nearest_int (s2, "height", w);
++    }
++
++    peercaps = gst_caps_fixate (peercaps);
++  }
++
++  /* pass framerate if we don't have any */
++  s2 = gst_caps_get_structure (peercaps, 0);
++  if (d && !gst_structure_get_value (s2, "framerate"))
++    gst_structure_set (s2, "framerate", GST_TYPE_FRACTION, n, d, NULL);
++
++  if (!gst_v4l2filter_src_setcaps (v4l2filter->srcpad, peercaps)) {
++    GST_WARNING_OBJECT (v4l2filter,
++        "can't set caps %" GST_PTR_FORMAT, peercaps);
++    return FALSE;
++  }
++  return TRUE;
++}
++
++static gboolean
++gst_v4l2filter_sink_setcaps (GstPad * pad, GstCaps * caps)
++{
++  GstV4l2Filter *v4l2filter = GST_V4L2FILTER (GST_OBJECT_PARENT (pad));
++  GstV4l2Object *obj = v4l2filter->sink_v4l2object;
++
++  LOG_CAPS (v4l2filter, caps);
++
++  if (!gst_caps_is_subset (caps, v4l2filter->sink_v4l2object->probed_caps)) {
++    GST_INFO_OBJECT (v4l2filter, "incomplete caps");
++    GST_DEBUG_OBJECT (v4l2filter, "probed caps: %" GST_PTR_FORMAT,
++        v4l2filter->sink_v4l2object->probed_caps);
++    GST_DEBUG_OBJECT (v4l2filter, "set caps:    %" GST_PTR_FORMAT, caps);
++    v4l2filter->incomplete_caps = TRUE;
++    return TRUE;
++  }
++
++  /* make sure the caps changed before doing anything */
++  if (gst_v4l2_object_caps_equal (obj, caps))
++    return TRUE;
++
++  if (!gst_v4l2_object_stop (obj))
++    goto stop_failed;
++
++  if (!gst_v4l2_object_set_format (obj, caps))
++    return FALSE;
++
++  v4l2filter->incomplete_caps = FALSE;
++
++  GST_INFO_OBJECT (v4l2filter, "setting sink caps: %" GST_PTR_FORMAT, caps);
++
++  if (!gst_v4l2filter_src_update_caps (v4l2filter, caps))
++    return FALSE;
++
++  return TRUE;
++
++  /* ERRORS */
++stop_failed:
++  {
++    GST_DEBUG_OBJECT (v4l2filter, "sink failed to stop streaming");
++    return FALSE;
++  }
++}
++
++static gboolean
++gst_v4l2filter_sink_event (GstPad * pad, GstObject * parent, GstEvent * event)
++{
++  gboolean ret;
++
++  switch (GST_EVENT_TYPE (event)) {
++    case GST_EVENT_CAPS:
++    {
++      GstCaps *caps;
++
++      gst_event_parse_caps (event, &caps);
++      ret = gst_v4l2filter_sink_setcaps (pad, caps);
++      gst_event_unref (event);
++      break;
++    }
++    default:
++      ret = gst_pad_event_default (pad, parent, event);
++      break;
++  }
++
++  return ret;
++}
++
++static gboolean
++gst_v4l2filter_src_setcaps (GstPad * pad, GstCaps * caps)
++{
++  GstV4l2Filter *v4l2filter = GST_V4L2FILTER (GST_OBJECT_PARENT (pad));
++  GstV4l2Object *obj = v4l2filter->src_v4l2object;
++
++  LOG_CAPS (v4l2filter, caps);
++
++  /* if we're not open, punt -- we'll get setcaps'd later via negotiate */
++  if (!GST_V4L2_IS_OPEN (v4l2filter->src_v4l2object))
++    return FALSE;
++
++  /* make sure the caps changed before doing anything */
++  if (gst_v4l2_object_caps_equal (obj, caps))
++    return TRUE;
++
++  if (!gst_v4l2_object_stop (obj))
++    goto stop_failed;
++
++  if (!gst_v4l2_object_set_format (obj, caps))
++    return FALSE;
++
++  GST_INFO_OBJECT (v4l2filter, "setting src caps: %" GST_PTR_FORMAT, caps);
++
++  gst_pad_push_event (pad, gst_event_new_caps (caps));
++
++  return TRUE;
++
++  /* ERRORS */
++stop_failed:
++  {
++    GST_DEBUG_OBJECT (v4l2filter, "src failed to stop streaming");
++    return FALSE;
++  }
++}
++
++static gboolean
++gst_v4l2filter_src_event (GstPad * pad, GstObject * parent, GstEvent * event)
++{
++  gboolean ret;
++
++  switch (GST_EVENT_TYPE (event)) {
++    case GST_EVENT_CAPS:
++    {
++      GstCaps *caps;
++
++      gst_event_parse_caps (event, &caps);
++      ret = gst_v4l2filter_src_setcaps (pad, caps);
++      gst_event_unref (event);
++      break;
++    }
++    default:
++      ret = gst_pad_event_default (pad, parent, event);
++      break;
++  }
++
++  return ret;
++}
++
++static GstStateChangeReturn
++gst_v4l2filter_change_state (GstElement * element, GstStateChange transition)
++{
++  GstStateChangeReturn ret = GST_STATE_CHANGE_SUCCESS;
++  GstV4l2Filter *v4l2filter = GST_V4L2FILTER (element);
++
++  GST_V4L2FILTER_PREROLL_LOCK (v4l2filter);
++  switch (transition) {
++    case GST_STATE_CHANGE_NULL_TO_READY:
++      /* open the device */
++      if (!gst_v4l2_object_open (v4l2filter->sink_v4l2object) ||
++          !gst_v4l2_object_open_shared (v4l2filter->src_v4l2object,
++              v4l2filter->sink_v4l2object)) {
++        GST_V4L2FILTER_PREROLL_UNLOCK (v4l2filter);
++        return GST_STATE_CHANGE_FAILURE;
++      }
++      break;
++    default:
++      break;
++  }
++  GST_V4L2FILTER_PREROLL_UNLOCK (v4l2filter);
++
++  if (transition == GST_STATE_CHANGE_PAUSED_TO_READY ||
++      transition == GST_STATE_CHANGE_READY_TO_NULL)
++    gst_v4l2_object_unlock (v4l2filter->sink_v4l2object);
++  ret = GST_ELEMENT_CLASS (parent_class)->change_state (element, transition);
++  if (transition == GST_STATE_CHANGE_PAUSED_TO_READY ||
++      transition == GST_STATE_CHANGE_READY_TO_NULL)
++    gst_v4l2_object_unlock_stop (v4l2filter->sink_v4l2object);
++
++  GST_V4L2FILTER_PREROLL_LOCK (v4l2filter);
++  switch (transition) {
++    case GST_STATE_CHANGE_PAUSED_TO_READY:
++      /* close the device */
++      gst_v4l2_object_stop (v4l2filter->sink_v4l2object);
++      gst_v4l2_object_stop (v4l2filter->src_v4l2object);
++      break;
++    case GST_STATE_CHANGE_READY_TO_NULL:
++      /* close the device */
++      gst_v4l2_object_close (v4l2filter->sink_v4l2object);
++      gst_v4l2_object_close (v4l2filter->src_v4l2object);
++      break;
++    default:
++      break;
++  }
++  GST_V4L2FILTER_PREROLL_UNLOCK (v4l2filter);
++
++  return ret;
++}
++
++static void
++v4l2_filter_src_task (GstPad * pad)
++{
++  GstFlowReturn ret;
++  GstBuffer *buffer;
++  GstV4l2Filter *v4l2filter = GST_V4L2FILTER (GST_OBJECT_PARENT (pad));
++  GstV4l2Object *obj = v4l2filter->src_v4l2object;
++  GstV4l2FilterTime *time;
++
++  ret = gst_buffer_pool_acquire_buffer (obj->pool, &buffer, NULL);
++  if (G_UNLIKELY (ret != GST_FLOW_OK))
++    goto out;
++
++  ret =
++      gst_v4l2_buffer_pool_process (GST_V4L2_BUFFER_POOL_CAST (obj->pool),
++      buffer);
++  if (G_UNLIKELY (ret != GST_FLOW_OK))
++    goto out;
++
++  time = (GstV4l2FilterTime *) g_async_queue_try_pop (v4l2filter->queue);
++  if (time) {
++    GST_BUFFER_PTS (buffer) = time->pts;
++    GST_BUFFER_DTS (buffer) = time->dts;
++    GST_BUFFER_DURATION (buffer) = time->duration;
++    GST_BUFFER_OFFSET (buffer) = time->offset;
++    GST_BUFFER_OFFSET_END (buffer) = time->offset_end;
++    v4l2_filter_free_time (time);
++  }
++
++  gst_pad_push (pad, buffer);
++  return;
++out:
++  gst_pad_pause_task (pad);
++}
++
++static gboolean
++gst_v4l2filter_activate_mode (GstPad * pad, GstObject * parent, GstPadMode mode,
++    gboolean active)
++{
++  gboolean result = TRUE;
++  gboolean is_sink = gst_pad_get_direction (pad) == GST_PAD_SINK;
++  GstV4l2Filter *v4l2filter = GST_V4L2FILTER (parent);
++
++  switch (mode) {
++    case GST_PAD_MODE_PULL:
++      /* sink currently only operates in push mode */
++      return !is_sink;
++    case GST_PAD_MODE_PUSH:
++      if (is_sink)
++        return TRUE;
++      GST_V4L2FILTER_PREROLL_LOCK (v4l2filter);
++      if (active)
++        result = gst_v4l2filter_start_task (v4l2filter);
++      else {
++        gpointer mem;
++        while ((mem = g_async_queue_try_pop (v4l2filter->queue)))
++          v4l2_filter_free_time (mem);
++        /* FIXME: is this correct? */
++        gst_v4l2_object_unlock (v4l2filter->src_v4l2object);
++        if (v4l2filter->src_v4l2object->pool) {
++          gst_buffer_pool_set_active (v4l2filter->src_v4l2object->pool, FALSE);
++          result = gst_pad_stop_task (pad);
++        }
++        gst_v4l2_object_unlock_stop (v4l2filter->src_v4l2object);
++      }
++      GST_V4L2FILTER_PREROLL_UNLOCK (v4l2filter);
++      break;
++    default:
++      result = FALSE;
++      break;
++  }
++
++  return result;
++}
++
++static GstFlowReturn
++gst_v4l2filter_sink_chain (GstPad * pad, GstObject * parent, GstBuffer * buffer)
++{
++  GstFlowReturn ret;
++  GstV4l2Filter *v4l2filter = GST_V4L2FILTER (parent);
++  GstV4l2Object *obj = v4l2filter->sink_v4l2object;
++  GstV4l2FilterTime *time;
++
++  GST_DEBUG_OBJECT (v4l2filter, "render buffer: %" GST_PTR_FORMAT, buffer);
++
++  if (G_UNLIKELY (v4l2filter->incomplete_caps)) {
++    GST_INFO_OBJECT (v4l2filter, "droping buffer while waiting for caps");
++    gst_buffer_unref (buffer);
++    return GST_FLOW_OK;
++  }
++
++  if (G_UNLIKELY (obj->pool == NULL))
++    goto not_negotiated;
++
++  GST_V4L2FILTER_PREROLL_LOCK (v4l2filter);
++  if (GST_PAD_MODE (v4l2filter->srcpad) != GST_PAD_MODE_NONE)
++    gst_v4l2filter_start_task (v4l2filter);
++  GST_V4L2FILTER_PREROLL_UNLOCK (v4l2filter);
++
++  if (!GST_PAD_TASK (v4l2filter->srcpad)) {
++    gst_buffer_unref (buffer);
++    return GST_FLOW_FLUSHING;
++  }
++
++  time = g_slice_new (GstV4l2FilterTime);
++  time->pts = GST_BUFFER_PTS (buffer);
++  time->dts = GST_BUFFER_DTS (buffer);
++  time->duration = GST_BUFFER_DURATION (buffer);
++  time->offset = GST_BUFFER_OFFSET (buffer);
++  time->offset_end = GST_BUFFER_OFFSET_END (buffer);
++  g_async_queue_push (v4l2filter->queue, time);
++
++  ret =
++      gst_v4l2_buffer_pool_process (GST_V4L2_BUFFER_POOL_CAST (obj->pool),
++      buffer);
++  gst_buffer_unref (buffer);
++
++  return ret;
++
++  /* ERRORS */
++not_negotiated:
++  {
++    gst_buffer_unref (buffer);
++    GST_ERROR_OBJECT (v4l2filter, "not negotiated");
++    return GST_FLOW_NOT_NEGOTIATED;
++  }
++}
+diff --git a/sys/v4l2/gstv4l2filter.h b/sys/v4l2/gstv4l2filter.h
+new file mode 100644
+index 0000000..d42cf56
+--- /dev/null
++++ b/sys/v4l2/gstv4l2filter.h
+@@ -0,0 +1,82 @@
++/* GStreamer
++ * Copyright (C) 2011 Michael Olbrich <m.olbrich@pengutronix.de>
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Library General Public
++ * License as published by the Free Software Foundation; either
++ * version 2 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Library General Public License for more details.
++ *
++ * You should have received a copy of the GNU Library General Public
++ * License along with this library; if not, write to the
++ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
++ * Boston, MA 02111-1307, USA.
++ */
++
++#ifndef __GST_V4L2_FILTER_H__
++#define __GST_V4L2_FILTER_H__
++
++#include <gst/gst.h>
++#include <gst/gstelement.h>
++#include <gst/video/video.h>
++
++#include <gstv4l2object.h>
++#include <gstv4l2bufferpool.h>
++
++
++G_BEGIN_DECLS
++
++GST_DEBUG_CATEGORY_EXTERN (v4l2filter_debug);
++
++#define GST_TYPE_V4L2FILTER \
++  (gst_v4l2filter_get_type())
++#define GST_V4L2FILTER(obj) \
++  (G_TYPE_CHECK_INSTANCE_CAST((obj),GST_TYPE_V4L2FILTER,GstV4l2Filter))
++#define GST_V4L2FILTER_CLASS(klass) \
++  (G_TYPE_CHECK_CLASS_CAST((klass),GST_TYPE_V4L2FILTER,GstV4l2FilterClass))
++#define GST_IS_V4L2FILTER(obj) \
++  (G_TYPE_CHECK_INSTANCE_TYPE((obj),GST_TYPE_V4L2FILTER))
++#define GST_IS_V4L2FILTER_CLASS(klass) \
++  (G_TYPE_CHECK_CLASS_TYPE((klass),GST_TYPE_V4L2FILTER))
++
++#define GST_V4L2FILTER_GET_PREROLL_LOCK(obj)   (&GST_V4L2FILTER(obj)->preroll_lock)
++#define GST_V4L2FILTER_PREROLL_LOCK(obj)       (g_mutex_lock(GST_V4L2FILTER_GET_PREROLL_LOCK(obj)))
++#define GST_V4L2FILTER_PREROLL_TRYLOCK(obj)    (g_mutex_trylock(GST_V4L2FILTER_GET_PREROLL_LOCK(obj)))
++#define GST_V4L2FILTER_PREROLL_UNLOCK(obj)     (g_mutex_unlock(GST_V4L2FILTER_GET_PREROLL_LOCK(obj)))
++
++typedef struct _GstV4l2Filter GstV4l2Filter;
++typedef struct _GstV4l2FilterClass GstV4l2FilterClass;
++
++/**
++ * GstV4l2Filter:
++ *
++ * Opaque data structure
++ */
++struct _GstV4l2Filter {
++  GstElement element;
++
++  GstPad *srcpad;
++  GstPad *sinkpad;
++
++  GMutex preroll_lock;
++
++  GstV4l2Object * src_v4l2object;
++  GstV4l2Object * sink_v4l2object;
++
++  GAsyncQueue *queue;
++  gboolean incomplete_caps;
++};
++
++struct _GstV4l2FilterClass {
++  GstElementClass parent_class;
++};
++
++GType gst_v4l2filter_get_type(void);
++
++G_END_DECLS
++
++#endif /* __GST_V4L2_FILTER_H__ */

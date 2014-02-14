@@ -1,0 +1,293 @@
+From: Michael Olbrich <m.olbrich@pengutronix.de>
+Date: Tue, 3 Sep 2013 12:29:28 +0200
+Subject: [PATCH] v4l2: filter: implement latency & QOS handling
+
+Signed-off-by: Michael Olbrich <m.olbrich@pengutronix.de>
+---
+ sys/v4l2/gstv4l2filter.c | 164 ++++++++++++++++++++++++++++++++++++++++++-----
+ sys/v4l2/gstv4l2filter.h |   7 ++
+ 2 files changed, 154 insertions(+), 17 deletions(-)
+
+diff --git a/sys/v4l2/gstv4l2filter.c b/sys/v4l2/gstv4l2filter.c
+index 913df4a..d06592e 100644
+--- a/sys/v4l2/gstv4l2filter.c
++++ b/sys/v4l2/gstv4l2filter.c
+@@ -42,6 +42,7 @@ GST_DEBUG_CATEGORY (v4l2filter_debug);
+ 
+ typedef struct _GstV4l2FilterTime
+ {
++  GstClockTime start;
+   GstClockTime order;
+   GstClockTime pts;
+   GstClockTime dts;
+@@ -217,6 +218,11 @@ gst_v4l2filter_init (GstV4l2Filter * v4l2filter)
+ 
+   g_mutex_init (&v4l2filter->queue_lock);
+   v4l2filter->queue = g_sequence_new (v4l2_filter_free_time);
++
++  v4l2filter->earliest_time = GST_CLOCK_TIME_NONE;
++
++  v4l2filter->min_latency = 0;
++  v4l2filter->max_latency = GST_CLOCK_TIME_NONE;
+ }
+ 
+ static void
+@@ -310,6 +316,7 @@ gst_v4l2filter_getcaps (GstPad * pad, GstCaps * filter)
+ static gboolean
+ gst_v4l2filter_query (GstPad * pad, GstObject * parent, GstQuery * query)
+ {
++  GstV4l2Filter *v4l2filter = GST_V4L2FILTER (parent);
+   gboolean res = FALSE;
+ 
+   switch (GST_QUERY_TYPE (query)) {
+@@ -343,6 +350,31 @@ gst_v4l2filter_query (GstPad * pad, GstObject * parent, GstQuery * query)
+       res = TRUE;
+       break;
+     }
++    case GST_QUERY_LATENCY:
++    {
++      gboolean live;
++      GstClockTime min_latency, max_latency;
++
++      res = gst_pad_peer_query (v4l2filter->sinkpad, query);
++      if (res) {
++        gst_query_parse_latency (query, &live, &min_latency, &max_latency);
++        GST_DEBUG_OBJECT (v4l2filter, "Peer latency: live %d, min %"
++            GST_TIME_FORMAT " max %" GST_TIME_FORMAT, live,
++            GST_TIME_ARGS (min_latency), GST_TIME_ARGS (max_latency));
++
++        GST_OBJECT_LOCK (v4l2filter);
++        min_latency += v4l2filter->min_latency;
++        if (v4l2filter->max_latency == GST_CLOCK_TIME_NONE) {
++          max_latency = GST_CLOCK_TIME_NONE;
++        } else if (max_latency != GST_CLOCK_TIME_NONE) {
++          max_latency += v4l2filter->max_latency;
++        }
++        GST_OBJECT_UNLOCK (v4l2filter);
++
++        v4l2filter->live = live;
++        gst_query_set_latency (query, live, min_latency, max_latency);
++      }
++    }
+     default:
+       res = gst_pad_query_default (pad, parent, query);
+       break;
+@@ -447,6 +479,9 @@ gst_v4l2filter_sink_setcaps (GstPad * pad, GstCaps * caps)
+ 
+   v4l2filter->incomplete_caps = FALSE;
+ 
++  v4l2filter->min_latency = 0;
++  v4l2filter->max_latency = GST_CLOCK_TIME_NONE;
++
+   GST_INFO_OBJECT (v4l2filter, "setting sink caps: %" GST_PTR_FORMAT, caps);
+ 
+   return TRUE;
+@@ -477,18 +512,33 @@ gst_v4l2filter_sink_event (GstPad * pad, GstObject * parent, GstEvent * event)
+       break;
+     }
+     case GST_EVENT_EOS:
+-      GST_LOG_OBJECT (v4l2filter, "got EOS event, stopping decoder");
+-      /*
+-       * Send V4L2_DEC_CMD_STOP decoder command on the v4l2 output side and
+-       * continue to dequeue remaining buffers at the v4l2 capture side.
+-       */
+-      memset (&dcmd, 0, sizeof (dcmd));
+-      dcmd.cmd = V4L2_DEC_CMD_STOP;
+-      dcmd.flags = 0;
+-      dcmd.stop.pts = 0;
+-      v4l2_ioctl (v4l2filter->sink_v4l2object->video_fd,
+-          VIDIOC_DECODER_CMD, &dcmd);
++    case GST_EVENT_SEGMENT:
++    {
++      switch (GST_EVENT_TYPE (event)) {
++        case GST_EVENT_EOS:
++          GST_ERROR_OBJECT (v4l2filter, "got EOS event, stopping decoder");
++          /*
++           * Send V4L2_DEC_CMD_STOP decoder command on the v4l2 output side and
++           * continue to dequeue remaining buffers at the v4l2 capture side.
++           */
++          memset (&dcmd, 0, sizeof (dcmd));
++          dcmd.cmd = V4L2_DEC_CMD_STOP;
++          dcmd.flags = 0;
++          dcmd.stop.pts = 0;
++          v4l2_ioctl (v4l2filter->sink_v4l2object->video_fd,
++              VIDIOC_DECODER_CMD, &dcmd);
++          break;
++        case GST_EVENT_SEGMENT:
++          GST_OBJECT_LOCK (v4l2filter);
++          v4l2filter->earliest_time = GST_CLOCK_TIME_NONE;
++          GST_OBJECT_UNLOCK (v4l2filter);
++          gst_event_copy_segment (event, &v4l2filter->segment);
++          break;
++        default:
++          break;
++      }
+       /* fallthrough */
++    }
+     default:
+       g_mutex_lock (&v4l2filter->queue_lock);
+       if (GST_EVENT_IS_SERIALIZED (event)
+@@ -501,9 +551,9 @@ gst_v4l2filter_sink_event (GstPad * pad, GstObject * parent, GstEvent * event)
+         if (GST_CLOCK_TIME_IS_VALID (time->pts)) {
+           time->order = time->pts;
+         } else {
+-          GstClock *clock = gst_system_clock_obtain ();
+-          time->order = gst_clock_get_time (clock);
+-          gst_object_unref (clock);
++          GST_OBJECT_LOCK (v4l2filter);
++          time->order = v4l2filter->segment.position;
++          GST_OBJECT_UNLOCK (v4l2filter);
+         }
+         g_sequence_insert_sorted (v4l2filter->queue, time,
+             v4l2filter_time_sort, 0);
+@@ -557,7 +607,8 @@ stop_failed:
+ static gboolean
+ gst_v4l2filter_src_event (GstPad * pad, GstObject * parent, GstEvent * event)
+ {
+-  gboolean ret;
++  GstV4l2Filter *v4l2filter = GST_V4L2FILTER (parent);
++  gboolean ret = TRUE;
+ 
+   switch (GST_EVENT_TYPE (event)) {
+     case GST_EVENT_CAPS:
+@@ -569,6 +620,29 @@ gst_v4l2filter_src_event (GstPad * pad, GstObject * parent, GstEvent * event)
+       gst_event_unref (event);
+       break;
+     }
++    case GST_EVENT_QOS:
++    {
++      GstV4l2Object *obj = v4l2filter->sink_v4l2object;
++      GstClockTimeDiff diff;
++      GstClockTime timestamp;
++
++      gst_event_parse_qos (event, NULL, NULL, &diff, &timestamp);
++      GST_OBJECT_LOCK (v4l2filter);
++      if (G_LIKELY (GST_CLOCK_TIME_IS_VALID (timestamp))) {
++        if (G_UNLIKELY (diff > 0)) {
++          GstClockTime dur = (GST_V4L2_FPS_N (obj) > 0) ?
++              gst_util_uint64_scale (GST_SECOND, GST_V4L2_FPS_D (obj),
++              GST_V4L2_FPS_N (obj)) : 0;
++          v4l2filter->earliest_time = timestamp + 2 * diff + dur;
++        } else {
++          v4l2filter->earliest_time = timestamp + diff;
++        }
++      } else {
++        v4l2filter->earliest_time = GST_CLOCK_TIME_NONE;
++      }
++      GST_OBJECT_UNLOCK (v4l2filter);
++      /* fall-through */
++    }
+     default:
+       ret = gst_pad_event_default (pad, parent, event);
+       break;
+@@ -669,6 +743,31 @@ v4l2_filter_src_task (GstPad * pad)
+       GST_BUFFER_OFFSET (buffer) = time->offset;
+       GST_BUFFER_OFFSET_END (buffer) = time->offset_end;
+       found = TRUE;
++
++      if (v4l2filter->live) {
++        GstClockTimeDiff old_latency;
++        GstClock *clock = gst_system_clock_obtain ();
++        GstClockTimeDiff latency = gst_clock_get_time (clock) - time->start;
++        gst_object_unref (clock);
++        GST_OBJECT_LOCK (v4l2filter);
++        old_latency = v4l2filter->min_latency;
++        /* latency contains the time the buffer spent in queues. Hope
++           that the real latency is always the same, so the minimum is
++           the best guess. */
++        if (old_latency == 0 || latency < old_latency * 9 / 10) {
++          v4l2filter->min_latency = latency;
++          if (obj->pool)
++            v4l2filter->max_latency = latency *
++                GST_V4L2_BUFFER_POOL_CAST (obj->pool)->num_buffers;
++          else
++            v4l2filter->max_latency = GST_CLOCK_TIME_NONE;
++        }
++        GST_OBJECT_UNLOCK (v4l2filter);
++        if (v4l2filter->min_latency != old_latency) {
++          gst_element_post_message (GST_ELEMENT_CAST (v4l2filter),
++              gst_message_new_latency (GST_OBJECT (v4l2filter)));
++        }
++      }
+     }
+     g_sequence_remove (iter);
+   }
+@@ -725,6 +824,9 @@ gst_v4l2filter_sink_chain (GstPad * pad, GstObject * parent, GstBuffer * buffer)
+   GstV4l2Filter *v4l2filter = GST_V4L2FILTER (parent);
+   GstV4l2Object *obj = v4l2filter->sink_v4l2object;
+   GstV4l2FilterTime *time;
++  GstClockTime deadline;
++  GstClock *clock;
++  gboolean can_drop;
+ 
+   GST_DEBUG_OBJECT (v4l2filter, "render buffer: %" GST_PTR_FORMAT, buffer);
+ 
+@@ -734,6 +836,30 @@ gst_v4l2filter_sink_chain (GstPad * pad, GstObject * parent, GstBuffer * buffer)
+     return GST_FLOW_OK;
+   }
+ 
++  can_drop = (GST_VIDEO_INFO_FORMAT (&obj->info) != GST_VIDEO_FORMAT_ENCODED) ||
++      (GST_BUFFER_FLAGS (buffer) & GST_BUFFER_FLAG_DROPPABLE);
++
++  GST_OBJECT_LOCK (v4l2filter);
++  if (GST_CLOCK_TIME_IS_VALID (v4l2filter->earliest_time) &&
++      GST_CLOCK_TIME_IS_VALID (GST_BUFFER_PTS (buffer)) &&
++      can_drop && v4l2filter->segment.format == GST_FORMAT_TIME) {
++
++    deadline = gst_segment_to_running_time (&v4l2filter->segment,
++        GST_FORMAT_TIME, GST_BUFFER_PTS (buffer));
++
++    if (GST_CLOCK_DIFF (v4l2filter->earliest_time, deadline) < 0) {
++      GST_INFO_OBJECT (v4l2filter, "droping buffer because of QOS, deadline: %"
++          GST_TIME_FORMAT " < earliest: %" GST_TIME_FORMAT " (latency = %"
++          GST_TIME_FORMAT ")", GST_TIME_ARGS (deadline),
++          GST_TIME_ARGS (v4l2filter->earliest_time),
++          GST_TIME_ARGS (v4l2filter->min_latency));
++      gst_buffer_unref (buffer);
++      GST_OBJECT_UNLOCK (v4l2filter);
++      return GST_FLOW_OK;
++    }
++  }
++  GST_OBJECT_UNLOCK (v4l2filter);
++
+   if (G_UNLIKELY (obj->pool == NULL))
+     goto not_negotiated;
+ 
+@@ -743,13 +869,17 @@ gst_v4l2filter_sink_chain (GstPad * pad, GstObject * parent, GstBuffer * buffer)
+   time->duration = GST_BUFFER_DURATION (buffer);
+   time->offset = GST_BUFFER_OFFSET (buffer);
+   time->offset_end = GST_BUFFER_OFFSET_END (buffer);
++  clock = gst_system_clock_obtain ();
+   if (GST_CLOCK_TIME_IS_VALID (time->pts)) {
+     time->order = time->pts;
+   } else {
+-    GstClock *clock = gst_system_clock_obtain ();
+     time->order = gst_clock_get_time (clock);
+-    gst_object_unref (clock);
+   }
++  time->start = gst_clock_get_time (clock);
++  gst_object_unref (clock);
++  GST_OBJECT_LOCK (v4l2filter);
++  v4l2filter->segment.position = time->order;
++  GST_OBJECT_UNLOCK (v4l2filter);
+ 
+   g_mutex_lock (&v4l2filter->queue_lock);
+   g_sequence_insert_sorted (v4l2filter->queue, time, v4l2filter_time_sort, 0);
+diff --git a/sys/v4l2/gstv4l2filter.h b/sys/v4l2/gstv4l2filter.h
+index 4b8545f..af24c69 100644
+--- a/sys/v4l2/gstv4l2filter.h
++++ b/sys/v4l2/gstv4l2filter.h
+@@ -70,6 +70,13 @@ struct _GstV4l2Filter {
+   GSequence *queue;
+   GMutex queue_lock;
+   gboolean incomplete_caps;
++
++  GstSegment segment;
++
++  GstClockTime earliest_time; /* OBJECT_LOCK */
++  gint64 min_latency; /* OBJECT_LOCK */
++  gint64 max_latency; /* OBJECT_LOCK */
++  gboolean live;
+ };
+ 
+ struct _GstV4l2FilterClass {

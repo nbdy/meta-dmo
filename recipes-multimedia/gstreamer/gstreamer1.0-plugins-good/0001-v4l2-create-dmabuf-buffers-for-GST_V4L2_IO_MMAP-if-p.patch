@@ -1,0 +1,145 @@
+From: Michael Olbrich <m.olbrich@pengutronix.de>
+Date: Fri, 3 May 2013 17:53:18 +0200
+Subject: [PATCH] v4l2: create dmabuf buffers for GST_V4L2_IO_MMAP if possible
+
+Signed-off-by: Michael Olbrich <m.olbrich@pengutronix.de>
+---
+ sys/v4l2/gstv4l2bufferpool.c | 77 +++++++++++++++++++++++---------------------
+ sys/v4l2/gstv4l2bufferpool.h |  1 +
+ 2 files changed, 41 insertions(+), 37 deletions(-)
+
+diff --git a/sys/v4l2/gstv4l2bufferpool.c b/sys/v4l2/gstv4l2bufferpool.c
+index f5396d9..9cb711e 100644
+--- a/sys/v4l2/gstv4l2bufferpool.c
++++ b/sys/v4l2/gstv4l2bufferpool.c
+@@ -122,11 +122,12 @@ gst_v4l2_buffer_pool_free_buffer (GstBufferPool * bpool, GstBuffer * buffer)
+       g_assert (meta != NULL);
+ 
+       index = meta->vbuffer.index;
+-      GST_LOG_OBJECT (pool,
+-          "unmap buffer %p idx %d (data %p, len %u)", buffer,
+-          index, meta->mem, meta->vbuffer.length);
+-
+-      v4l2_munmap (meta->mem, meta->vbuffer.length);
++      if (meta->mem) {
++        GST_LOG_OBJECT (pool,
++            "unmap buffer %p idx %d (data %p, len %u)", buffer,
++            index, meta->mem, meta->vbuffer.length);
++        v4l2_munmap (meta->mem, meta->vbuffer.length);
++      }
+       pool->buffers[index] = NULL;
+       break;
+     }
+@@ -162,6 +163,10 @@ gst_v4l2_buffer_pool_alloc_buffer (GstBufferPool * bpool, GstBuffer ** buffer,
+     case GST_V4L2_IO_MMAP:
+     case GST_V4L2_IO_DMABUF:
+     {
++#if HAVE_DECL_V4L2_MEMORY_DMABUF
++      struct v4l2_exportbuffer expbuf;
++#endif
++
+ #ifdef VIDIOC_CREATE_BUFS
+       if (pool->num_allocated == pool->num_buffers) {
+         struct v4l2_create_buffers create_bufs;
+@@ -207,7 +212,26 @@ gst_v4l2_buffer_pool_alloc_buffer (GstBufferPool * bpool, GstBuffer ** buffer,
+       if (meta->vbuffer.memory == V4L2_MEMORY_MMAP)
+         GST_LOG_OBJECT (pool, "  MMAP offset:  %u", meta->vbuffer.m.offset);
+ 
+-      if (obj->mode == GST_V4L2_IO_MMAP) {
++#if HAVE_DECL_V4L2_MEMORY_DMABUF
++      memset (&expbuf, 0, sizeof (struct v4l2_exportbuffer));
++      expbuf.type = meta->vbuffer.type;
++      expbuf.index = meta->vbuffer.index;
++      expbuf.flags = O_RDWR | O_CLOEXEC;
++      if (v4l2_ioctl (pool->video_fd, VIDIOC_EXPBUF, &expbuf) == 0) {
++        if (!pool->allocator)
++          pool->allocator = gst_object_ref_sink (gst_dmabuf_allocator_new ());
++
++        meta->fd = expbuf.fd;
++        gst_buffer_append_memory (newbuf,
++            gst_dmabuf_allocator_alloc (pool->allocator, dup (meta->fd),
++                meta->vbuffer.length));
++        meta->mem = NULL;
++      } else {
++        GST_WARNING_OBJECT (pool, "VIDIOC_EXPBUF failed: %s, fallback to mmap",
++            g_strerror (errno));
++#else
++      {
++#endif
+         meta->mem = v4l2_mmap (0, meta->vbuffer.length,
+             PROT_READ | PROT_WRITE, MAP_SHARED, pool->video_fd,
+             meta->vbuffer.m.offset);
+@@ -219,23 +243,6 @@ gst_v4l2_buffer_pool_alloc_buffer (GstBufferPool * bpool, GstBuffer ** buffer,
+                 meta->mem, meta->vbuffer.length, 0, meta->vbuffer.length, NULL,
+                 NULL));
+       }
+-#if HAVE_DECL_V4L2_MEMORY_DMABUF
+-      if (obj->mode == GST_V4L2_IO_DMABUF) {
+-        struct v4l2_exportbuffer expbuf;
+-
+-        memset (&expbuf, 0, sizeof (struct v4l2_exportbuffer));
+-        expbuf.type = meta->vbuffer.type;
+-        expbuf.index = meta->vbuffer.index;
+-        expbuf.flags = O_CLOEXEC;
+-        if (v4l2_ioctl (pool->video_fd, VIDIOC_EXPBUF, &expbuf) < 0)
+-          goto expbuf_failed;
+-
+-        meta->vbuffer.memory = V4L2_MEMORY_DMABUF;
+-        gst_buffer_append_memory (newbuf,
+-            gst_dmabuf_allocator_alloc (pool->allocator, expbuf.fd,
+-                meta->vbuffer.length));
+-      }
+-#endif
+       /* add metadata to raw video buffers */
+       if (pool->add_videometa && info->finfo) {
+         const GstVideoFormatInfo *finfo = info->finfo;
+@@ -327,17 +334,6 @@ mmap_failed:
+     errno = errnosave;
+     return GST_FLOW_ERROR;
+   }
+-#if HAVE_DECL_V4L2_MEMORY_DMABUF
+-expbuf_failed:
+-  {
+-    gint errnosave = errno;
+-
+-    GST_WARNING ("Failed EXPBUF: %s", g_strerror (errnosave));
+-    gst_buffer_unref (newbuf);
+-    errno = errnosave;
+-    return GST_FLOW_ERROR;
+-  }
+-#endif
+ }
+ 
+ static gboolean
+@@ -779,9 +775,16 @@ gst_v4l2_buffer_pool_dqbuf (GstV4l2BufferPool * pool, GstBuffer ** buffer)
+    */
+   if (obj->type == V4L2_BUF_TYPE_VIDEO_CAPTURE) {
+     gst_buffer_remove_all_memory (outbuf);
+-    gst_buffer_append_memory (outbuf,
+-        gst_memory_new_wrapped (GST_MEMORY_FLAG_NO_SHARE,
+-            meta->mem, vbuffer.length, 0, vbuffer.bytesused, NULL, NULL));
++    if (meta->mem) {
++      gst_buffer_append_memory (outbuf,
++          gst_memory_new_wrapped (GST_MEMORY_FLAG_NO_SHARE,
++              meta->mem, vbuffer.length, 0, vbuffer.bytesused, NULL, NULL));
++    } else {
++      gst_buffer_append_memory (outbuf,
++          gst_dmabuf_allocator_alloc (pool->allocator, dup (meta->fd),
++              meta->vbuffer.length));
++      gst_buffer_resize (outbuf, 0, vbuffer.bytesused);
++    }
+   }
+ 
+   GST_BUFFER_TIMESTAMP (outbuf) = timestamp;
+diff --git a/sys/v4l2/gstv4l2bufferpool.h b/sys/v4l2/gstv4l2bufferpool.h
+index 3582bce..1624354 100644
+--- a/sys/v4l2/gstv4l2bufferpool.h
++++ b/sys/v4l2/gstv4l2bufferpool.h
+@@ -75,6 +75,7 @@ struct _GstV4l2Meta {
+   GstMeta meta;
+ 
+   gpointer mem;
++  int fd;
+   struct v4l2_buffer vbuffer;
+ };
+ 

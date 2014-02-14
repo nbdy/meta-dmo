@@ -1,0 +1,23 @@
+From: Michael Olbrich <m.olbrich@pengutronix.de>
+Date: Thu, 12 Sep 2013 16:58:09 +0200
+Subject: [PATCH] v4l2: pass buffer timestamps for mem2mem devices
+
+Signed-off-by: Michael Olbrich <m.olbrich@pengutronix.de>
+---
+ sys/v4l2/gstv4l2bufferpool.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/sys/v4l2/gstv4l2bufferpool.c b/sys/v4l2/gstv4l2bufferpool.c
+index 45e952b..6230827 100644
+--- a/sys/v4l2/gstv4l2bufferpool.c
++++ b/sys/v4l2/gstv4l2bufferpool.c
+@@ -731,6 +731,9 @@ gst_v4l2_buffer_pool_qbuf (GstV4l2BufferPool * pool, GstBuffer * buf)
+ 
+   index = meta->vbuffer.index;
+   meta->vbuffer.bytesused = gst_buffer_get_size (buf);
++  if ((pool->obj->vcap.capabilities & V4L2_CAP_VIDEO_M2M) &&
++      (pool->obj->type == V4L2_BUF_TYPE_VIDEO_OUTPUT))
++    GST_TIME_TO_TIMEVAL (GST_BUFFER_TIMESTAMP (buf), meta->vbuffer.timestamp);
+ 
+   GST_LOG_OBJECT (pool,
+       "enqueue buffer %p, index:%d, queued:%d, flags:%08x mem:%p used:%d",
