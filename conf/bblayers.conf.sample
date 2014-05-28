@@ -16,6 +16,7 @@ BBLAYERS ?= " \
 	##COREBASE##/meta-openembedded/meta-gnome \
 	##COREBASE##/meta-openembedded/meta-xfce \
 	##COREBASE##/meta-openembedded/meta-multimedia \
+	##COREBASE##/meta-openembedded/meta-filesystems \
 "
 
 BBLAYERS_NON_REMOVABLE ?= " \
