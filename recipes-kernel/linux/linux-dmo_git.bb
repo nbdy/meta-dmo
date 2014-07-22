@@ -46,18 +46,18 @@ require recipes-kernel/linux/linux-yocto.inc
 
 # Override SRC_URI in a bbappend file to point at a different source
 # tree if you do not want to build from Linus' tree.
-SRC_URI = "git://git@emb.data-modul.com/userrepos/sfr/linux-for-oe-test;protocol=ssh;nocheckout=1;name=mx6;nobranch=1"
-
-KBRANCH = "sfr/linux-for-oe-test"
+SRC_URI = "git://git@emb.data-modul.com/userrepos/sfr/linux-for-oe-test;protocol=ssh;branch=sfr/linux-for-oe-test;nocheckout=1;name=mx6"
+SRC_URI_edm_qmx6 += "file://defconfig"
+SRC_URI_edm_qmx6 += "file://gpu.cfg"
 
 LINUX_VERSION ?= "3.16-rc6"
 LINUX_VERSION_EXTENSION ?= "-sfr-gpu"
 
 # Override SRCREV to point to a different commit in a bbappend file to
 # build a different release of the Linux kernel.
-SRCREV_mx6="5e4dee091f1912544baddfedd1e1e99d509c111c"
+SRCREV_mx6="${AUTOREV}"
 
-PR = "r1"
+PR = "r2"
 PV = "${LINUX_VERSION}+git${SRCPV}"
 
 # Override COMPATIBLE_MACHINE to include your machine in a bbappend
