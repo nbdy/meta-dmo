@@ -13,7 +13,6 @@ IMAGE_INSTALL = " \
     iproute2 \
     iputils \
     iw \
-    kernel-modules-prebuild \
     linux-firmware \
     nfs-utils \
     nfs-utils-client \
