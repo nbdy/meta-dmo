@@ -38,8 +38,6 @@ LICENSE = "GPLv2"
 inherit core-image
 inherit dmo-images
 
-DEPENDS += "genext2fs-native"
-
 SDCARD = "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.without-homefs.img"
 SDCARD_HOME = "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.with-homefs.img"
 
