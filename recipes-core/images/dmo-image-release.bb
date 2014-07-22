@@ -38,7 +38,6 @@ IMAGE_INSTALL_append = " \
     xset \
 "
 IMAGE_INSTALL_append_mx6 += " \
-    cpu-status-info \
     gpu-viv-bin-mx6q \
     xf86-video-imxfb-vivante \
 "
