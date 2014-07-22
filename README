@@ -1,0 +1,35 @@
+This README file contains information on building the meta-dmo
+BSP layer.
+Please see the corresponding sections below for details.
+
+
+Dependencies
+============
+
+This layer depends on:
+
+  URI: git://git.openembedded.org/bitbake
+  branch: master
+
+  URI: git://git.openembedded.org/openembedded-core
+  layers: meta
+  branch: master
+
+  URI: git://git.yoctoproject.org/poky
+  layers: meta-yocto
+  branch: master
+
+  URI: git://git.yoctoproject.org/meta-fsl-arm
+
+  URI: https://github.com/OSSystems/meta-browser.git
+
+  URI: git://git.openembedded.org/meta-openembedded
+  layers: meta-oe, meta-gnome, meta-xfce, meta-multimedia
+
+
+Patches
+=======
+
+Please submit any patches against this BSP to the maintainer(s):
+
+Maintainer: Silvio Fricke <silvio.fricke@gmail.com>
