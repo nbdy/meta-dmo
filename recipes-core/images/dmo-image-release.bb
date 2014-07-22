@@ -22,7 +22,6 @@ IMAGE_INSTALL_append = " \
     procps \
     psplash \
     strace \
-    slim \
     sudo \
     unclutter \
     util-linux \
