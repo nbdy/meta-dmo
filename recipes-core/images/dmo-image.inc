@@ -35,6 +35,8 @@ IMAGE_INSTALL_append_mx6 = " \
 IMAGE_LINGUAS = " "
 LICENSE = "GPLv2"
 
+DEPENDS += "e2fsprogs-native"
+
 inherit core-image
 inherit dmo-images
 
