@@ -59,8 +59,9 @@ create_homefs_and_image () {
 
     mv ${WORKDIR}/rootfs/home/* ${HOMEFS}
 
-    # generate ext2
-    genext2fs -b ${HOMEFS_SPACE} -d ${HOMEFS} -i 8192 ${HOMEFS_IMAGE}
-    # convert to ext3
-    tune2fs -j ${HOMEFS_IMAGE}
+    [ -e ${HOMEFS_IMAGE} ] && rm ${HOMEFS_IMAGE}
+    dd if=/dev/zero of=${HOMEFS_IMAGE} count=0 bs=1k seek=${HOMEFS_SPACE}
+
+    # Create a sparse image block
+    mkfs.ext3 -F ${HOMEFS_IMAGE} -d ${HOMEFS}
 }
