@@ -41,17 +41,6 @@ do_compile () {
 
 do_deploy () {
         # manipulate environment
-        [ -e ${S}/manipulate_bb_env ] && rm -rf ${S}/manipulate_bb_env
-
-        ${S}/scripts/bareboxenv -l ${S}/manipulate_bb_env ${S}/common/barebox_default_env
-
-        install ${DEPLOY_DIR_IMAGE}/imx6q-dmo-edmqmx6-auo-g173hw01.dtb \
-                ${DEPLOY_DIR_IMAGE}/imx6q-dmo-edmqmx6-chimei-g070y2.dtb \
-                ${S}/manipulate_bb_env/
-        ln -sf imx6q-dmo-edmqmx6-chimei-g070y2.dtb ${S}/manipulate_bb_env/deviceTreeFile
-
-        ${S}/scripts/bareboxenv -s ${S}/manipulate_bb_env ${S}/common/barebox_default_env
-
 	install -d ${DEPLOY_DIR_IMAGE}
 	install ${S}/${BAREBOX_BINARY} ${DEPLOY_DIR_IMAGE}/${BAREBOX_IMAGE}
 	install ${S}/common/barebox_default_env ${DEPLOY_DIR_IMAGE}/${BAREBOXENV_BIN}
