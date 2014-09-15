@@ -12,6 +12,7 @@ IMAGE_INSTALL_append = " \
     dmo-gst-videoscripts \
     gstreamer \
     i2c-tools \
+    icecc \
     icu \
     kmod \
     mtools \
