@@ -9,7 +9,7 @@ inherit cmake
 
 PR = "r6"
 
-SRC_URI = "git://git.berlios.de/slim;protocol=git;tag=v${PV} \
+SRC_URI = "git://github.com/data-modul/slim;protocol=git;tag=v${PV} \
            file://slim.sh \
            file://0001-Fix-systemd-service-install-path.patch \
            file://0003-Fix-install-for-slim.service-3418.patch"
