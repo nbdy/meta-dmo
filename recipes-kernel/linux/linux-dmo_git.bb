@@ -46,9 +46,9 @@ require recipes-kernel/linux/linux-yocto.inc
 
 # Override SRC_URI in a bbappend file to point at a different source
 # tree if you do not want to build from Linus' tree.
-SRC_URI = "git://git@emb.data-modul.com/userrepos/sfr/linux-for-oe-test;protocol=ssh;branch=sfr/linux-for-oe-test;nocheckout=1;name=mx6"
-SRC_URI_edm_qmx6 += "file://defconfig"
-SRC_URI_edm_qmx6 += "file://gpu.cfg"
+SRC_URI = "git://git@emb.data-modul.com/userrepos/zdo/linux-media-hdmi;protocol=ssh;branch=zdo/media/hdmi_hpd_tests;nocheckout=1;name=mx6"
+SRC_URI_append_mx6 += "file://defconfig"
+SRC_URI_append_mx6 += "file://gpu.cfg"
 
 LINUX_VERSION ?= "3.16-rc6"
 LINUX_VERSION_EXTENSION ?= "-sfr-gpu"
