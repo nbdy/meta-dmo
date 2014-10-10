@@ -9,12 +9,14 @@ IMAGE_INSTALL_append = " \
     bash \
     chromium \
     canutils \
+    cinematicexperience \
     dmo-gst-videoscripts \
+    dmo-base-user \
     gstreamer \
     i2c-tools \
-    icecc \
     icu \
     kmod \
+    mtd-utils \
     mtools \
     obexd \
     openssh \
@@ -22,11 +24,17 @@ IMAGE_INSTALL_append = " \
     packagegroup-xfce-base \
     procps \
     psplash \
+    qtbase \
+    qtbase-tools \
+    qtbase-plugins \
+    qtbase-fonts \
+    slim \
     strace \
     sudo \
     unclutter \
     util-linux \
     wget \
+    xdg-utils \
     xf86-input-evdev \
     xf86-video-fbdev \
     xhost \
