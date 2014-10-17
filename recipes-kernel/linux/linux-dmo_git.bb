@@ -50,7 +50,7 @@ SRC_URI = "git://git@emb.data-modul.com/development/linux;protocol=ssh;branch=sf
 SRC_URI_append_mx6 += "file://defconfig"
 SRC_URI_append_mx6 += "file://gpu.cfg"
 
-LINUX_VERSION ?= "3.16-rc6"
+LINUX_VERSION ?= "3.16.4"
 LINUX_VERSION_EXTENSION ?= "-sfr-gpu"
 
 # Override SRCREV to point to a different commit in a bbappend file to
