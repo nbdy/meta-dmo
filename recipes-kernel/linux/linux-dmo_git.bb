@@ -57,7 +57,6 @@ LINUX_VERSION_EXTENSION ?= "-sfr-gpu"
 # build a different release of the Linux kernel.
 SRCREV_mx6="${AUTOREV}"
 
-PR = "r2"
 PV = "${LINUX_VERSION}+git${SRCPV}"
 
 # Override COMPATIBLE_MACHINE to include your machine in a bbappend
