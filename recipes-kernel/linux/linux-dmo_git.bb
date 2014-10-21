@@ -51,8 +51,7 @@ SRC_URI_append_mx6 += "file://defconfig"
 SRC_URI_append_mx6 += "file://debug.cfg"
 SRC_URI_append_mx6 += "file://multimedia.cfg"
 
-LINUX_VERSION ?= "3.16.4"
-LINUX_VERSION_EXTENSION ?= "-sfr-gpu"
+LINUX_VERSION ?= "3.16.6"
 
 # Override SRCREV to point to a different commit in a bbappend file to
 # build a different release of the Linux kernel.
