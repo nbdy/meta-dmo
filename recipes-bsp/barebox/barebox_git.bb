@@ -9,7 +9,3 @@ SRCREV_mx6="${AUTOREV}"
 COMPATIBLE_MACHINE = "imx6q-dmo-edm-qmx6"
 
 S = "${WORKDIR}/git"
-
-do_configure_prepend_imx6q-dmo-edm-qmx6() {
-    oe_runmake ${BAREBOX_MACHINE}
-}

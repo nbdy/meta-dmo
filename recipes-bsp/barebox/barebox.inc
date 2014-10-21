@@ -38,6 +38,10 @@ do_compile () {
 	oe_runmake all
 }
 
+do_configure_prepend_imx6q-dmo-edm-qmx6() {
+    oe_runmake ${BAREBOX_MACHINE}
+}
+
 do_deploy () {
         # manipulate environment
 	install -d ${DEPLOY_DIR_IMAGE}
