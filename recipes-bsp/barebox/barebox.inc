@@ -43,14 +43,11 @@ do_deploy () {
         # manipulate environment
 	install -d ${DEPLOY_DIR_IMAGE}
 	install ${S}/${BAREBOX_BINARY} ${DEPLOY_DIR_IMAGE}/${BAREBOX_IMAGE}
-	install ${S}/common/barebox_default_env ${DEPLOY_DIR_IMAGE}/${BAREBOXENV_BIN}
 
         # deploy ...
 	cd ${DEPLOY_DIR_IMAGE}
 	rm -f ${BAREBOX_SYMLINK}
-	rm -f ${BAREBOXENV_SYMLINK}
 	ln -sf ${BAREBOX_IMAGE} ${BAREBOX_SYMLINK}
-	ln -sf ${BAREBOXENV_BIN} ${BAREBOXENV_SYMLINK}
 
 	install -d ${STAGING_BINDIR_NATIVE}
 	cd ${S}
