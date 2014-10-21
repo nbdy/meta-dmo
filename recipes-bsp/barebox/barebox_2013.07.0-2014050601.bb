@@ -1,6 +1,5 @@
 require barebox.inc
 
-PR = "${INC_PR}.23"
 SRC_URI = " \
     ${DMOFTP}/${PN}-${PV}.tar.gz \
 "

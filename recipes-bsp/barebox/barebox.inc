@@ -4,7 +4,6 @@
 # with some adaptions for our barebox in git repository
 #
 
-INC_PR = "r7"
 DESCRIPTION = "Barebox - a bootloader that inherits the best of U-Boot and the Linux kernel"
 HOMEPAGE = "http://www.barebox.org/"
 SECTION = "bootloader"

@@ -1,7 +1,6 @@
 require barebox.inc
 
 PV = "2014.10.0+git${SRCREV}"
-PR = "${INC_PR}.22"
 SRC_URI = " \
     git://git@emb.data-modul.com/development/barebox;protocol=ssh;branch=sfr/release-2014.10;nocheckout=1;name=mx6 \
 "
