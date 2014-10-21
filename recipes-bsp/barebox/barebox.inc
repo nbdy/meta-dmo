@@ -21,9 +21,7 @@ EXTRA_OEMAKE = "CROSS_COMPILE=${TARGET_PREFIX}"
 
 BAREBOX_BINARY ?= "barebox.bin"
 BAREBOX_IMAGE ?= "barebox-${MACHINE}-${PV}-${PR}.bin"
-BAREBOXENV_BIN ?= "bareboxenv-${MACHINE}-${PV}-${PR}.bin"
 BAREBOX_SYMLINK ?= "barebox-${MACHINE}.bin"
-BAREBOXENV_SYMLINK ?= "bareboxenv-${MACHINE}.bin"
 
 INSANE_SKIP_${PN} = "True"
 
