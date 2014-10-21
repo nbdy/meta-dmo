@@ -57,8 +57,5 @@ do_deploy () {
 	install -m 755 scripts/mkimage ${STAGING_BINDIR_NATIVE}/
 	install -m 755 scripts/bareboxenv ${STAGING_BINDIR_NATIVE}/
 }
-# before we can configure we need the generated dtb
-do_deploy[depends] += "virtual/kernel:do_install"
-
 do_deploy[dirs] = "${S}"
 addtask deploy before do_build after do_compile
