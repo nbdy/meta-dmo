@@ -4,7 +4,6 @@
 # with some adaptions for our barebox in git repository
 #
 
-INC_PR = "r7"
 DESCRIPTION = "Barebox - a bootloader that inherits the best of U-Boot and the Linux kernel"
 HOMEPAGE = "http://www.barebox.org/"
 SECTION = "bootloader"
@@ -22,9 +21,7 @@ EXTRA_OEMAKE = "CROSS_COMPILE=${TARGET_PREFIX}"
 
 BAREBOX_BINARY ?= "barebox.bin"
 BAREBOX_IMAGE ?= "barebox-${MACHINE}-${PV}-${PR}.bin"
-BAREBOXENV_BIN ?= "bareboxenv-${MACHINE}-${PV}-${PR}.bin"
 BAREBOX_SYMLINK ?= "barebox-${MACHINE}.bin"
-BAREBOXENV_SYMLINK ?= "bareboxenv-${MACHINE}.bin"
 
 INSANE_SKIP_${PN} = "True"
 
@@ -37,6 +34,10 @@ do_compile () {
 	unset CFLAGS
 	unset CPPFLAGS
 	oe_runmake all
+}
+
+do_configure_prepend_imx6q-dmo-edm-qmx6() {
+    oe_runmake ${BAREBOX_MACHINE}
 }
 
 do_deploy () {
@@ -54,8 +55,5 @@ do_deploy () {
 	install -m 755 scripts/mkimage ${STAGING_BINDIR_NATIVE}/
 	install -m 755 scripts/bareboxenv ${STAGING_BINDIR_NATIVE}/
 }
-# before we can configure we need the generated dtb
-do_deploy[depends] += "virtual/kernel:do_install"
-
 do_deploy[dirs] = "${S}"
 addtask deploy before do_build after do_compile
