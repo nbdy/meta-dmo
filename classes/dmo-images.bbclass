@@ -35,6 +35,9 @@ IMAGE_CMD_dmosdcard () {
     BOOT_BLOCKS=$(LC_ALL=C parted -s ${SDCARD_WITH_HOMEFS} unit b print | awk '/ 1 / { print substr($4, 1, length($4 -1)) / 1024 }')
     mkfs.vfat -n "${BOOTDD_VOLUME_ID}" -S 512 -C ${WORKDIR}/boot.img $BOOT_BLOCKS
     mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${MACHINE}.bin ::/${KERNEL_IMAGETYPE}
+    # copy the devicetrees in kernel image
+    mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-imx6q-dmo-edmqmx6*.dtb ::/
+    mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-imx6q-dmo-edmqmx6.dtb ::/oftree
 
     # Burn Partition
     dd if=${WORKDIR}/boot.img of=${SDCARD_WITH_HOMEFS} conv=notrunc seek=1 bs=$(expr 1024    \* 1024) && sync && sync
