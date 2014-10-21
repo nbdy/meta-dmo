@@ -45,7 +45,7 @@ SDCARD = "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.without-homefs.img"
 SDCARD_HOME = "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.with-homefs.img"
 
 ROOTFS_POSTINSTALL_COMMAND += " create_homefs_and_image; "
-ROOTFS_POSTPROCESS_COMMAND += "remove_libav_and_x264_files"
+ROOTFS_POSTPROCESS_COMMAND += " dmo_imageRemoveLibavX264Files; "
 
 # set size and factor of ROOTFS
 IMAGE_ROOTFS_SIZE = "819200"
@@ -69,36 +69,30 @@ create_homefs_and_image () {
     mkfs.ext3 -F ${HOMEFS_IMAGE} -d ${HOMEFS}
 }
 
-removeFiles() {
+dmo_image_removeFiles () {
 
     filePath="$1"
     if [ -f $filePath ]; then
-        i=0
         while read line
         do
-            xFiles[$i]=${IMAGE_ROOTFS}"/usr/"$line
-            ((++i))
+            file=${IMAGE_ROOTFS}"/usr/"$line
+            if [ ! -d $file ] && [ -f $file ]; then
+                rm "$file"
+                bbnote "Removed" $file
+            fi 
         done < $filePath
-
-        for f in ${xFiles[*]}
-        do
-            if [ ! -d $f ] && [ -f $f ]; then
-                rm "$f"
-                bbnote "Removed" $f
-            fi
-        done
     else
-            bberror "\""$filePath"\" does not exists."
-            exit -1
+        bberror "\""$filePath"\" does not exists."
+        exit -1
     fi
 }
 
-remove_libav_and_x264_files() {
+dmo_imageRemoveLibavX264Files () {
 
-    readonly X264_FILES=${FILE_DIRNAME}"/files/x264_file_list"
-    readonly LIBAV_FILES=${FILE_DIRNAME}"/files/libav_file_list"
-
-    removeFiles $X264_FILES
-    removeFiles $LIBAV_FILES
+    if [ "${DMO_REMOVE_FILES_FROM_COMMERCIAL_RECIPES}" = "1" ]; then
+        bbnote "Removing files from commercial recipies"
+        dmo_image_removeFiles ${FILE_DIRNAME}"/files/x264_file_list"
+        dmo_image_removeFiles ${FILE_DIRNAME}"/files/libav_file_list"
+    fi
 }
 
