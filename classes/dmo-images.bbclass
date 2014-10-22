@@ -28,7 +28,6 @@ IMAGE_CMD_dmosdcard () {
 
     # put barebox to image
     dd if=${DEPLOY_DIR_IMAGE}/barebox-${MACHINE}.bin of=${SDCARD_WITH_HOMEFS} conv=notrunc seek=1 skip=1 bs=512
-    dd if=${DEPLOY_DIR_IMAGE}/bareboxenv-${MACHINE}.bin of=${SDCARD_WITH_HOMEFS} conv=notrunc seek=1 bs=512k
 
     # put kernel to image (shameless copied from meta-fsl-arm)
     [ -e ${WORKDIR}/boot.img ] && rm ${WORKDIR}/boot.img
