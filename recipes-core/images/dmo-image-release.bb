@@ -13,6 +13,12 @@ IMAGE_INSTALL_append = " \
     dmo-gst-videoscripts \
     dmo-base-user \
     gstreamer \
+    gst-meta-base \
+    gst-meta-x11-base \
+    gst-meta-audio \
+    gst-meta-debug \
+    gst-meta-video \
+    gst-meta-unsorted \
     i2c-tools \
     icu \
     kmod \
