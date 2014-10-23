@@ -1,0 +1,98 @@
+From: Michael Olbrich <m.olbrich@pengutronix.de>
+Date: Fri, 13 Sep 2013 15:58:03 +0200
+Subject: [PATCH] v4l2: add support for cropping meta
+
+Signed-off-by: Michael Olbrich <m.olbrich@pengutronix.de>
+---
+ sys/v4l2/gstv4l2bufferpool.c | 50 ++++++++++++++++++++++++++++++++++++++++++++
+ sys/v4l2/gstv4l2bufferpool.h |  2 ++
+ 2 files changed, 52 insertions(+)
+
+diff --git a/sys/v4l2/gstv4l2bufferpool.c b/sys/v4l2/gstv4l2bufferpool.c
+index 6230827..1593560 100644
+--- a/sys/v4l2/gstv4l2bufferpool.c
++++ b/sys/v4l2/gstv4l2bufferpool.c
+@@ -743,6 +743,30 @@ gst_v4l2_buffer_pool_qbuf (GstV4l2BufferPool * pool, GstBuffer * buf)
+   if (pool->buffers[index] != NULL)
+     goto already_queued;
+ 
++  if (pool->obj->type == V4L2_BUF_TYPE_VIDEO_OUTPUT && pool->support_selection) {
++    GstVideoCropMeta *cmeta;
++    cmeta = gst_buffer_get_video_crop_meta (buf);
++    if (cmeta && (cmeta->x != pool->active_selection.r.left ||
++            cmeta->y != pool->active_selection.r.top ||
++            cmeta->width != pool->active_selection.r.width ||
++            cmeta->height != pool->active_selection.r.height)) {
++      pool->active_selection.type = pool->obj->type;
++      pool->active_selection.target = V4L2_SEL_TGT_CROP;
++      pool->active_selection.flags = 0;
++      pool->active_selection.r.left = cmeta->x;
++      pool->active_selection.r.top = cmeta->y;
++      pool->active_selection.r.width = cmeta->width;
++      pool->active_selection.r.height = cmeta->height;
++      GST_DEBUG_OBJECT (pool, "new cropping rectangle %dx%d+%d+%d",
++          cmeta->width, cmeta->height, cmeta->x, cmeta->y);
++      if (v4l2_ioctl (pool->video_fd, VIDIOC_S_SELECTION,
++              &pool->active_selection) < 0) {
++        GST_INFO_OBJECT (pool, "failed to set cropping rectangle");
++        pool->support_selection = FALSE;
++      }
++    }
++  }
++
+   GST_LOG_OBJECT (pool, "doing QBUF");
+   if (v4l2_ioctl (pool->video_fd, VIDIOC_QBUF, &meta->vbuffer) < 0)
+     goto queue_failed;
+@@ -850,6 +874,31 @@ gst_v4l2_buffer_pool_dqbuf (GstV4l2BufferPool * pool, GstBuffer ** buffer)
+     }
+   }
+ 
++  if (obj->type == V4L2_BUF_TYPE_VIDEO_CAPTURE) {
++    if (pool->support_selection) {
++      struct v4l2_selection sel;
++      sel.type = obj->type;
++      sel.target = V4L2_SEL_TGT_COMPOSE_DEFAULT;
++      sel.flags = 0;
++      if (v4l2_ioctl (pool->video_fd, VIDIOC_G_SELECTION, &sel) < 0) {
++        pool->support_selection = FALSE;
++      } else {
++        if (sel.r.left != 0 || sel.r.top != 0 ||
++            sel.r.width != GST_VIDEO_INFO_WIDTH (&obj->info) ||
++            sel.r.height != GST_VIDEO_INFO_HEIGHT (&obj->info)) {
++          GstVideoCropMeta *cmeta;
++          cmeta = gst_buffer_add_video_crop_meta (outbuf);
++          cmeta->x = sel.r.left;
++          cmeta->y = sel.r.top;
++          cmeta->width = sel.r.width;
++          cmeta->height = sel.r.height;
++          GST_LOG_OBJECT (pool, "add cropping meta %dx%d+%d+%d",
++              cmeta->width, cmeta->height, cmeta->x, cmeta->y);
++        }
++      }
++    }
++  }
++
+   GST_BUFFER_TIMESTAMP (outbuf) = timestamp;
+ 
+   *buffer = outbuf;
+@@ -1170,6 +1219,7 @@ gst_v4l2_buffer_pool_new (GstV4l2Object * obj, GstCaps * caps)
+   pool->video_fd = fd;
+   pool->obj = obj;
+   pool->can_alloc = TRUE;
++  pool->support_selection = TRUE;
+ 
+   name = g_strdup_printf ("%s-%s-bufferpool",
+       gst_object_get_name (GST_OBJECT (obj->element)),
+diff --git a/sys/v4l2/gstv4l2bufferpool.h b/sys/v4l2/gstv4l2bufferpool.h
+index 1624354..d645d23 100644
+--- a/sys/v4l2/gstv4l2bufferpool.h
++++ b/sys/v4l2/gstv4l2bufferpool.h
+@@ -55,6 +55,8 @@ struct _GstV4l2BufferPool
+   guint size;
+   gboolean add_videometa;
+   gboolean can_alloc;        /* if extra buffers can be allocated */
++  gboolean support_selection;
++  struct v4l2_selection active_selection;
+ 
+   guint num_buffers;         /* number of buffers we use */
+   guint num_allocated;       /* number of buffers allocated by the driver */

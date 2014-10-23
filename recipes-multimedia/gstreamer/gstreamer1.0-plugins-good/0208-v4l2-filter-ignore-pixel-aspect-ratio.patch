@@ -1,0 +1,23 @@
+From: Michael Olbrich <m.olbrich@pengutronix.de>
+Date: Mon, 17 Jun 2013 11:02:52 +0200
+Subject: [PATCH] v4l2: filter: ignore pixel-aspect-ratio
+
+Signed-off-by: Michael Olbrich <m.olbrich@pengutronix.de>
+---
+ sys/v4l2/gstv4l2filter.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/sys/v4l2/gstv4l2filter.c b/sys/v4l2/gstv4l2filter.c
+index e19c19b..7d94c53 100644
+--- a/sys/v4l2/gstv4l2filter.c
++++ b/sys/v4l2/gstv4l2filter.c
+@@ -210,6 +210,9 @@ gst_v4l2filter_init (GstV4l2Filter * v4l2filter)
+ */
+   gst_element_add_pad (GST_ELEMENT (v4l2filter), v4l2filter->srcpad);
+ 
++  v4l2filter->src_v4l2object->keep_aspect = FALSE;
++  v4l2filter->sink_v4l2object->keep_aspect = FALSE;
++
+   g_mutex_init (&v4l2filter->preroll_lock);
+ 
+   g_mutex_init (&v4l2filter->queue_lock);

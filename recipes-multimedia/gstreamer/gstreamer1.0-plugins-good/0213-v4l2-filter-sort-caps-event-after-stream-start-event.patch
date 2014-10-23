@@ -1,0 +1,48 @@
+From: Michael Olbrich <m.olbrich@pengutronix.de>
+Date: Thu, 21 Nov 2013 09:39:27 +0100
+Subject: [PATCH] v4l2: filter: sort caps event after stream-start event
+
+Signed-off-by: Michael Olbrich <m.olbrich@pengutronix.de>
+---
+ sys/v4l2/gstv4l2filter.c | 21 ++++++++++++++++++++-
+ 1 file changed, 20 insertions(+), 1 deletion(-)
+
+diff --git a/sys/v4l2/gstv4l2filter.c b/sys/v4l2/gstv4l2filter.c
+index d84580d..bd0ebbf 100644
+--- a/sys/v4l2/gstv4l2filter.c
++++ b/sys/v4l2/gstv4l2filter.c
+@@ -568,6 +568,8 @@ gst_v4l2filter_src_setcaps (GstPad * pad, GstCaps * caps)
+ {
+   GstV4l2Filter *v4l2filter = GST_V4L2FILTER (GST_OBJECT_PARENT (pad));
+   GstV4l2Object *obj = v4l2filter->src_v4l2object;
++  GstEvent *event;
++  GSequenceIter *iter;
+ 
+   LOG_CAPS (v4l2filter, caps);
+ 
+@@ -587,7 +589,24 @@ gst_v4l2filter_src_setcaps (GstPad * pad, GstCaps * caps)
+ 
+   GST_INFO_OBJECT (v4l2filter, "setting src caps: %" GST_PTR_FORMAT, caps);
+ 
+-  gst_pad_push_event (pad, gst_event_new_caps (caps));
++  event = gst_event_new_caps (caps);
++  g_mutex_lock (&v4l2filter->queue_lock);
++  iter = g_sequence_get_iter_at_pos (v4l2filter->queue, 0);
++  if (!g_sequence_iter_is_end (iter)) {
++    GstV4l2FilterTime *t = (GstV4l2FilterTime *) g_sequence_get (iter);
++    if (t->event && GST_EVENT_TYPE (t->event) == GST_EVENT_STREAM_START) {
++      GstV4l2FilterTime *time = g_slice_new0 (GstV4l2FilterTime);
++      GST_LOG_OBJECT (v4l2filter, "queue %" GST_PTR_FORMAT, event);
++      time->pts = GST_EVENT_TIMESTAMP (event);
++      time->event = event;
++      time->order = t->order;
++      g_sequence_insert_before (g_sequence_iter_next (iter), time);
++      event = NULL;
++    }
++  }
++  g_mutex_unlock (&v4l2filter->queue_lock);
++  if (event)
++    gst_pad_push_event (pad, gst_event_new_caps (caps));
+ 
+   return TRUE;
+ 
