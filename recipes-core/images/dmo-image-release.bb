@@ -14,6 +14,8 @@ IMAGE_INSTALL_append = " \
     dmo-base-user \
     gstreamer1.0 \
     gstreamer1.0-plugins-good-meta \
+    gstreamer1.0-plugins-base-meta \
+    gstreamer1.0-plugins-bad-meta \
     i2c-tools \
     icu \
     kmod \
