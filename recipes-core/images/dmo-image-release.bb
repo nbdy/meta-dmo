@@ -17,6 +17,7 @@ IMAGE_INSTALL_append = " \
     i2c-tools \
     icu \
     kmod \
+    kmsfbwrap \
     mtd-utils \
     mtools \
     obexd \
