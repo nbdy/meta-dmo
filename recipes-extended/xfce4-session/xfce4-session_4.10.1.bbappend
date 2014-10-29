@@ -1,5 +1,5 @@
 
-PRINC := "${@int(PRINC) + 1}"
+PR = "r1" 
 
 pkg_postinst_${PN}() {
 #!/bin/bash
