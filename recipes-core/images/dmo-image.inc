@@ -1,5 +1,3 @@
-INC_PR = "r4"
-
 # hardware independent packages
 IMAGE_INSTALL = " \
     bluez-hcidump \

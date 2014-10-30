@@ -1,7 +1,6 @@
 DESCRIPTION = "dmctouch: some tools for dmctouch tests"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://${S}/usb26/COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
-PR = "r0"
 
 SRC_URI = "file://tsc_213_121126.tgz \
            file://usbtest--add-sys-types-h.patch \

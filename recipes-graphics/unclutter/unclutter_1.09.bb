@@ -4,8 +4,6 @@ LICENSE = "PD"
 
 DEPENDS = "virtual/libx11"
 
-PR = "r0"
-
 SRC_URI = "${SOURCEFORGE_MIRROR}/project/${PN}/${PN}/source_${PV}/${PN}-${PV}.tar.gz"
 SRC_URI[md5sum] = "8c4464367b2db1d15fe36a8752e917c8"
 SRC_URI[sha256sum] = "3a53575fe2a75a34bc9a2b0ad92ee0f8a7dbedc05d8783f191c500060a40a9bd"

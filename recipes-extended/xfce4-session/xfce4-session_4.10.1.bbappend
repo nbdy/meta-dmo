@@ -1,6 +1,4 @@
 
-PR = "r1" 
-
 pkg_postinst_${PN}() {
 #!/bin/bash
 
