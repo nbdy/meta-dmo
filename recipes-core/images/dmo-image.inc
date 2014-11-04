@@ -3,7 +3,6 @@ IMAGE_INSTALL = " \
     bluez-hcidump \
     bluez4 \
     coreutils \
-    dmo-base-user \
     e2fsprogs-e2fsck \
     e2fsprogs-mke2fs \
     e2fsprogs-tune2fs \
