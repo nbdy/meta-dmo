@@ -9,7 +9,6 @@ IMAGE_INSTALL_append = " \
     canutils \
     cinematicexperience \
     dmo-gst-videoscripts \
-    dmo-base-user \
     gstreamer1.0 \
     gstreamer1.0-plugins-good-meta \
     gstreamer1.0-plugins-base-meta \
