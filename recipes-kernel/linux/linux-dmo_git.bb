@@ -50,6 +50,7 @@ SRC_URI = "git://git@emb.data-modul.com/development/linux;protocol=ssh;branch=sf
 SRC_URI_append_mx6 += "file://defconfig"
 SRC_URI_append_mx6 += "file://debug.cfg"
 SRC_URI_append_mx6 += "file://multimedia.cfg"
+SRC_URI_append_mx6 += "file://thermal.cfg"
 
 LINUX_VERSION ?= "3.16.6"
 
