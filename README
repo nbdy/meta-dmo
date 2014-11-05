@@ -8,23 +8,25 @@ Dependencies
 
 This layer depends on:
 
-  URI: git://git.openembedded.org/bitbake
-  branch: master
-
-  URI: git://git.openembedded.org/openembedded-core
-  layers: meta
-  branch: master
-
   URI: git://git.yoctoproject.org/poky
-  layers: meta-yocto
+  layers: meta, meta-selftest, meta-skeleton, meta-yocto, meta-yocto-bsp, bitbake
+  branch: daisy
+
+  URI: git://github.com/OSSystems/meta-browser
+  layers: meta-browser
   branch: master
 
-  URI: git://git.yoctoproject.org/meta-fsl-arm
-
-  URI: https://github.com/OSSystems/meta-browser.git
+  URI: git://github.com/data-modul/meta-fsl-arm
+  layers: meta-fsl-arm
+  branch: daisy
 
   URI: git://git.openembedded.org/meta-openembedded
-  layers: meta-oe, meta-gnome, meta-xfce, meta-multimedia
+  layers: meta-efl, meta-filesystems, meta-gnome, meta-gpe, meta-initramfs, meta-multimedia, meta-networking, meta-oe, meta-perl, meta-ruby, meta-systemd, meta-webserver, meta-xfce
+  branch: daisy
+
+  URI: git@github.com:meta-qt5/meta-qt5.git
+  layers: meta-qt5
+  branch: daisy
 
 
 Patches
