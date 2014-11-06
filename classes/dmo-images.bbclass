@@ -1,3 +1,7 @@
+# Class to generate the sdcard image.
+
+HOMEPAGE = "https://emb.data-modul.com"
+
 inherit image_types
 
 # we need generating the rootfs to every time
