@@ -42,6 +42,7 @@
 #
 
 inherit kernel
+inherit dmo-checksum
 require recipes-kernel/linux/linux-yocto.inc
 
 # Override SRC_URI in a bbappend file to point at a different source
@@ -63,3 +64,17 @@ PV = "${LINUX_VERSION}+git${SRCPV}"
 # Override COMPATIBLE_MACHINE to include your machine in a bbappend
 # file. Leaving it empty here ensures an early explicit build failure.
 COMPATIBLE_MACHINE = "(mx6)"
+
+do_deploy_append() {
+    dmo_do_checksum ${DEPLOYDIR} ${KERNEL_IMAGE_BASE_NAME}".bin"
+    dmo_do_checksum ${DEPLOYDIR} ${MODULE_TARBALL_BASE_NAME}
+
+    if test -n "${KERNEL_DEVICETREE}"; then
+        for DTB in ${KERNEL_DEVICETREE}; do
+            DTB_BASE_NAME=`basename ${DTB} .dtb`
+            DTB_NAME=`echo ${KERNEL_IMAGE_BASE_NAME} | sed "s/${MACHINE}/${DTB_BASE_NAME}/g"`
+            dmo_do_checksum ${DEPLOYDIR} ${DTB_NAME}".dtb"
+        done
+    fi
+}
+

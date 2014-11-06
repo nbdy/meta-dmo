@@ -16,6 +16,7 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 inherit kernel-arch
 inherit cml1
+inherit dmo-checksum
 
 EXTRA_OEMAKE = "CROSS_COMPILE=${TARGET_PREFIX}"
 
@@ -54,6 +55,8 @@ do_deploy () {
 	cd ${S}
 	install -m 755 scripts/mkimage ${STAGING_BINDIR_NATIVE}/
 	install -m 755 scripts/bareboxenv ${STAGING_BINDIR_NATIVE}/
+
+        dmo_do_checksum ${DEPLOY_DIR_IMAGE} ${BAREBOX_IMAGE}
 }
 do_deploy[dirs] = "${S}"
 addtask deploy before do_build after do_compile
