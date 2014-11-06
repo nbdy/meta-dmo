@@ -1,3 +1,5 @@
+HOMEPAGE="https://emb.data-modul.com"
+
 # hardware independent packages
 IMAGE_INSTALL = " \
     bluez-hcidump \

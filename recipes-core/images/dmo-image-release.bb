@@ -1,4 +1,5 @@
 DESCRIPTION = "A small image just capable of allowing a device to boot."
+HOMEPAGE="https://emb.data-modul.com"
 
 require dmo-image.inc
 

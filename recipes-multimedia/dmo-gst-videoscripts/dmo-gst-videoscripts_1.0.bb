@@ -2,6 +2,7 @@
 # Released under the MIT license
 
 DESCRIPTION = "Some scripts to start video over gst-launch"
+HOMEPAGE="https://emb.data-modul.com"
 LICENSE = "MIT"
 DEPENDS = "gstreamer"
 LIC_FILES_CHKSUM = "file://${WORKDIR}/MIT-license.txt;md5=84c2f27af54cb640d5fa0a101671f386"

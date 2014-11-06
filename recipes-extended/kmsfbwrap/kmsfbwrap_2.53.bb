@@ -1,4 +1,5 @@
 DESCRIPTION = "KMS frame buffer wrapper"
+HOMEPAGE="https://emb.data-modul.com"
 LICENSE = "GPLv2"
 
 DEPENDS = "fuse"
