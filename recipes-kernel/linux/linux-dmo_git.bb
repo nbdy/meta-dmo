@@ -54,12 +54,13 @@ SRC_URI_append_mx6 += "file://multimedia.cfg"
 SRC_URI_append_mx6 += "file://thermal.cfg"
 
 LINUX_VERSION ?= "3.16.6"
+LINUX_VERSION_EXTENSION = "+git${SRCPV}"
 
 # Override SRCREV to point to a different commit in a bbappend file to
 # build a different release of the Linux kernel.
 SRCREV_mx6="${AUTOREV}"
 
-PV = "${LINUX_VERSION}"
+PV = "${LINUX_VERSION}-${PR}+git${SRCPV}"
 
 # Override COMPATIBLE_MACHINE to include your machine in a bbappend
 # file. Leaving it empty here ensures an early explicit build failure.
