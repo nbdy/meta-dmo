@@ -8,7 +8,6 @@ IMAGE_INSTALL_append = " \
     bash \
     chromium \
     canutils \
-    cinematicexperience \
     dmo-gst-videoscripts \
     gstreamer1.0 \
     gstreamer1.0-plugins-good-meta \
