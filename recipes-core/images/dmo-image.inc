@@ -17,6 +17,7 @@ IMAGE_INSTALL = " \
     linux-firmware \
     nfs-utils \
     nfs-utils-client \
+    pciutils \
     powertop \
     packagegroup-core-boot \
     root-user-homedir \
