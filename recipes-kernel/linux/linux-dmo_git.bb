@@ -53,6 +53,7 @@ SRC_URI_append_mx6 += "file://debug.cfg"
 SRC_URI_append_mx6 += "file://multimedia.cfg"
 SRC_URI_append_mx6 += "file://thermal.cfg"
 SRC_URI_append_mx6 += "file://multitouch.cfg"
+SRC_URI_append_mx6 += "file://rtc.cfg"
 
 LINUX_VERSION ?= "3.16.6"
 LINUX_VERSION_EXTENSION = "+git${SRCPV}"
