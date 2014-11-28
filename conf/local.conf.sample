@@ -57,7 +57,8 @@ PARALLEL_MAKE ?= "-j ${@oe.utils.cpu_count()}"
 #MACHINE ?= "mpc8315e-rdb"
 #MACHINE ?= "edgerouter"
 #
-# This sets the default machine to be qemux86 if no other machine is selected:
+# Supported machines from Data-Modul layer meta-dmo
+#MACHINE ??= "imx6dl-dmo-edm-qmx6"
 MACHINE ??= "imx6q-dmo-edm-qmx6"
 
 #
