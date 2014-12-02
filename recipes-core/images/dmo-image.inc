@@ -48,6 +48,7 @@ SDCARD_HOME = "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.with-homefs.img"
 
 ROOTFS_POSTINSTALL_COMMAND += " create_homefs_and_image; "
 ROOTFS_POSTPROCESS_COMMAND += " dmo_imageRemoveLibavX264Files; "
+ROOTFS_POSTPROCESS_COMMAND_remove = "rootfs_update_timestamp ;" 
 
 # set size and factor of ROOTFS
 IMAGE_ROOTFS_SIZE = "819200"
