@@ -55,7 +55,7 @@ SRC_URI_append_mx6 += "file://thermal.cfg"
 SRC_URI_append_mx6 += "file://multitouch.cfg"
 SRC_URI_append_mx6 += "file://rtc.cfg"
 
-LINUX_VERSION ?= "3.16.6"
+LINUX_VERSION ?= "3.16.7"
 LINUX_VERSION_EXTENSION = "+git${SRCPV}"
 
 # Override SRCREV to point to a different commit in a bbappend file to
