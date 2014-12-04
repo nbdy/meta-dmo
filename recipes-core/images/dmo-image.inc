@@ -2,28 +2,51 @@ HOMEPAGE="https://emb.data-modul.com"
 
 # hardware independent packages
 IMAGE_INSTALL = " \
+    bash \
     bluez-hcidump \
     bluez4 \
+    canutils \
     coreutils \
+    dmo-gst-videoscripts \
     e2fsprogs-e2fsck \
     e2fsprogs-mke2fs \
     e2fsprogs-tune2fs \
     fb-test \
+    gpu-viv-bin-mx6q \
+    gstreamer1.0 \
+    gstreamer1.0-plugins-bad-meta \
+    gstreamer1.0-plugins-base-meta \
+    gstreamer1.0-plugins-good-meta \
+    i2c-tools \
+    icu \
     iperf \
     iproute2 \
     iputils \
     iw \
     kernel-modules \
+    kmod \
+    kmsfbwrap \
     linux-firmware \
+    mtd-utils \
+    mtools \
     nfs-utils \
     nfs-utils-client \
+    obexd \
+    openobex \
+    openssh \
+    packagegroup-core-boot \
     pciutils \
     powertop \
-    packagegroup-core-boot \
+    procps \
+    psplash \
     root-user-homedir \
     start-stop-daemon \
+    strace \
+    sudo \
     tslib \
     udev-extraconf \
+    util-linux \
+    wget \
     wireless-tools \
     wpa-supplicant \
     ${ROOTFS_PKGMANAGE_BOOTSTRAP} \
