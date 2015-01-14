@@ -15,8 +15,6 @@ IMAGE_INSTALL_append = " \
     qtbase-fonts-ttf-vera \
     qtbase-mkspecs \
     qtbase-plugins \
-    qtbase-plugins \
-    qtbase-tools \
     qtbase-tools \
     qtdeclarative \
     qtdeclarative-examples \
