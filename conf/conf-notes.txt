@@ -12,7 +12,7 @@ in your conf/local.conf.
 
 meta-dmo has currently two image-recipies
 
-	* dmo-image-release
+	* dmo-image-x11
 	* dmo-image-minimal
 	* dmo-image-qt
 
