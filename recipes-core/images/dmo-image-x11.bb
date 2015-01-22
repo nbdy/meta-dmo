@@ -1,6 +1,7 @@
 DESCRIPTION = "A small image just capable of allowing a device to boot."
 HOMEPAGE="https://emb.data-modul.com"
 
+#OVERRIDES.=":x11"
 require dmo-image.inc
 
 # hardware independent
