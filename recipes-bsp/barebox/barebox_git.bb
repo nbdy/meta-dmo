@@ -6,7 +6,7 @@ SRC_URI = " \
 "
 SRCREV_mx6="${AUTOREV}"
 
-COMPATIBLE_MACHINE = "imx6q-dmo-edm-qmx6"
+COMPATIBLE_MACHINE = "(imx6q-dmo-edm-qmx6|imx6dl-dmo-edm-qmx6)"
 
 S = "${WORKDIR}/git"
 
