@@ -47,7 +47,7 @@ require recipes-kernel/linux/linux-yocto.inc
 
 # Override SRC_URI in a bbappend file to point at a different source
 # tree if you do not want to build from Linus' tree.
-SRC_URI = "git://git@emb.data-modul.com/development/linux.git;protocol=ssh;branch=sfr/qt;name=mx6"
+SRC_URI = "git://git@emb.data-modul.com/development/linux.git;protocol=ssh;branch=dmo-release-2015.02;name=kernel"
 SRC_URI_append_mx6 += "file://defconfig"
 SRC_URI_append_mx6 += "file://debug.cfg"
 SRC_URI_append_mx6 += "file://multimedia.cfg"
@@ -61,7 +61,7 @@ LINUX_VERSION_EXTENSION = "+git${SRCPV}"
 
 # Override SRCREV to point to a different commit in a bbappend file to
 # build a different release of the Linux kernel.
-SRCREV_mx6="${AUTOREV}"
+SRCREV_kernel="${AUTOREV}"
 
 PV = "${LINUX_VERSION}-${PR}+git${SRCPV}"
 
