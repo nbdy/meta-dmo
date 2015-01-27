@@ -50,11 +50,7 @@ require recipes-kernel/linux/linux-yocto.inc
 SRC_URI = "git://git@emb.data-modul.com/development/linux.git;protocol=ssh;branch=dmo-release-2015.02;name=kernel"
 SRC_URI_append_mx6 += "file://defconfig"
 SRC_URI_append_mx6 += "file://debug.cfg"
-SRC_URI_append_mx6 += "file://multimedia.cfg"
-SRC_URI_append_mx6 += "file://thermal.cfg"
-SRC_URI_append_mx6 += "file://multitouch.cfg"
-SRC_URI_append_mx6 += "file://rtc.cfg"
-SRC_URI_append_mx6 += "file://vivante.cfg"
+SRC_URI_append_mx6 += "file://hardware.cfg"
 
 LINUX_VERSION ?= "3.16.7"
 LINUX_VERSION_EXTENSION = "+git${SRCPV}"
