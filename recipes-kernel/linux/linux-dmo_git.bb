@@ -67,7 +67,7 @@ PV = "${LINUX_VERSION}-${PR}+git${SRCPV}"
 
 # Override COMPATIBLE_MACHINE to include your machine in a bbappend
 # file. Leaving it empty here ensures an early explicit build failure.
-COMPATIBLE_MACHINE = "(mx6)"
+COMPATIBLE_MACHINE = "(imx6q-dmo-edm-qmx6|imx6dl-dmo-edm-qmx6)"
 
 do_deploy_append() {
     dmo_do_checksum ${DEPLOYDIR} ${KERNEL_IMAGE_BASE_NAME}".bin"
