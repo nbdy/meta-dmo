@@ -1,0 +1,13 @@
+Index: xserver-xorg-video-imx-viv-3.10.17-1.0.1/EXA/src/vivante_fbdev/vivante_fbdev_driver.c
+===================================================================
+--- xserver-xorg-video-imx-viv-3.10.17-1.0.1.orig/EXA/src/vivante_fbdev/vivante_fbdev_driver.c
++++ xserver-xorg-video-imx-viv-3.10.17-1.0.1/EXA/src/vivante_fbdev/vivante_fbdev_driver.c
+@@ -38,7 +38,7 @@
+ 
+ #if defined(USE_VIV_FB)
+ static Bool gVivFb = TRUE;
+-static Bool gEnableXRandR = TRUE;
++static Bool gEnableXRandR = FALSE;
+ static Bool gEnableDRI = TRUE;
+ static Bool gEnableFbSyncExt = TRUE;
+ #else
