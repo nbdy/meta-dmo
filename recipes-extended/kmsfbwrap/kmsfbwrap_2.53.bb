@@ -2,7 +2,7 @@ DESCRIPTION = "KMS frame buffer wrapper"
 HOMEPAGE="https://emb.data-modul.com"
 LICENSE = "GPLv2"
 
-DEPENDS = "fuse"
+DEPENDS = "fuse libdrm"
 DEPENDS += " ${@base_contains('DISTRO_FEATURES', 'pam', 'libpam', '', d)}"
 
 inherit autotools
