@@ -1,11 +1,10 @@
 DESCRIPTION = "A small image just capable of allowing a device to boot."
 HOMEPAGE="https://emb.data-modul.com"
 
-#OVERRIDES.=":x11"
 require dmo-image.inc
 
 # hardware independent
-IMAGE_INSTALL_append = " \
+IMAGE_INSTALL_append_dmo-x11 = " \
     chromium \
     packagegroup-xfce-base \
     slim \
@@ -22,4 +21,23 @@ IMAGE_INSTALL_append = " \
     xserver-xorg-extension-dbe \
     xserver-xorg-extension-extmod \
     xset \
+"
+IMAGE_INSTALL_append_dmo-qt = " \
+    qtbase \
+    qtbase-examples \
+    qtbase-fonts \
+    qtbase-fonts-pfa \
+    qtbase-fonts-pfb \
+    qtbase-fonts-qpf \
+    qtbase-fonts-ttf-dejavu \
+    qtbase-fonts-ttf-vera \
+    qtbase-mkspecs \
+    qtbase-plugins \
+    qtbase-tools \
+    qtdeclarative \
+    qtdeclarative-examples \
+    qtdeclarative-mkspecs \
+    qtdeclarative-plugins \
+    qtdeclarative-qmlplugins \
+    qtdeclarative-tools \
 "
