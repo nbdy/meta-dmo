@@ -25,7 +25,6 @@ IMAGE_INSTALL = " \
     iw \
     kernel-modules \
     kmod \
-    kmsfbwrap \
     linux-firmware \
     mtd-utils \
     mtools \
