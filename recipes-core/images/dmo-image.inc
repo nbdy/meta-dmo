@@ -14,6 +14,7 @@ IMAGE_INSTALL = " \
     iputils \
     iw \
     kernel-modules \
+    kmod \
     linux-firmware \
     nfs-utils \
     nfs-utils-client \
