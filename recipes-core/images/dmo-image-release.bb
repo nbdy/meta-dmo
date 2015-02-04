@@ -22,7 +22,7 @@ IMAGE_INSTALL_append_dmo-x11 = " \
     xserver-xorg-extension-extmod \
     xset \
 "
-IMAGE_INSTALL_append_dmo-qt = " \
+IMAGE_INSTALL_append = " \
     qtbase \
     qtbase-examples \
     qtbase-fonts \
