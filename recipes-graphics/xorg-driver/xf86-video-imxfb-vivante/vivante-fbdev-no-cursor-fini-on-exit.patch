@@ -1,0 +1,13 @@
+Index: xserver-xorg-video-imx-viv-3.10.17-1.0.1/EXA/src/vivante_fbdev/vivante_fbdev_driver.c
+===================================================================
+--- xserver-xorg-video-imx-viv-3.10.17-1.0.1.orig/EXA/src/vivante_fbdev/vivante_fbdev_driver.c	2014-07-25 15:38:24.000000000 +0200
++++ xserver-xorg-video-imx-viv-3.10.17-1.0.1/EXA/src/vivante_fbdev/vivante_fbdev_driver.c	2015-02-04 11:59:16.511267640 +0100
+@@ -1123,7 +1123,7 @@
+         }
+     }
+ 
+-    if(gVivFb)
++    if(gVivFb && gEnableXRandR)
+         xf86_cursors_fini(pScreen);
+ 
+     fbdevHWRestore(pScrn);
