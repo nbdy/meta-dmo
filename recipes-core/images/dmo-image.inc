@@ -52,8 +52,11 @@ IMAGE_INSTALL = " \
     ${CORE_IMAGE_EXTRA_INSTALL} \
 "
 # Hardware depend packages
-IMAGE_INSTALL_append_mx6 = " \
+IMAGE_INSTALL_append_mx6q = " \
     firmware-imx-vpu-imx6q \
+"
+IMAGE_INSTALL_append_mx6dl = " \
+    firmware-imx-vpu-imx6d \
 "
 
 IMAGE_LINGUAS = " "
