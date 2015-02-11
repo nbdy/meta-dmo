@@ -42,7 +42,9 @@ IMAGE_INSTALL = " \
     start-stop-daemon \
     strace \
     sudo \
-    tslib \
+    tslib-conf \
+    tslib-calibrate \
+    tslib-tests \
     udev-extraconf \
     util-linux \
     wget \
