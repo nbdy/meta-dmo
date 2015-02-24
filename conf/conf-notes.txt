@@ -15,3 +15,13 @@ meta-dmo has currently two image-recipies
 	* dmo-image-minimal
 	* dmo-image-release
 
+and two distro configurations
+	
+	* poky-dmo-x11
+	* poky-dmo-qt 
+
+The "poky-dmo-qt" is a qt5 only distro, where x11 is disabled.
+
+The "poky-dmo-x11" is set as default, to use the "poky-dmo-qt" you have to
+change the DISTRO parameter in your conf/local.conf.
+
