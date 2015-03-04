@@ -14,6 +14,9 @@ SDCARD_WITHOUT_HOMEFS = "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.without-homefs.sdcard
 IMAGE_DEPENDS_dmosdcard = "parted-native dosfstools-native mtools-native \
                         virtual/kernel ${IMAGE_BOOTLOADER}"
 
+do_rootfs[depends] += "${IMAGE_BOOTLOADER}:do_deploy"
+do_rootfs[depends] += "virtual/kernel:do_deploy"
+
 IMAGE_CMD_dmosdcard () {
     # create SDCARD
     bbnote "creating sdcard"
