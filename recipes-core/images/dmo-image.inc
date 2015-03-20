@@ -3,6 +3,7 @@ HOMEPAGE="https://emb.data-modul.com"
 # hardware independent packages
 IMAGE_INSTALL = " \
     bash \
+    blanking \
     bluez-hcidump \
     bluez4 \
     canutils \
