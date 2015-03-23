@@ -23,6 +23,7 @@ IMAGE_INSTALL_append_dmo-x11 = " \
     xset \
 "
 IMAGE_INSTALL_append = " \
+    cinematicexperience \
     qtbase \
     qtbase-examples \
     qtbase-fonts \
