@@ -1,3 +1,4 @@
+DESCRIPTION = "A small image just capable of allowing a device to boot."
 HOMEPAGE="https://emb.data-modul.com"
 
 # hardware independent packages
@@ -54,6 +55,46 @@ IMAGE_INSTALL = " \
     ${ROOTFS_PKGMANAGE_BOOTSTRAP} \
     ${CORE_IMAGE_EXTRA_INSTALL} \
 "
+
+IMAGE_INSTALL_append_dmo-x11 = " \
+    chromium \
+    packagegroup-xfce-base \
+    slim \
+    unclutter \
+    xdg-utils \
+    xf86-input-evdev \
+    xf86-video-fbdev \
+    xf86-video-imxfb-vivante \
+    xhost \
+    xinput-calibrator \
+    xmodmap \
+    xrdb \
+    xserver-xorg \
+    xserver-xorg-extension-dbe \
+    xserver-xorg-extension-extmod \
+    xset \
+"
+IMAGE_INSTALL_append_dmo-qt = " \
+    cinematicexperience \
+    qtbase \
+    qtbase-examples \
+    qtbase-fonts \
+    qtbase-fonts-pfa \
+    qtbase-fonts-pfb \
+    qtbase-fonts-qpf \
+    qtbase-fonts-ttf-dejavu \
+    qtbase-fonts-ttf-vera \
+    qtbase-mkspecs \
+    qtbase-plugins \
+    qtbase-tools \
+    qtdeclarative \
+    qtdeclarative-examples \
+    qtdeclarative-mkspecs \
+    qtdeclarative-plugins \
+    qtdeclarative-qmlplugins \
+    qtdeclarative-tools \
+"
+
 # Hardware depend packages
 IMAGE_INSTALL_append_mx6q = " \
     firmware-imx-vpu-imx6q \

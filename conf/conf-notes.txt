@@ -9,19 +9,22 @@ To agree this you have to need to add a
 in your conf/local.conf.
 
 
+following command builds the image
 
-meta-dmo has currently two image-recipies
+	* dmo-image
 
-	* dmo-image-minimal
-	* dmo-image-release
-
-and two distro configurations
+depending on the selected distro configuration, the image will contain
+different preinstalled software.
+There are currently three different distro configurations
 	
-	* poky-dmo-x11
-	* poky-dmo-qt 
+	* dmo-distro
+	* dmo-distro-qt 
+	* dmo-distro-x11
 
-The "poky-dmo-qt" is a qt5 only distro, where x11 is disabled.
+In the "dmo-distro" is the minimal configuration.
+The "dmo-distro-qt" is a qt5 only distro, where x11 is disabled.
+And the "dmo-distro-x11" is a full image, containing x11 and qt5.
 
-The "poky-dmo-x11" is set as default, to use the "poky-dmo-qt" you have to
+The "dmo-distro-x11" is set as default, to use the "dmo-distro-qt" you have to
 change the DISTRO parameter in your conf/local.conf.
 
