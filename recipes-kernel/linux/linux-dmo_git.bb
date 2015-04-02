@@ -44,7 +44,6 @@
 inherit kernel
 inherit dmo-checksum
 require recipes-kernel/linux/linux-yocto.inc
-require linux-dmo.inc
 
 # Override SRC_URI in a bbappend file to point at a different source
 # tree if you do not want to build from Linus' tree.
