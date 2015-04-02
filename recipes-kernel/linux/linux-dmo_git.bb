@@ -44,6 +44,7 @@
 inherit kernel
 inherit dmo-checksum
 require recipes-kernel/linux/linux-yocto.inc
+require linux-dmo.inc
 
 # Override SRC_URI in a bbappend file to point at a different source
 # tree if you do not want to build from Linus' tree.
@@ -60,6 +61,8 @@ LINUX_VERSION_EXTENSION = "+git${SRCPV}"
 SRCREV_kernel="${AUTOREV}"
 
 PV = "${LINUX_VERSION}-${PR}+git${SRCPV}"
+
+KCONFIG_MODE="--alldefconfig"
 
 # Override COMPATIBLE_MACHINE to include your machine in a bbappend
 # file. Leaving it empty here ensures an early explicit build failure.
