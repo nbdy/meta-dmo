@@ -61,6 +61,7 @@ IMAGE_INSTALL_append_dmo-x11 = " \
     mesa-demos \
     packagegroup-xfce-base \
     slim \
+    slim-systemd \
     unclutter \
     xdg-utils \
     xf86-input-evdev \
