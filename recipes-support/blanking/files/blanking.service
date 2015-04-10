@@ -1,0 +1,17 @@
+# This service is a modified copy of the auto 
+# generated version from systemd service genrator
+
+[Unit]
+Description=Disable blanking on all ttys
+
+[Service]
+Type=forking
+Restart=no
+TimeoutSec=5min
+IgnoreSIGPIPE=no
+KillMode=process
+GuessMainPID=no
+RemainAfterExit=yes
+ExecStart=/usr/bin/blanking.sh start
+ExecStop=/usr/bin/blanking.sh stop
+WantedBy=multi-user.target
