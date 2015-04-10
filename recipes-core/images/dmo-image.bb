@@ -41,7 +41,6 @@ IMAGE_INSTALL = " \
     procps \
     psplash \
     root-user-homedir \
-    start-stop-daemon \
     strace \
     sudo \
     tslib-conf \
@@ -58,6 +57,8 @@ IMAGE_INSTALL = " \
 
 IMAGE_INSTALL_append_dmo-x11 = " \
     chromium \
+    matchbox-keyboard \
+    mesa-demos \
     packagegroup-xfce-base \
     slim \
     unclutter \
@@ -76,6 +77,7 @@ IMAGE_INSTALL_append_dmo-x11 = " \
 "
 IMAGE_INSTALL_append_dmo-qt = " \
     cinematicexperience \
+    qt3d \
     qtbase \
     qtbase-examples \
     qtbase-fonts \
