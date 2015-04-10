@@ -1,0 +1,25 @@
+From 319608e0951efcd4ea64c475f053e99d93dc4351 Mon Sep 17 00:00:00 2001
+From: Sebastian Wezel <swezel@data-modul.com>
+Date: Fri, 10 Apr 2015 13:21:03 +0200
+Subject: [PATCH] Fix sytemd install path
+
+Signed-off-by: Sebastian Wezel <swezel@data-modul.com>
+---
+ CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 0a9f31d..47f768c 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -171,6 +171,6 @@ install(FILES slim.1 DESTINATION ${MANDIR}/man1/)
+ # configure
+ install(FILES slim.conf DESTINATION ${SYSCONFDIR})
+ # systemd service file
+-install(FILES slim.service DESTINATION usr/lib/systemd/system)
++install(FILES slim.service DESTINATION ${CMAKE_INSTALL_LIBDIR}/systemd/system)
+ # themes directory
+ subdirs(themes)
+-- 
+2.3.5
+

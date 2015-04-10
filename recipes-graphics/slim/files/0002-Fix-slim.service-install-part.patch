@@ -1,0 +1,28 @@
+From 74deeb45c0a53bfc3d773bb4862f2652abeb09e3 Mon Sep 17 00:00:00 2001
+From: Sebastian Wezel <swezel@data-modul.com>
+Date: Fri, 10 Apr 2015 13:59:44 +0200
+Subject: [PATCH] Fix slim.service install part
+
+Signed-off-by: Sebastian Wezel <swezel@data-modul.com>
+---
+ slim.service | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/slim.service b/slim.service
+index b894085..34ef0ac 100644
+--- a/slim.service
++++ b/slim.service
+@@ -1,9 +1,9 @@
+ [Unit]
+ Description=SLiM Simple Login Manager
+-After=systemd-user-sessions.service
+ 
+ [Service]
+ ExecStart=/usr/bin/slim -nodaemon
+ 
+ [Install]
+ Alias=display-manager.service
++WantedBy=multi-user.target
+-- 
+2.3.5
+
