@@ -5,7 +5,7 @@ DESCRIPTION = "disable or enable tty blanking"
 HOMEPAGE = "https://emb.data-modul.com"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/COPYING.MIT;md5=3da9cfbcb788c80a0384361b4de20420"
-RDEPENDS = "bash"
+RDEPENDS_${PN} = "bash"
 
 inherit systemd
 
