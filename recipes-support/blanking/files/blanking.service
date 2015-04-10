@@ -5,6 +5,7 @@
 Description=Disable blanking on all ttys
 
 [Service]
+Environment="TERM=vt100"
 Type=forking
 Restart=no
 TimeoutSec=5min
