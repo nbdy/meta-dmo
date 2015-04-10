@@ -1,10 +1,14 @@
 require conf/distro/poky.conf
 
 DISTRO_FEATURES_remove = "wayland irda zeroconf 3g nfc"
+DISTRO_FEATURES_append = " systemd "
+VIRTUAL-RUNTIME_init_manager = " systemd "
+VIRTUAL-RUNTIME_initscripts = ""
+PACKAGECONFIG_append_pn-systemd += "networkd resolved"
 
 # disable this BACKFILL distro features
 # you don't know what BACKFILL is? *tz* look here: http://patches.openembedded.org/patch/21849/
-DISTRO_FEATURES_BACKFILL_CONSIDERED += " pulseaudio "
+DISTRO_FEATURES_BACKFILL_CONSIDERED += " pulseaudio sysvinit "
 
 # Data-Modul FTP-Server
 DMOFTP = "ftp://Public_EMB@ftp.data-modul.com"
