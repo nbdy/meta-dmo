@@ -5,8 +5,8 @@
 Description=Disable blanking on all ttys
 
 [Service]
-Environment="TERM=vt100"
-Type=forking
+Environment="TERM=linux"
+Type=oneshot
 Restart=no
 TimeoutSec=5min
 IgnoreSIGPIPE=no
@@ -15,4 +15,6 @@ GuessMainPID=no
 RemainAfterExit=yes
 ExecStart=/usr/bin/blanking.sh start
 ExecStop=/usr/bin/blanking.sh stop
+
+[Install]
 WantedBy=multi-user.target
