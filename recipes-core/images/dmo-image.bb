@@ -122,6 +122,13 @@ ROOTFS_POSTINSTALL_COMMAND += " create_homefs_and_image; "
 ROOTFS_POSTPROCESS_COMMAND += " dmo_imageRemoveLibavX264Files; "
 ROOTFS_POSTPROCESS_COMMAND_remove = " rootfs_update_timestamp ;" 
 
+# The write_image_manifest needs to be removed, with the space,
+# and afterwards reenterd witout the space.
+# This needs to be done, because the above remove,
+# removes also the ';' after 'write_image_manifest'
+ROOTFS_POSTPROCESS_COMMAND_remove = " write_image_manifest ;"
+ROOTFS_POSTPROCESS_COMMAND += " write_image_manifest;"
+
 # set size and factor of ROOTFS
 IMAGE_ROOTFS_SIZE = "3145728"
 IMAGE_OVERHEAD_FACTOR = "1"
@@ -182,3 +189,10 @@ do_deploy () {
 
 do_deploy[dirs] = "${S}"
 addtask deploy before do_build after do_rootfs
+
+ssh_allow_empty_password_append() {
+    if [ -e ${IMAGE_ROOTFS}${sysconfdir}/ssh/sshd_config_readonly ]; then
+        sed -i 's/^[#[:space:]]*PermitRootLogin.*/PermitRootLogin yes/' ${IMAGE_ROOTFS}${sysconfdir}/ssh/sshd_config_readonly
+        sed -i 's/^[#[:space:]]*PermitEmptyPasswords.*/PermitEmptyPasswords yes/' ${IMAGE_ROOTFS}${sysconfdir}/ssh/sshd_config_readonly
+    fi
+}
