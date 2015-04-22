@@ -6,6 +6,6 @@ Name=eth0
 #DHCP=v4
 
 #Static setup
-Address=10.12.12.3/24
-Gateway=10.12.12.2
+Address=10.0.0.2/24
+Gateway=10.0.0.1
 
