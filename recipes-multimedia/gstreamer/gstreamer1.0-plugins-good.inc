@@ -4,6 +4,7 @@ LICENSE = "GPLv2+ & LGPLv2.1+"
 
 # libid3tag
 DEPENDS += "gstreamer1.0-plugins-base gconf zlib bzip2"
+RDEPENDS_${PN} += "libudev libcap libgudev"
 
 inherit gettext gconf
 
