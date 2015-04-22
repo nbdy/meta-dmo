@@ -15,6 +15,7 @@ IMAGE_INSTALL = " \
     e2fsprogs-tune2fs \
     fb-test \
     imx-gpu-viv \
+    imx-gpu-viv-demos \
     gstreamer1.0 \
     gstreamer1.0-plugins-bad-meta \
     gstreamer1.0-plugins-base-meta \
