@@ -5,6 +5,7 @@ DISTRO_FEATURES_append = " systemd "
 VIRTUAL-RUNTIME_init_manager = " systemd "
 VIRTUAL-RUNTIME_initscripts = ""
 PACKAGECONFIG_append_pn-systemd += "networkd resolved"
+PACKAGECONFIG_append_pn-qtbase += "tslib icu examples"
 
 # disable this BACKFILL distro features
 # you don't know what BACKFILL is? *tz* look here: http://patches.openembedded.org/patch/21849/
