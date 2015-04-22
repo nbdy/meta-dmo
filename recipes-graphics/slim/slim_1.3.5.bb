@@ -4,6 +4,7 @@ LICENSE = "GPLv2"
 
 DEPENDS = "virtual/libx11 libxmu libpng jpeg freetype sessreg ttf-bitstream-vera"
 DEPENDS += " ${@base_contains('DISTRO_FEATURES', 'pam', 'libpam', '', d)}"
+RDEPENDS_${PN} += "libxft"
 
 inherit cmake
 inherit systemd
