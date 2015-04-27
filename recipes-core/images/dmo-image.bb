@@ -1,6 +1,15 @@
 DESCRIPTION = "A small image just capable of allowing a device to boot."
 HOMEPAGE="https://emb.data-modul.com"
 
+inherit core-image
+inherit dmo-images
+inherit dmo-checksum
+
+IMAGE_LINGUAS = " "
+LICENSE = "GPLv2"
+
+DEPENDS += "e2fsprogs-native"
+
 # hardware independent packages
 IMAGE_INSTALL = " \
     bash \
@@ -107,15 +116,6 @@ IMAGE_INSTALL_append_mx6dl = " \
     firmware-imx-vpu-imx6d \
 "
 
-IMAGE_LINGUAS = " "
-LICENSE = "GPLv2"
-
-DEPENDS += "e2fsprogs-native"
-
-inherit core-image
-inherit dmo-images
-inherit dmo-checksum
-
 SDCARD = "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.without-homefs.img"
 SDCARD_HOME = "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.with-homefs.img"
 
@@ -133,6 +133,8 @@ ROOTFS_POSTPROCESS_COMMAND += " write_image_manifest;"
 # set size and factor of ROOTFS
 IMAGE_ROOTFS_SIZE = "3145728"
 IMAGE_OVERHEAD_FACTOR = "1"
+
+INITRAMFS_IMAGE = "dmo-image-initramfs"
 
 HOMEFS_SPACE = "786431"
 HOMEFS_IMAGE = "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.homefs.ext3"
