@@ -7,12 +7,14 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/COPYING.MIT;md5=3da9cfbcb788c80a0384
 
 RDEPENDS_${PN} = "udev"
 
-SRC_URI = "file://init.sh"
+SRC_URI = "git://git@emb.data-modul.com/development/initscripts;branch=master;protocol=ssh;name=initrd"
+SRCREV_initrd = "${AUTOREV}"
 
-S = "${WORKDIR}"
+S = "${WORKDIR}/git"
+PV = "${SRCPV}"
 
 do_install(){
-    install -m 0755 ${WORKDIR}/init.sh ${D}/init
+    install -m 0755 ${S}/init-overlay.sh ${D}/init
 }
 
 FILES_${PN} += "/init"
