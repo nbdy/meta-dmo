@@ -12,6 +12,8 @@ EXTRA_IMAGEDEPENDS = "virtual/bootloader virtual/kernel"
 IMAGE_FSTYPES = "tar.bz2 ext3 dmosdcard"
 IMAGE_TYPEDEP_dmosdcard = "ext3"
 
+INITRAMFS_IMAGE = "dmo-image-initramfs"
+
 # barebox configurations
 IMAGE_BOOTLOADER = "barebox"
 BAREBOX_MACHINE = "datamodul-edm-qmx6_defconfig"

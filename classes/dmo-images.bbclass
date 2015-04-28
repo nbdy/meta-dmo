@@ -47,6 +47,7 @@ IMAGE_CMD_dmosdcard () {
         mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${dtb} ::/
     done
     mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${DEFAULT_KERNEL_DEVICETREE} ::/oftree
+    mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/${INITRAMFS_IMAGE}-${MACHINE}.cpio.gz ::/initramfs
 
     # Burn Partition
     dd if=${WORKDIR}/boot.img of=${SDCARD_WITH_HOMEFS} conv=notrunc seek=1 bs=$(expr 1024    \* 1024) && sync && sync

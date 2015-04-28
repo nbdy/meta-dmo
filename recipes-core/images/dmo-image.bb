@@ -134,7 +134,7 @@ ROOTFS_POSTPROCESS_COMMAND += " write_image_manifest;"
 IMAGE_ROOTFS_SIZE = "3145728"
 IMAGE_OVERHEAD_FACTOR = "1"
 
-INITRAMFS_IMAGE = "dmo-image-initramfs"
+#INITRAMFS_IMAGE = "dmo-image-initramfs"
 
 HOMEFS_SPACE = "786431"
 HOMEFS_IMAGE = "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.homefs.ext3"
