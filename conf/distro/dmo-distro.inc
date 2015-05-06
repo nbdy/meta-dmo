@@ -1,6 +1,6 @@
 require conf/distro/poky.conf
 
-DISTRO_FEATURES_remove = "wayland irda zeroconf 3g nfc"
+DISTRO_FEATURES_remove = "irda zeroconf 3g nfc"
 DISTRO_FEATURES_append = " systemd "
 VIRTUAL-RUNTIME_init_manager = " systemd "
 VIRTUAL-RUNTIME_initscripts = ""
@@ -15,7 +15,7 @@ DISTRO_FEATURES_BACKFILL_CONSIDERED += " pulseaudio sysvinit "
 DMOFTP = "ftp://Public_EMB@ftp.data-modul.com"
 
 # Render rootfs as readonly
-IMAGE_FEATURES += " read-only-rootfs package-management "
+IMAGE_FEATURES += " package-management "
 
 # some license things here
 LICENSE_FLAGS_WHITELIST = "commercial_libav commercial_x264"
