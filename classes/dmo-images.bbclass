@@ -7,7 +7,7 @@ inherit image_types
 # we need generating the rootfs to every time
 do_rootfs[nostamp] = "1"
 
-SDCARD_SIZE = "3942401"
+SDCARD_SIZE = "3858432"
 SDCARD_WITH_HOMEFS    = "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.with-homefs.sdcard2"
 SDCARD_WITHOUT_HOMEFS = "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.without-homefs.sdcard2"
 
@@ -28,9 +28,10 @@ IMAGE_CMD_dmosdcard () {
     # 0010MB - 1000MB - RootFS (ext3)
     # 1000MB - 2000M  - HomeFS (ext3)
     parted -s ${SDCARD_WITH_HOMEFS} mklabel msdos
-    parted -s ${SDCARD_WITH_HOMEFS} unit KiB mkpart primary fat32    1024   10240
-    parted -s ${SDCARD_WITH_HOMEFS} unit KiB mkpart primary         10240 3155968
-    parted -s ${SDCARD_WITH_HOMEFS} unit KiB mkpart primary       3155968 3942400
+    parted -s ${SDCARD_WITH_HOMEFS} unit KiB mkpart primary fat32    1024   52224
+    parted -s ${SDCARD_WITH_HOMEFS} unit KiB mkpart primary         52224 2936832
+    parted -s ${SDCARD_WITH_HOMEFS} unit KiB mkpart primary       2936832 3653632
+    parted -s ${SDCARD_WITH_HOMEFS} unit KiB mkpart primary       3653632 3858431
     parted -s ${SDCARD_WITH_HOMEFS} print
 
     # put barebox to image
@@ -49,12 +50,18 @@ IMAGE_CMD_dmosdcard () {
     mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${DEFAULT_KERNEL_DEVICETREE} ::/oftree
     mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/${INITRAMFS_IMAGE}-${MACHINE}.cpio.gz ::/initramfs
 
+    # Creat the overlay partition
+    [ -e ${WORKDIR}/overlay.img ] && rm ${WORKDIR}/overlay.img
+    dd if=/dev/zero of=${WORKDIR}/overlay.img seek=716799 count=0 bs=1k
+    mkfs.ext3 -F ${WORKDIR}/overlay.img
+    
     # Burn Partition
-    dd if=${WORKDIR}/boot.img of=${SDCARD_WITH_HOMEFS} conv=notrunc seek=1 bs=$(expr 1024    \* 1024) && sync && sync
-    dd if=${SDCARD_ROOTFS}    of=${SDCARD_WITH_HOMEFS} conv=notrunc seek=1 bs=$(expr 10240   \* 1024) && sync && sync
-    dd if=${HOMEFS_IMAGE}     of=${SDCARD_WITH_HOMEFS} conv=notrunc seek=1 bs=$(expr 3155968 \* 1024) && sync && sync
+    dd if=${WORKDIR}/boot.img    of=${SDCARD_WITH_HOMEFS} conv=notrunc seek=1 bs=$(expr 1024    \* 1024) && sync && sync
+    dd if=${SDCARD_ROOTFS}       of=${SDCARD_WITH_HOMEFS} conv=notrunc seek=1 bs=$(expr 52224   \* 1024) && sync && sync
+    dd if=${WORKDIR}/overlay.img of=${SDCARD_WITH_HOMEFS} conv=notrunc seek=1 bs=$(expr 2936832 \* 1024) && sync && sync
+    dd if=${HOMEFS_IMAGE}        of=${SDCARD_WITH_HOMEFS} conv=notrunc seek=1 bs=$(expr 3653632 \* 1024) && sync && sync
 
     # crop image to get one without homefs, but with same partition table
-    dd if=${SDCARD_WITH_HOMEFS} of=${SDCARD_WITHOUT_HOMEFS} bs=$(expr 1024 \* 3155968) count=1 && sync && sync
+    dd if=${SDCARD_WITH_HOMEFS} of=${SDCARD_WITHOUT_HOMEFS} bs=$(expr 1024 \* 3653632) count=1 && sync && sync
 }
 

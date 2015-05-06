@@ -64,10 +64,15 @@ IMAGE_INSTALL = " \
     ${ROOTFS_PKGMANAGE_BOOTSTRAP} \
     ${CORE_IMAGE_EXTRA_INSTALL} \
 "
+#ttf-dejavu-sans 
+#    e-wm 
+#    e-wm-theme-b-and-w 
+#    e-wm-theme-illume-efenniht 
+#    e-wm-config-mobile 
+#    e-wm-config-standard 
 
 IMAGE_INSTALL_append_dmo-x11 = " \
     chromium \
-    matchbox-keyboard \
     mesa-demos \
     packagegroup-xfce-base \
     slim \
@@ -107,6 +112,10 @@ IMAGE_INSTALL_append_dmo-qt = " \
     qtdeclarative-qmlplugins \
     qtdeclarative-tools \
 "
+IMAGE_INSTALL_append_dmo-wayland = " \
+    wayland \
+    weston \
+"
 
 # Hardware depend packages
 IMAGE_INSTALL_append_mx6q = " \
@@ -131,12 +140,12 @@ ROOTFS_POSTPROCESS_COMMAND_remove = " write_image_manifest ;"
 ROOTFS_POSTPROCESS_COMMAND += " write_image_manifest;"
 
 # set size and factor of ROOTFS
-IMAGE_ROOTFS_SIZE = "3145728"
+IMAGE_ROOTFS_SIZE = "2884607"
 IMAGE_OVERHEAD_FACTOR = "1"
 
 #INITRAMFS_IMAGE = "dmo-image-initramfs"
 
-HOMEFS_SPACE = "786431"
+HOMEFS_SPACE = "204799"
 HOMEFS_IMAGE = "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.homefs.ext3"
 
 create_homefs_and_image () {
