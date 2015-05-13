@@ -21,7 +21,7 @@ PACKAGECONFIG ??= " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'bluetooth', 'bluez', '', d)} \
     ${@bb.utils.contains('DISTRO_FEATURES', 'directfb', 'directfb', '', d)} \
     orc curl uvch264 neon sndfile \
-    hls sbc dash bz2 smoothstreaming \
+    hls sbc dash bz2 smoothstreaming faad faac\
     "
 
 # dash = Dynamic Adaptive Streaming over HTTP
