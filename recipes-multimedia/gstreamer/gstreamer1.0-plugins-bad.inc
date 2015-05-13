@@ -2,25 +2,33 @@ require gstreamer1.0-plugins.inc
 
 LICENSE = "GPLv2+ & LGPLv2+ & LGPLv2.1+ "
 
-DEPENDS += "gstreamer1.0-plugins-base bzip2"
+DEPENDS += "gstreamer1.0-plugins-base bzip2 libpng jpeg"
 
 S = "${WORKDIR}/gst-plugins-bad-${PV}"
 
-inherit gettext
+SRC_URI += "file://configure-allow-to-disable-libssh2.patch \
+           "
 
+inherit gettext bluetooth
+
+# opengl packageconfig factored out to make it easy for distros
+# and BSP layers to pick either (desktop) opengl, gles2, or no GL
+PACKAGECONFIG_GL ?= "${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'gles2', '', d)}"
 
 PACKAGECONFIG ??= " \
-    ${@base_contains('DISTRO_FEATURES', 'wayland', 'wayland', '', d)} \
-    ${@base_contains('DISTRO_FEATURES', 'opengl', 'eglgles', '', d)} \
-    ${@base_contains('DISTRO_FEATURES', 'bluetooth', 'bluez', '', d)} \
-    ${@base_contains('DISTRO_FEATURES', 'directfb', 'directfb', '', d)} \
-    orc curl uvch264 neon \
+    ${PACKAGECONFIG_GL} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'bluetooth', 'bluez', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'directfb', 'directfb', '', d)} \
+    orc curl uvch264 neon sndfile \
     hls sbc dash bz2 smoothstreaming \
     "
+
 # dash = Dynamic Adaptive Streaming over HTTP
 PACKAGECONFIG[assrender]       = "--enable-assrender,--disable-assrender,libass"
 PACKAGECONFIG[curl]            = "--enable-curl,--disable-curl,curl"
-PACKAGECONFIG[eglgles]         = "--enable-eglgles,--disable-eglgles,virtual/egl virtual/libgles2"
+PACKAGECONFIG[gles2]           = "--enable-gles2 --enable-egl,--disable-gles2 --disable-egl,virtual/libgles2 virtual/egl"
+PACKAGECONFIG[opengl]          = "--enable-opengl,--disable-opengl,virtual/libgl libglu"
 PACKAGECONFIG[faac]            = "--enable-faac,--disable-faac,faac"
 PACKAGECONFIG[faad]            = "--enable-faad,--disable-faad,faad2"
 PACKAGECONFIG[libmms]          = "--enable-libmms,--disable-libmms,libmms"
@@ -41,20 +49,29 @@ PACKAGECONFIG[bz2]             = "--enable-bz2,--disable-bz2,bzip2"
 PACKAGECONFIG[fluidsynth]      = "--enable-fluidsynth,--disable-fluidsynth,fluidsynth"
 PACKAGECONFIG[schroedinger]    = "--enable-schro,--disable-schro,schroedinger"
 PACKAGECONFIG[smoothstreaming] = "--enable-smoothstreaming,--disable-smoothstreaming,libxml2"
-PACKAGECONFIG[bluez]           = "--enable-bluez,--disable-bluez,bluez4"
+PACKAGECONFIG[bluez]          = "--enable-bluez,--disable-bluez,${BLUEZ}"
 PACKAGECONFIG[rsvg]            = "--enable-rsvg,--disable-rsvg,librsvg"
+PACKAGECONFIG[sndfile]         = "--enable-sndfile,--disable-sndfile,libsndfile1"
+PACKAGECONFIG[webp]            = "--enable-webp,--disable-webp,libwebp"
+PACKAGECONFIG[rtmp]            = "--enable-rtmp,--disable-rtmp,rtmpdump"
+PACKAGECONFIG[libssh2]         = "--enable-libssh2,--disable-libssh2,libssh2"
 
 # these plugins have not been ported to 1.0 (yet):
-#   directdraw vcd apexsink cdaudio dc1394 lv2 linsys musepack mythtv
-#   nas timidity teletextdec sdl sndfile xvid wininet acm gsettings
-#   sndio cdxaparse dccp faceoverlay hdvparse ivfparse jp2kdecimator
-#   linsys mve nuvdemux osx_video patchdetect quicktime real sdi stereo
-#   tta videomeasure videosignal vmnc
+#   directdraw vcd apexsink dc1394 lv2 linsys musepack mythtv
+#   nas timidity teletextdec sdl xvid wininet acm gsettings
+#   sndio qtwrapper cdxaparse dccp faceoverlay hdvparse tta
+#   mve nuvdemux osx_video patchdetect quicktime real sdi
+#   videomeasure gsettings
+
+# these plugins have no corresponding library in OE-core or meta-openembedded:
+#   openni2 winks direct3d directdraw directsound winscreencap osx_video
+#   apple_media android_media avc chromaprint daala dts gme gsm kate ladspa mimic
+#   mpeg2enc mplex ofa openjpeg opensles pvr resindvd rtmp soundtouch spandsp spc
+#   srtp vdpau voaacenc voamrwbenc wasapi zbar
 
 EXTRA_OECONF += " \
     --enable-dvb \
     --enable-shm \
-    --enable-mfc \
     --enable-fbdev \
     --enable-decklink \
     --disable-acm \
@@ -62,13 +79,12 @@ EXTRA_OECONF += " \
     --disable-apexsink \
     --disable-apple_media \
     --disable-avc \
-    --disable-cdaudio \
     --disable-chromaprint \
+    --disable-cocoa \
     --disable-daala \
     --disable-dc1394 \
     --disable-direct3d \
     --disable-directdraw \
-    --disable-directshow \
     --disable-directsound \
     --disable-dts \
     --disable-gme \
@@ -91,10 +107,8 @@ EXTRA_OECONF += " \
     --disable-pvr \
     --disable-quicktime \
     --disable-resindvd \
-    --disable-rtmp \
     --disable-sdl \
     --disable-sdltest \
-    --disable-sndfile \
     --disable-sndio \
     --disable-soundtouch \
     --disable-spandsp \
@@ -107,14 +121,16 @@ EXTRA_OECONF += " \
     --disable-voaacenc \
     --disable-voamrwbenc \
     --disable-wasapi \
-    --disable-webp \
     --disable-wildmidi \
     --disable-wininet \
     --disable-winscreencap \
     --disable-xvid \
     --disable-zbar \
     ${GSTREAMER_1_0_ORC} \
+    ${@bb.utils.contains("TUNE_FEATURES", "mx32", "--disable-yadif", "", d)} \
     "
 
 ARM_INSTRUCTION_SET = "arm"
+
+FILES_gstreamer1.0-plugins-bad-opencv += "${datadir}/gst-plugins-bad/1.0/opencv*"
 

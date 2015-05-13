@@ -3,26 +3,26 @@ require gstreamer1.0-plugins.inc
 LICENSE = "GPLv2+ & LGPLv2.1+"
 
 # libid3tag
-DEPENDS += "gstreamer1.0-plugins-base gconf zlib bzip2"
-RDEPENDS_${PN} += "libudev libcap libgudev"
+DEPENDS += "gstreamer1.0-plugins-base zlib bzip2 libcap"
 
-inherit gettext gconf
+inherit gettext
 
 
 PACKAGECONFIG ??= " \
-    ${@base_contains('DISTRO_FEATURES', 'x11', 'x11', '', d)} \
-    ${@base_contains('DISTRO_FEATURES', 'pulseaudio', 'pulseaudio', '', d)} \
-    orc cairo flac gdk-pixbuf jpeg libpng soup speex taglib \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'x11', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'pulseaudio', 'pulseaudio', '', d)} \
+    orc cairo flac gdk-pixbuf gudev jpeg libpng soup speex taglib \
     "
 
-X11DEPENDS = "virtual/libx11 libsm libxrender"
-X11ENABLEOPTS = "--enable-x --enable-xvideo=yes --enable-xshm"
-X11DISABLEOPTS = "--disable-x --enable-xvideo=no --disable-xshm"
+X11DEPENDS = "virtual/libx11 libsm libxrender libxfixes libxdamage"
+X11ENABLEOPTS = "--enable-x --enable-xshm"
+X11DISABLEOPTS = "--disable-x --disable-xshm"
 PACKAGECONFIG[x11]        = "${X11ENABLEOPTS},${X11DISABLEOPTS},${X11DEPENDS}"
 PACKAGECONFIG[pulseaudio] = "--enable-pulse,--disable-pulse,pulseaudio"
 PACKAGECONFIG[cairo]      = "--enable-cairo,--disable-cairo,cairo"
 PACKAGECONFIG[flac]       = "--enable-flac,--disable-flac,flac"
 PACKAGECONFIG[gdk-pixbuf] = "--enable-gdk_pixbuf,--disable-gdk_pixbuf,gdk-pixbuf"
+PACKAGECONFIG[gudev]      = "--with-gudev,--without-gudev,udev"
 PACKAGECONFIG[jack]       = "--enable-jack,--disable-jack,jack"
 PACKAGECONFIG[jpeg]       = "--enable-jpeg,--disable-jpeg,jpeg"
 PACKAGECONFIG[libpng]     = "--enable-libpng,--disable-libpng,libpng"
@@ -55,5 +55,4 @@ EXTRA_OECONF += " \
     ${GSTREAMER_1_0_ORC} \
 "
 
-FILES_${PN}-gconfelements += "${sysconfdir}/gconf/schemas/gstreamer-1.0.schemas"
-
+FILES_${PN}-equalizer += "${datadir}/gstreamer-1.0/presets/*.prs"

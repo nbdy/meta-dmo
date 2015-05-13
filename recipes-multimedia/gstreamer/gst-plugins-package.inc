@@ -50,7 +50,7 @@ ALLOW_EMPTY_${PN}-staticdev = "1"
 PACKAGES += "${PN}-apps ${PN}-meta ${PN}-glib"
 FILES_${PN}-apps = "${bindir}"
 
-FILES_${PN} = "${datadir}/gstreamer-${LIBV}"
+FILES_${PN} = "${datadir}/gstreamer-${LIBV} ${libdir}/gstreamer-1.0/include"
 FILES_${PN}-dbg += "${libdir}/gstreamer-${LIBV}/.debug"
 FILES_${PN}-glib = "${datadir}/glib-2.0"
 

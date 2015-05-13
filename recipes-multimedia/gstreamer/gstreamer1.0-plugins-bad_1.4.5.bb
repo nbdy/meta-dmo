@@ -1,5 +1,3 @@
-DEFAULT_PREFERENCE = "-1"
-
 include gstreamer1.0-plugins-bad.inc
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=73a5855a8119deb017f5f13cf327095d \
@@ -7,20 +5,10 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=73a5855a8119deb017f5f13cf327095d \
                     file://COPYING.LIB;md5=21682e4e8fea52413fd26c60acb907e5 \
                     file://gst/tta/crc32.h;beginline=12;endline=29;md5=27db269c575d1e5317fffca2d33b3b50"
 
-S = "${WORKDIR}/git"
+SRC_URI += "file://0001-gl-do-not-check-for-GL-GLU-EGL-GLES2-libs-if-disable.patch"
 
-SRCREV = "91853015b71b20aac9f91b096c1e0ac114988744"
+SRC_URI[md5sum] = "e0bb39412cf4a48fe0397bcf3a7cd451"
+SRC_URI[sha256sum] = "152fad7250683d72f9deb36c5685428338365fe4a4c87ffe15e38783b14f983c"
 
-PACKAGECONFIG[sbc] = "--enable-sbc,--disable-sbc,sbc"
-PACKAGECONFIG[hls] = "--enable-hls,--disable-hls,gnutls"
-
-EXTRA_OECONF += " \
-    -disable-openjpeg \
-    "
-
-do_configure_prepend() {
-	cd ${S}
-	./autogen.sh --noconfigure
-	cd ${B}
-}
+S = "${WORKDIR}/gst-plugins-bad-${PV}"
 
