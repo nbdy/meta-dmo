@@ -2,7 +2,7 @@ require conf/distro/poky.conf
 require conf/distro/include/qt5-versions.inc
 
 QT5_VERSION = "5.4.1+git%"
-DISTRO_FEATURES_remove = "irda zeroconf 3g nfc"
+DISTRO_FEATURES_remove = "wayland irda zeroconf 3g nfc"
 DISTRO_FEATURES_append = " systemd "
 VIRTUAL-RUNTIME_init_manager = " systemd "
 VIRTUAL-RUNTIME_initscripts = ""
