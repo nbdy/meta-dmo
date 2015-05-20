@@ -64,13 +64,6 @@ IMAGE_INSTALL = " \
     ${ROOTFS_PKGMANAGE_BOOTSTRAP} \
     ${CORE_IMAGE_EXTRA_INSTALL} \
 "
-#ttf-dejavu-sans 
-#    e-wm 
-#    e-wm-theme-b-and-w 
-#    e-wm-theme-illume-efenniht 
-#    e-wm-config-mobile 
-#    e-wm-config-standard 
-
 IMAGE_INSTALL_append_dmo-x11 = " \
     chromium \
     mesa-demos \
@@ -112,11 +105,6 @@ IMAGE_INSTALL_append_dmo-qt = " \
     qtdeclarative-qmlplugins \
     qtdeclarative-tools \
 "
-IMAGE_INSTALL_append_dmo-wayland = " \
-    wayland \
-    weston \
-"
-
 # Hardware depend packages
 IMAGE_INSTALL_append_mx6q = " \
     firmware-imx-vpu-imx6q \
