@@ -1,0 +1,10 @@
+Index: fontconfig-2.11.1/fontconfig.pc.in
+===================================================================
+--- fontconfig-2.11.1.orig/fontconfig.pc.in
++++ fontconfig-2.11.1/fontconfig.pc.in
+@@ -15,4 +15,4 @@ Requires: @PKGCONFIG_REQUIRES@
+ Requires.private: @PKGCONFIG_REQUIRES_PRIVATELY@
+ Libs: -L${libdir} -lfontconfig
+ Libs.private: @EXPAT_LIBS@ @FREETYPE_LIBS@ @ICONV_LIBS@ @LIBXML2_LIBS@
+-Cflags: -I${includedir} @EXPAT_CFLAGS@ @FREETYPE_CFLAGS@ @ICONV_CFLAGS@ @LIBXML2_CFLAGS@
++Cflags: -I${includedir} @EXPAT_CFLAGS@ @ICONV_CFLAGS@ @LIBXML2_CFLAGS@
