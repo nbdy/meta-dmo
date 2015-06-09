@@ -51,6 +51,7 @@ IMAGE_INSTALL = " \
     procps \
     psplash \
     root-user-homedir \
+    systemd-vconsole-setup \
     strace \
     sudo \
     tslib-conf \
