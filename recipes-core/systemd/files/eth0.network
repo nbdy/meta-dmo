@@ -3,9 +3,9 @@ Name=eth0
 
 [Network]
 #DHCP setup
-#DHCP=v4
+DHCP=v4
 
 #Static setup
-Address=10.0.0.2/24
-Gateway=10.0.0.1
+#Address=10.0.0.2/24
+#Gateway=10.0.0.1
 
