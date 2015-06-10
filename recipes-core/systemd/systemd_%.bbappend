@@ -20,6 +20,7 @@ pkg_postinst_${PN}() {
             OPTS="--root=$D"
         fi
         systemctl $OPTS mask getty@tty1.service
+        systemctl $OPTS mask systemd-machine-id-commit.service
     fi
 }
 
