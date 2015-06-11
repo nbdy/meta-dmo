@@ -1,0 +1,81 @@
+From 84c23fc01b28087de35604ef971227b57fb77876 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Andreas=20M=C3=BCller?= <schnitzeltony@googlemail.com>
+Date: Thu, 22 Jan 2015 16:09:35 +0100
+Subject: [PATCH 12/12] Set paths for target properly
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Upstream-Status: Inappropriate [OE specific]
+
+Signed-off-by: Andreas Müller <schnitzeltony@googlemail.com>
+---
+ configure | 43 +++++++++++++++++++++----------------------
+ 1 file changed, 21 insertions(+), 22 deletions(-)
+
+diff --git a/configure b/configure
+index 7a34b11..7bb4476 100755
+--- a/configure
++++ b/configure
+@@ -3811,31 +3811,29 @@ addConfStr()
+
+ QT_CONFIGURE_STR_OFFSETS=
+ QT_CONFIGURE_STRS=
+-addConfStr "$QT_REL_INSTALL_DOCS"
+-addConfStr "$QT_REL_INSTALL_HEADERS"
+-addConfStr "$QT_REL_INSTALL_LIBS"
+-addConfStr "$QT_REL_INSTALL_LIBEXECS"
+-addConfStr "$QT_REL_INSTALL_BINS"
+-addConfStr "$QT_REL_INSTALL_PLUGINS"
+-addConfStr "$QT_REL_INSTALL_IMPORTS"
+-addConfStr "$QT_REL_INSTALL_QML"
+-addConfStr "$QT_REL_INSTALL_ARCHDATA"
+-addConfStr "$QT_REL_INSTALL_DATA"
+-addConfStr "$QT_REL_INSTALL_TRANSLATIONS"
+-addConfStr "$QT_REL_INSTALL_EXAMPLES"
+-addConfStr "$QT_REL_INSTALL_TESTS"
++addConfStr "$QT_SYSROOT_DOCS"
++addConfStr "$QT_SYSROOT_HEADERS"
++addConfStr "$QT_SYSROOT_LIBS"
++addConfStr "$QT_SYSROOT_LIBEXECS"
++addConfStr "$QT_SYSROOT_BINS"
++addConfStr "$QT_SYSROOT_PLUGINS"
++addConfStr "$QT_SYSROOT_IMPORTS"
++addConfStr "$QT_SYSROOT_QML"
++addConfStr "$QT_SYSROOT_ARCHDATA"
++addConfStr "$QT_SYSROOT_DATA"
++addConfStr "$QT_SYSROOT_TRANSLATIONS"
++addConfStr "$QT_SYSROOT_EXAMPLES"
++addConfStr "$QT_SYSROOT_TESTS"
+ QT_CONFIGURE_STR_OFFSETS_ALL=$QT_CONFIGURE_STR_OFFSETS
+ QT_CONFIGURE_STRS_ALL=$QT_CONFIGURE_STRS
+
+ QT_CONFIGURE_STR_OFFSETS=
+ QT_CONFIGURE_STRS=
+-addConfStr "$CFG_SYSROOT"
+-addConfStr "$QT_REL_HOST_BINS"
+-addConfStr "$QT_REL_HOST_LIBS"
+-addConfStr "$QT_REL_HOST_DATA"
+-addConfStr "$QT_EXTERNAL_HOST_BINS"
+-addConfStr "$shortxspec"
+-addConfStr "$shortspec"
++addConfStr "$QT_SYSROOT_BINS"
++addConfStr "$QT_SYSROOT_LIBS"
++addConfStr "$QT_SYSROOT_LIBS/qt5"
++addConfStr "linux-g++"
++addConfStr "linux-g++"
+
+ #-------------------------------------------------------------------------------
+ # generate qconfig.cpp
+@@ -3851,7 +3849,7 @@ static const char qt_configure_licensed_
+ static const char qt_configure_installation          [12+11]    = "qt_instdate=2012-12-20";
+ 
+ /* Installation Info */
+-static const char qt_configure_prefix_path_str       [512 + 12] = "qt_prfxpath=$QT_INSTALL_PREFIX";
++static const char qt_configure_prefix_path_str       [512 + 12] = "qt_prfxpath=$QT_SYSROOT_PREFIX";
+ #ifdef QT_BUILD_QMAKE
+ static const char qt_configure_ext_prefix_path_str   [256 + 12] = "qt_epfxpath=$QT_EXT_PREFIX";
+ static const char qt_configure_host_prefix_path_str  [256 + 12] = "qt_hpfxpath=$QT_HOST_PREFIX";
+-- 
+2.3.5
+
