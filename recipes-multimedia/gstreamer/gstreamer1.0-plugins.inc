@@ -8,7 +8,7 @@ inherit autotools pkgconfig
 
 GSTREAMER_1_0_DEBUG ?= "--disable-debug"
 GSTREAMER_1_0_GIT_BRANCH ?= "master"
-EXTRA_OECONF = "--disable-valgrind ${GSTREAMER_1_0_DEBUG} --disable-examples "
+EXTRA_OECONF = "--disable-valgrind ${GSTREAMER_1_0_DEBUG} "
 
 acpaths = "-I ${S}/common/m4 -I ${S}/m4"
 

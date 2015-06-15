@@ -8,10 +8,15 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=a6f89e2100d9b6cdffcea4f398e37343 \
 
 S = "${WORKDIR}/git"
 
-SRC_URI = "git://github.com/Vodalys/gst-plugins-good.git;branch=veobox \
-	   file://0001-gst-plugins-good-v4l2sink-use-output-overlay.patch"
+#SRC_URI = "git://github.com/Vodalys/gst-plugins-good.git;branch=veobox \
+#	   file://0001-gst-plugins-good-v4l2sink-use-output-overlay.patch"
 
-SRCREV = "bc2bd82c1b696711124fd55eaa6cd5adedd31a2f"
+SRC_URI += "file://0001-gst-plugins-good-v4l2sink-use-output-overlay.patch "
+
+# SRCREV = "bc2bd82c1b696711124fd55eaa6cd5adedd31a2f"
+SRCREV = "${AUTOREV}"
+
+PR = "r14"
 
 CFLAGS_append = " -Wno-error=unused-but-set-variable "
 
