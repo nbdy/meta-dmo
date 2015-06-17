@@ -15,7 +15,8 @@ PV = "${SRCPV}"
 
 do_install(){
     install -m 0755 ${S}/init-overlay.sh ${D}/init
+    echo "INITVERSION=${PV}" > ${D}/scriptversion
 }
 
-FILES_${PN} += "/init"
+FILES_${PN} += "/init /scriptversion"
 
