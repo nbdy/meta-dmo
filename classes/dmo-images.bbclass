@@ -10,6 +10,7 @@ do_rootfs[nostamp] = "1"
 SDCARD_SIZE = "3858432"
 SDCARD_WITH_HOMEFS    = "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.with-homefs.sdcard2"
 SDCARD_WITHOUT_HOMEFS = "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.without-homefs.sdcard2"
+SDCARD_WITHOUT_OVERLAY = "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.without-overlay.sdcard2"
 
 IMAGE_DEPENDS_dmosdcard = "parted-native dosfstools-native mtools-native \
                         virtual/kernel ${IMAGE_BOOTLOADER}"
@@ -63,5 +64,8 @@ IMAGE_CMD_dmosdcard () {
 
     # crop image to get one without homefs, but with same partition table
     dd if=${SDCARD_WITH_HOMEFS} of=${SDCARD_WITHOUT_HOMEFS} bs=$(expr 1024 \* 3653632) count=1 && sync && sync
+
+    # crop image to get one without overlay and homefs, but with same partition table
+    dd if=${SDCARD_WITH_HOMEFS} of=${SDCARD_WITHOUT_OVERLAY} bs=$(expr 1024 \* 2936832) count=1 && sync && sync
 }
 
