@@ -4,6 +4,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/qtbase:"
 SRC_URI += "file://0003-Add-external-hostbindir-option.patch \
             file://0011-qmake-don-t-build-it-in-configure-but-allow-to-build.patch \
             file://0012-Set-paths-for-target-properly.patch \
+            file://0021-Fixed-unused-identifier-in-not-yet-used-enum.patch \
             "
 
 QT_CONFIG_FLAGS += "-external-hostbindir ${OE_QMAKE_PATH_EXTERNAL_HOST_BINS}"
