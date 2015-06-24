@@ -14,7 +14,8 @@ S = "${WORKDIR}/git"
 SRC_URI += "file://0001-gst-plugins-good-v4l2sink-use-output-overlay.patch "
 
 # SRCREV = "bc2bd82c1b696711124fd55eaa6cd5adedd31a2f"
-SRCREV = "${AUTOREV}"
+SRCREV = "37e3ca1447932633d521d29b722ce38f42c10618"
+# ${AUTOREV}"
 
 PR = "r14"
 
