@@ -52,6 +52,7 @@ SRC_URI = "git://git@emb.data-modul.com/development/linux;branch=sfr/release-201
 SRC_URI_append_mx6 += "file://defconfig"
 SRC_URI_append_mx6 += "file://debug.cfg"
 SRC_URI_append_mx6 += "file://hardware.cfg"
+SRC_URI_append_mx6 += "file://zconfig.cfg"
 
 LINUX_VERSION ?= "4.1.0"
 LINUX_VERSION_EXTENSION = "+git${SRCPV}"
