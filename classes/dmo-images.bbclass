@@ -21,7 +21,7 @@ do_rootfs[depends] += "virtual/kernel:do_deploy"
 IMAGE_CMD_dmosdcard () {
     # create SDCARD
     bbnote "creating sdcard"
-    dd if=/dev/zero of=${SDCARD_WITH_HOMEFS} bs=1 count=0 seek=$(expr ${SDCARD_SIZE} \* 1024)
+    truncate -s $(expr ${SDCARD_SIZE} \* 1024) ${SDCARD_WITH_HOMEFS}
 
     # ... and partition this sdcard
     # 0000MB - 0001MB - Bootspace (unpartitioned)
@@ -53,7 +53,7 @@ IMAGE_CMD_dmosdcard () {
 
     # Creat the overlay partition
     [ -e ${WORKDIR}/overlay.img ] && rm ${WORKDIR}/overlay.img
-    dd if=/dev/zero of=${WORKDIR}/overlay.img seek=716799 count=0 bs=1k
+    truncate -s 716799 ${WORKDIR}/overlay.img
     mkfs.ext3 -F ${WORKDIR}/overlay.img
     
     # Burn Partition
@@ -63,9 +63,11 @@ IMAGE_CMD_dmosdcard () {
     dd if=${HOMEFS_IMAGE}        of=${SDCARD_WITH_HOMEFS} conv=notrunc seek=1 bs=$(expr 3653632 \* 1024) && sync && sync
 
     # crop image to get one without homefs, but with same partition table
-    dd if=${SDCARD_WITH_HOMEFS} of=${SDCARD_WITHOUT_HOMEFS} bs=$(expr 1024 \* 3653632) count=1 && sync && sync
+    cp ${SDCARD_WITH_HOMEFS} ${SDCARD_WITHOUT_HOMEFS}
+    truncate -s $(expr 1024 \* 3653632) ${SDCARD_WITHOUT_HOMEFS}
 
     # crop image to get one without overlay and homefs, but with same partition table
-    dd if=${SDCARD_WITH_HOMEFS} of=${SDCARD_WITHOUT_OVERLAY} bs=$(expr 1024 \* 2936832) count=1 && sync && sync
+    cp ${SDCARD_WITH_HOMEFS} ${SDCARD_WITHOUT_OVERLAY}
+    truncate -s $(expr 1024 \* 2936832) ${SDCARD_WITHOUT_OVERLAY}
 }
 
