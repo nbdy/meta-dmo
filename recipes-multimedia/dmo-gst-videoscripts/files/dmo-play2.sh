@@ -118,7 +118,6 @@ ovl=1
 scale=1
 vout=1
 for dev in `ls -1 /dev/video/by-name/*`; do
-	echo "--- > $dev $scale"
 	case "$dev" in
 		*decoder*)
 		dec_dev=$dev
@@ -199,8 +198,6 @@ tst=$2
 sound=$3
 output_device=$4
 loop=$5
-
-get_v4l2_devices
 
 if [[ -z $fn || -z $tst || -z $sound ||-z $output_device ]]; then
 	usage

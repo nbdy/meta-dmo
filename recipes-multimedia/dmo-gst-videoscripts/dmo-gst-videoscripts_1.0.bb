@@ -19,6 +19,6 @@ do_install () {
                    ${D}/usr/bin
 }
 
-SRC_URI[playback.md5sum] = "cbc63bd464e33489d9e0a676369c44dd"
-SRC_URI[playback.sha256] = "8e6f8eb7e7ea669a47ee5235bc29f86300f53063c40a99cf63b44aefae383fd5"
+SRC_URI[playback.md5sum] = "8448648b7e428861b5b9928db5368550"
+SRC_URI[playback.sha256] = "42206ab68b71be838eed180cac221844d1082396101fb489d917751d4789bb46"
 
