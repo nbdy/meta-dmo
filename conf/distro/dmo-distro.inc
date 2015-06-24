@@ -2,6 +2,12 @@ require conf/distro/poky.conf
 
 QT5_VERSION = "5.4.1+git%"
 QT_MODULE_BRANCH = "5.5"
+PREFERRED_VERSION_gstreamer1.0 = "git"
+PREFERRED_VERSION_gstreamer1.0-meta-base = "git"
+PREFERRED_VERSION_gstreamer1.0-plugins-bad = "git"
+PREFERRED_VERSION_gstreamer1.0-plugins-base = "git"
+PREFERRED_VERSION_gstreamer1.0-plugins-good = "git"
+PREFERRED_VERSION_gstreamer1.0-plugins-ugly = "git"
 DISTRO_FEATURES_remove = "wayland irda zeroconf 3g nfc"
 DISTRO_FEATURES_append = " systemd "
 VIRTUAL-RUNTIME_init_manager = " systemd "
