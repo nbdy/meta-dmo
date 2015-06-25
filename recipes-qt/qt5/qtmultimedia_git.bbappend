@@ -1,6 +1,7 @@
 require qt5-dmo.inc
 FILESEXTRAPATHS_prepend := "${THISDIR}/qtmultimedia:"
 
+PACKAGECONFIG_append += "gstreamer"
 
 SRC_URI += "file://0002-Fix-porting-effort-to-GStreamer-patch.patch"
 
