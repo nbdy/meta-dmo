@@ -53,7 +53,7 @@ IMAGE_CMD_dmosdcard () {
 
     # Creat the overlay partition
     [ -e ${WORKDIR}/overlay.img ] && rm ${WORKDIR}/overlay.img
-    truncate -s 716799 ${WORKDIR}/overlay.img
+    truncate -s $(expr 1024 \* 716799) ${WORKDIR}/overlay.img
     mkfs.ext3 -F ${WORKDIR}/overlay.img
     
     # Burn Partition
