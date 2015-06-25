@@ -105,6 +105,11 @@ IMAGE_INSTALL_append_dmo-qt = " \
     qtdeclarative-plugins \
     qtdeclarative-qmlplugins \
     qtdeclarative-tools \
+    qtmultimedia \
+    qtmultimedia-examples \
+    qtmultimedia-mkspecs \
+    qtmultimedia-plugins \
+    qtmultimedia-qmlplugins \
 "
 # Hardware depend packages
 IMAGE_INSTALL_append_mx6q = " \
