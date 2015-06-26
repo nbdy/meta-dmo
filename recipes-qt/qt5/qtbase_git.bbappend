@@ -7,6 +7,8 @@ SRC_URI += "file://0003-Add-external-hostbindir-option.patch \
             file://0021-Fixed-unused-identifier-in-not-yet-used-enum.patch \
             "
 
+SRC_URI_remove = "file://0006-eglfs-fix-egl-error-for-platforms-only-supporting-on.patch"
+
 QT_CONFIG_FLAGS += "-external-hostbindir ${OE_QMAKE_PATH_EXTERNAL_HOST_BINS}"
 
 do_patch_append() {
