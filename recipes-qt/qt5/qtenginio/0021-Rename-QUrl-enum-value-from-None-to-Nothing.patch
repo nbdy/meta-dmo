@@ -1,0 +1,22 @@
+Index: git/src/enginio_client/enginioreply_p.h
+===================================================================
+--- git.orig/src/enginio_client/enginioreply_p.h
++++ git/src/enginio_client/enginioreply_p.h
+@@ -130,7 +130,7 @@ public:
+ 
+         QNetworkRequest request = _nreply->request();
+         qDebug() << "NetworkReply:" << _nreply;
+-        qDebug() << "  Request URL:" << request.url().toString(/*FormattingOptions*/ QUrl::None);
++        qDebug() << "  Request URL:" << request.url().toString(/*FormattingOptions*/ QUrl::Nothing);
+         qDebug() << "  Operation:" << operationNames[_nreply->operation()];
+         qDebug() << "  HTTP return code:" << backendStatus();
+         qDebug() << "  Headers[Content-Type]:" << request.header(QNetworkRequest::ContentTypeHeader);
+@@ -142,7 +142,7 @@ public:
+ 
+         QByteArray json = _client->_requestData.value(_nreply);
+         if (!json.isEmpty()) {
+-            if (request.url().toString(QUrl::None).endsWith(QString::fromUtf8("account/auth/identity")))
++            if (request.url().toString(QUrl::Nothing).endsWith(QString::fromUtf8("account/auth/identity")))
+                 qDebug() << "Request Data hidden because it contains password";
+             else
+                 qDebug() << "Request Data:" << json;
