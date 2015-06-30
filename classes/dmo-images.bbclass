@@ -29,8 +29,8 @@ IMAGE_CMD_dmosdcard () {
     # 0010MB - 1000MB - RootFS (ext3)
     # 1000MB - 2000M  - HomeFS (ext3)
     parted -s ${SDCARD_WITH_HOMEFS} mklabel msdos
-    parted -s ${SDCARD_WITH_HOMEFS} unit KiB mkpart primary fat32    1024   52224
-    parted -s ${SDCARD_WITH_HOMEFS} unit KiB mkpart primary         52224 2936832
+    parted -s ${SDCARD_WITH_HOMEFS} unit KiB mkpart primary fat32    1024   53248
+    parted -s ${SDCARD_WITH_HOMEFS} unit KiB mkpart primary         53248 2936832
     parted -s ${SDCARD_WITH_HOMEFS} unit KiB mkpart primary       2936832 3653632
     parted -s ${SDCARD_WITH_HOMEFS} unit KiB mkpart primary       3653632 3858431
     parted -s ${SDCARD_WITH_HOMEFS} print
@@ -58,7 +58,7 @@ IMAGE_CMD_dmosdcard () {
     
     # Burn Partition
     dd if=${WORKDIR}/boot.img    of=${SDCARD_WITH_HOMEFS} conv=notrunc seek=1 bs=$(expr 1024    \* 1024) && sync && sync
-    dd if=${SDCARD_ROOTFS}       of=${SDCARD_WITH_HOMEFS} conv=notrunc seek=1 bs=$(expr 52224   \* 1024) && sync && sync
+    dd if=${SDCARD_ROOTFS}       of=${SDCARD_WITH_HOMEFS} conv=notrunc seek=1 bs=$(expr 53248   \* 1024) && sync && sync
     dd if=${WORKDIR}/overlay.img of=${SDCARD_WITH_HOMEFS} conv=notrunc seek=1 bs=$(expr 2936832 \* 1024) && sync && sync
     dd if=${HOMEFS_IMAGE}        of=${SDCARD_WITH_HOMEFS} conv=notrunc seek=1 bs=$(expr 3653632 \* 1024) && sync && sync
 
