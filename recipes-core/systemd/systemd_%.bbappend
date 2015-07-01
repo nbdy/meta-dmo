@@ -21,6 +21,9 @@ pkg_postinst_${PN}() {
         fi
         systemctl $OPTS mask getty@tty1.service
         systemctl $OPTS mask systemd-machine-id-commit.service
+        if ${@bb.utils.contains('IMAGE_FEATURES', 'read-only-rootfs', 'true', 'false', d)}; then
+            systemctl $OPTS mask opkg-configure.service
+        fi
     fi
 }
 
