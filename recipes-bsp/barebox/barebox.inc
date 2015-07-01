@@ -28,6 +28,10 @@ INSANE_SKIP_${PN} = "True"
 
 
 do_compile () {
+        if [ ${@base_contains('IMAGE_FEATURES', 'read-only-rootfs', 'true', 'false', d)} == 'false' ]; then
+            echo "global linux.bootargs.overlayrw=\"overlayrw=/dev/mmcblk1p3\"" >> ${S}/defaultenv/defaultenv-2-base/config
+        fi
+
 	if [ "${@base_contains('DISTRO_FEATURES', 'ld-is-gold', 'ld-is-gold', '', d)}" = "ld-is-gold" ] ; then
 		sed -i 's/$(CROSS_COMPILE)ld/$(CROSS_COMPILE)ld.bfd/g' Makefile
 	fi
