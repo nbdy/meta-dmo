@@ -2,6 +2,7 @@
 # Released under the MIT license (see COPYING.MIT for the terms)
 
 inherit qmake5
+inherit systemd
 
 DESCRIPTION = "Data Modul welcome lanucher"
 HOMEPAGE = "http://www.data-modul.com"
@@ -11,7 +12,10 @@ SECTION = "graphics"
 DEPENDS = "qtbase qtbase-native qtdeclarative"
 RDEPENDS_${PN} = "qtbase qtdeclarative"
 
-SRC_URI = "git://git@emb.data-modul.com/userrepos/pst/dmlauncher;protocol=ssh"
+SRC_URI = " \
+            git://git@emb.data-modul.com/userrepos/pst/dmlauncher;protocol=ssh \
+            file://dmlauncher.service \
+            "
 SRCREV = "${AUTOREV}"
 PV = "${SRCPV}"
 
@@ -32,9 +36,17 @@ do_configure() {
 do_install() {
     install -d ${D}/usr/bin
     install -m 755 ./dmlauncher ${D}/usr/bin
+
+    if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'ture', 'flase', d)}; then
+        install -d ${D}/usr/lib/systemd/system/
+        install -m 644 ${WORKDIR}/dlauncher.service ${D}/usr/lib/systemd/system
+    fi
 }
 
 PACKAGES = "${PN} ${PN}-dbg"
 
 FILES_${PN} += "/opt/dmlauncher/bin/dmlauncher"
 FILES_${PN}-dbg += "${datadir}/${P}/.dbug"
+
+SYSTEMD_SERVICE_${PN} = "dmlauncher.service"
+
