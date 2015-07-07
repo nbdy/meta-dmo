@@ -1,5 +1,8 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/qtbase:"
 
+SRCREV = "${AUTOREV}"
+# QT 5.5 release
+#SRCREV = "fae33bfbe35f8d082b420ee09662ff60634cb355"
 
 SRC_URI += "file://0003-Add-external-hostbindir-option.patch \
             file://0011-qmake-don-t-build-it-in-configure-but-allow-to-build.patch \
