@@ -38,9 +38,9 @@ do_install() {
     install -d ${D}/usr/share/dmlauncher/apps
     install -m 755 ./dmlauncher ${D}/usr/bin
 
-    if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'ture', 'flase', d)}; then
+    if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'true', 'flase', d)}; then
         install -d ${D}/usr/lib/systemd/system/
-        install -m 644 ${WORKDIR}/dlauncher.service ${D}/usr/lib/systemd/system
+        install -m 644 ${WORKDIR}/dmlauncher.service ${D}/usr/lib/systemd/system
     fi
 }
 
