@@ -35,6 +35,7 @@ do_configure() {
 
 do_install() {
     install -d ${D}/usr/bin
+    install -d ${D}/usr/share/dmlauncher/apps
     install -m 755 ./dmlauncher ${D}/usr/bin
 
     if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'ture', 'flase', d)}; then
@@ -45,7 +46,7 @@ do_install() {
 
 PACKAGES = "${PN} ${PN}-dbg"
 
-FILES_${PN} += "/opt/dmlauncher/bin/dmlauncher"
+FILES_${PN} += "/usr/bin/dmlauncher /usr/share/dmlauncher/apps"
 FILES_${PN}-dbg += "${datadir}/${P}/.dbug"
 
 SYSTEMD_SERVICE_${PN} = "dmlauncher.service"
