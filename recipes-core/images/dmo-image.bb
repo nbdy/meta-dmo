@@ -4,6 +4,7 @@ HOMEPAGE="https://emb.data-modul.com"
 inherit core-image
 inherit dmo-images
 inherit dmo-checksum
+inherit image-buildinfo
 
 IMAGE_LINGUAS = " "
 LICENSE = "GPLv2"
