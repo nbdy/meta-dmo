@@ -33,4 +33,8 @@ do_install_append() {
         install -m 755 ${WORKDIR}/slim.sh ${D}/${sysconfdir}/init.d
         ln -sf ../init.d/slim.sh ${D}/${sysconfdir}/rc5.d/S99slim
     fi
+
+    # Enable auto login for root user
+    sed -e "s/#\s*default_user\s*simone/default_user root/" -i ${D}/${sysconfdir}/slim.conf
+    sed -e "s/#\s*auto_login\s*no/auto_login yes/" -i ${D}/${sysconfdir}/slim.conf
 }
