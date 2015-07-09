@@ -88,6 +88,7 @@ IMAGE_INSTALL_append_dmo-x11 = " \
 "
 IMAGE_INSTALL_append_dmo-qt = " \
     cinematicexperience \
+    dmlauncher \
     qt3d \
     qtbase \
     qtbase-examples \
