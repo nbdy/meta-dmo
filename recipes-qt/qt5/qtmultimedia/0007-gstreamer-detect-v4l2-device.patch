@@ -1,0 +1,235 @@
+From 2e4c3c9dd8f0c51624845134ab524e397c36e5aa Mon Sep 17 00:00:00 2001
+From: Zahari Doychev <zahari.doychev@linux.com>
+Date: Tue, 14 Jul 2015 13:08:28 +0200
+Subject: [PATCH 7/7] gstreamer: detect v4l2 device
+
+The converter and the overlay v4l2 devices are  being detected. The code takes
+always the first ipu so in the case of quad and HDMI it will not work. We
+need more logic for that.
+
+Signed-off-by: Zahari Doychev <zahari.doychev@linux.com>
+---
+ .../mediaplayer/qgstreamerplayersession.cpp        | 97 ++++++++++++++++++++--
+ .../mediaplayer/qgstreamerplayersession.h          | 15 ++++
+ 2 files changed, 103 insertions(+), 9 deletions(-)
+
+diff --git a/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp b/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp
+index 13a41c4..688e554 100644
+--- a/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp
++++ b/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp
+@@ -64,11 +64,13 @@
+ #include <QtCore/qdir.h>
+ #include <QtCore/qstandardpaths.h>
+ 
++#if defined(ZDO_TEST)
++#include <QDirIterator>
++#endif
++
+ //#define DEBUG_PLAYBIN
+ //#define DEBUG_VO_BIN_DUMP
+ 
+-#define ZDO_TEST
+-
+ QT_BEGIN_NAMESPACE
+ 
+ static bool usePlaybinVolume()
+@@ -213,7 +215,11 @@ QGstreamerPlayerSession::QGstreamerPlayerSession(QObject *parent)
+     m_videoIdentity = gst_element_factory_make("identity", NULL); // floating ref
+ 
+ #if defined(ZDO_TEST)
+-    m_videoConverter = gst_element_factory_make("v4l2video4convert", NULL);
++    std::string ConvPluginName;
++    GetConvPluginName(ConvPluginName);
++    GetOvlDevName(m_OvlDeviceName);
++    qDebug("v4l2 overlay device: %s ", m_OvlDeviceName.c_str());
++    m_videoConverter = gst_element_factory_make(ConvPluginName.c_str(), NULL);
+ #endif
+ 
+ #else
+@@ -294,6 +300,77 @@ QGstreamerPlayerSession::~QGstreamerPlayerSession()
+     }
+ }
+ 
++#if defined(ZDO_TEST)
++int QGstreamerPlayerSession::GetV4L2ConvName(GstPluginFeature *feature,
++					std::string& name)
++{
++	if (GST_IS_ELEMENT_FACTORY(feature)) {
++		GstElementFactory *factory;
++
++		factory = GST_ELEMENT_FACTORY(feature);
++		if (g_strrstr(GST_OBJECT_NAME(factory), "convert")) {
++			name = GST_OBJECT_NAME(factory);
++			return 1;
++		}
++	}
++
++	return 0;
++}
++int QGstreamerPlayerSession::GetConvPluginName(std::string& ConvPluginName)
++{
++	GList *plugins, *orig_plugins;
++	int rv = 0;
++
++	orig_plugins = plugins = gst_registry_get_plugin_list (gst_registry_get ());
++	while(plugins && !rv) {
++	    GstPlugin *plugin;
++	    plugin = (GstPlugin *) (plugins->data);
++	    plugins = g_list_next (plugins);
++	    if (!g_strcmp0(gst_plugin_get_name(plugin), "video4linux2")) {
++	        GList *features, *orig_features;
++		orig_features = features = gst_registry_get_feature_list_by_plugin(
++				gst_registry_get (),
++				gst_plugin_get_name (plugin));
++		while (features) {
++		   if (features->data) {
++			rv = GetV4L2ConvName(GST_PLUGIN_FEATURE(features->data),
++							ConvPluginName);
++			if (rv) {
++				break;
++			}
++		   }
++		   features = g_list_next (features);
++		}
++		gst_plugin_feature_list_free(orig_features);
++	    }
++	}
++	gst_plugin_list_free(orig_plugins);
++	return 0;
++}
++
++int QGstreamerPlayerSession::GetOvlDevName(std::string& OvlDevName)
++{
++	QDirIterator it("/dev/video/by-name", QDirIterator::Subdirectories);
++	QChar DevNum = ' ';
++	int rv = 0;
++
++	while (it.hasNext()) {
++		QString str = it.next();
++		QChar c = str[str.length()-1];
++		if (str.contains("/dev/video/by-name/imx-ipuv3-ovl-", Qt::CaseInsensitive)) {
++			if (DevNum == ' ' || DevNum > c) {
++				OvlDevName = str.toStdString();
++				DevNum = c;
++				rv = 1;
++			}
++		}
++	}
++
++	return rv;
++}
++
++#endif
++
+ GstElement *QGstreamerPlayerSession::playbin() const
+ {
+     return m_playbin;
+@@ -519,7 +596,7 @@ bool QGstreamerPlayerSession::isAudioAvailable() const
+ #if defined(ZDO_TEST)
+ static void setup_hw_decoder(GstElement *e)
+ {
+-	qDebug("hwdec: set dma buffer output\n");
++	qDebug("hwdec: set dma buffer for capture I/O");
+ 	g_object_set(e, "capture-io-mode", 4, NULL);
+ }
+ #endif
+@@ -725,14 +802,14 @@ void QGstreamerPlayerSession::setVideoRenderer(QObject *videoOutput)
+ 	m_wpos = videoposition;
+ 	m_wsz = videosize;
+ 
+-	qDebug("win: (%u,%u,%u,%u)\n",
++	qDebug("win: (%u,%u,%u,%u)",
+ 			m_wpos.rx(),
+ 			m_wpos.ry(),
+ 			m_wsz.rwidth(),
+ 			m_wsz.rheight());
+ 	/* setup IPU overlay output */
+ 	g_object_set(m_v4l2sink,
+-		     "device", "/dev/video/by-name/imx-ipuv3-ovl-0",
++		     "device", m_OvlDeviceName.c_str(),
+ 		     "io-mode", 5,
+ 		     "sync", TRUE,
+ 		     "overlay-top", m_wpos.rx(),
+@@ -1070,7 +1147,7 @@ bool QGstreamerPlayerSession::play()
+ #if defined(ZDO_TEST)
+ 	/* setup IPU overlay output */
+ 	g_object_set(m_v4l2sink,
+-		     "device", "/dev/video/by-name/imx-ipuv3-ovl-0",
++		     "device", m_OvlDeviceName.c_str(),
+ 		     "io-mode", 5,
+ 		     "sync", TRUE,
+ 		     "overlay-top", m_wpos.rx(),
+@@ -1213,7 +1290,10 @@ void QGstreamerPlayerSession::setSeekable(bool seekable)
+ #ifdef DEBUG_PLAYBIN
+         qDebug() << Q_FUNC_INFO << seekable;
+ #endif
+-    if (0 && seekable != m_seekable) {
++#if defined(ZDO_TEST)
++	seekable = false;
++#endif
++    if (seekable != m_seekable) {
+         m_seekable = seekable;
+         emit seekableChanged(m_seekable);
+     }
+@@ -1925,7 +2005,6 @@ void QGstreamerPlayerSession::handleElementAdded(GstBin *bin, GstElement *elemen
+                          G_CALLBACK(handleElementAdded), session);
+     } else if (g_strrstr(elementName,"video4dec") || g_strrstr(elementName,"video7dec")) {
+ 	/* setup dma buffers to avoid memcpy */
+-	qDebug("*** DECODER ELEMENT ADDED ***\n");
+ 	setup_hw_decoder(element);
+     }
+ 
+diff --git a/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.h b/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.h
+index 4c79b4b..4b6d447 100644
+--- a/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.h
++++ b/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.h
+@@ -52,6 +52,8 @@
+ 
+ #include <gst/gst.h>
+ 
++#define ZDO_TEST
++
+ QT_BEGIN_NAMESPACE
+ 
+ class QGstreamerBusHelper;
+@@ -191,6 +193,13 @@ private:
+ 
+     static void playlistTypeFindFunction(GstTypeFind *find, gpointer userData);
+ 
++#if defined(ZDO_TEST)
++    int GetConvPluginName(std::string& ConvPluginName);
++    int GetV4L2ConvName(GstPluginFeature *feature, std::string& name);
++    int GetOvlDevName(std::string& OvlDevName);
++#endif
++
++
+     QNetworkRequest m_request;
+     QMediaPlayer::State m_state;
+     QMediaPlayer::State m_pendingState;
+@@ -201,8 +210,12 @@ private:
+ 
+     GstElement* m_videoOutputBin;
+     GstElement* m_videoIdentity;
++#if defined(ZDO_TEST)
+     GstElement* m_videoConverter;
+     GstElement* m_v4l2sink;
++    std::string m_OvlDeviceName;
++#endif
++
+ #if !GST_CHECK_VERSION(1,0,0)
+     GstElement* m_colorSpace;
+     bool m_usingColorspaceElement;
+@@ -217,8 +230,10 @@ private:
+     QObject *m_videoOutput;
+     QGstreamerVideoRendererInterface *m_renderer;
+ 
++#if defined(ZDO_TEST)
+     QPoint m_wpos;
+     QSize  m_wsz;
++#endif
+ 
+ #if defined(HAVE_GST_APPSRC)
+     QGstAppSrc *m_appSrc;
+-- 
+2.4.5
+

@@ -1,0 +1,200 @@
+From b07cc5c39545bf3beb6b817b6559c94154f1b596 Mon Sep 17 00:00:00 2001
+From: Zahari Doychev <zahari.doychev@linux.com>
+Date: Fri, 3 Jul 2015 15:05:48 +0200
+Subject: [PATCH 6/7] gstreamer: fix stop function
+
+Retain v4l2sink when finishing video output. This fixes the stop function
+and enables to load properly new videos. The setup of dma decoder buffers
+is move in the right callback too.
+
+Signed-off-by: Zahari Doychev <zahari.doychev@linux.com>
+---
+ .../mediaplayer/qgstreamerplayersession.cpp        | 85 ++++++++++++++--------
+ 1 file changed, 53 insertions(+), 32 deletions(-)
+
+diff --git a/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp b/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp
+index 8d45d15..13a41c4 100644
+--- a/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp
++++ b/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp
+@@ -522,23 +522,6 @@ static void setup_hw_decoder(GstElement *e)
+ 	qDebug("hwdec: set dma buffer output\n");
+ 	g_object_set(e, "capture-io-mode", 4, NULL);
+ }
+-
+-static void element_added_handler (GstBin *bin, GstElement *e, void *data)
+-{
+-	gchar *name = gst_element_get_name(e);
+-	(void) bin;
+-	if (name) {
+-		if (g_strrstr(name,"decode")) {
+-			g_signal_connect(e, "element-added",
+-				G_CALLBACK(element_added_handler), data);
+-		}
+-		if (g_strrstr(name,"videodec") || g_strrstr(name,"video7dec")) {
+-			qDebug("*** DECODER ELEMENT ADDED ***\n");
+-			setup_hw_decoder(e);
+-		}
+-		g_free(name);
+-	}
+-}
+ #endif
+ 
+ #if GST_CHECK_VERSION(1,0,0)
+@@ -756,9 +739,6 @@ void QGstreamerPlayerSession::setVideoRenderer(QObject *videoOutput)
+ 		     "overlay-left", m_wpos.ry(),
+ 		     "overlay-width", m_wsz.rwidth(),
+ 		     "overlay-height", m_wsz.rheight(), NULL);
+-
+-	g_signal_connect(m_playbin, "element-added",
+-			G_CALLBACK(element_added_handler), NULL);
+ #else
+         gst_bin_remove(GST_BIN(m_videoOutputBin), m_videoSink);
+ 
+@@ -806,7 +786,7 @@ void QGstreamerPlayerSession::setVideoRenderer(QObject *videoOutput)
+         resumeVideoProbes();
+ 
+     } else {
+-        if (m_pendingVideoSink) {
++	if (m_pendingVideoSink) {
+ #ifdef DEBUG_PLAYBIN
+             qDebug() << "already waiting for pad to be blocked, just change the pending sink";
+ #endif
+@@ -821,9 +801,15 @@ void QGstreamerPlayerSession::setVideoRenderer(QObject *videoOutput)
+ #endif
+ 
+         //block pads, async to avoid locking in paused state
+-        GstPad *srcPad = gst_element_get_static_pad(m_videoIdentity, "src");
++#if defined(ZDO_TEST)
++	GstPad *srcPad = gst_element_get_static_pad(m_videoConverter, "src");
++#else
++	GstPad *srcPad = gst_element_get_static_pad(m_videoIdentity, "src");
++#endif
++
+ #if GST_CHECK_VERSION(1,0,0)
+-        this->pad_probe_id = gst_pad_add_probe(srcPad, (GstPadProbeType)(GST_PAD_PROBE_TYPE_BUFFER | GST_PAD_PROBE_TYPE_BLOCKING), block_pad_cb, this, NULL);
++        this->pad_probe_id = gst_pad_add_probe(srcPad, (GstPadProbeType)(GST_PAD_PROBE_TYPE_BUFFER |
++				GST_PAD_PROBE_TYPE_BLOCKING), block_pad_cb, this, NULL);
+ #else
+         gst_pad_set_blocked_async(srcPad, true, &block_pad_cb, this);
+ #endif
+@@ -850,17 +836,30 @@ void QGstreamerPlayerSession::finishVideoOutputChange()
+     qDebug() << "finishVideoOutputChange" << m_pendingVideoSink;
+ #endif
+ 
++#if defined(ZDO_TEST)
++    GstPad *srcPad = gst_element_get_static_pad(m_videoConverter, "src");
++#else
+     GstPad *srcPad = gst_element_get_static_pad(m_videoIdentity, "src");
++#endif
+ 
+     if (!gst_pad_is_blocked(srcPad)) {
+         //pad is not blocked, it's possible to swap outputs only in the null state
+         qWarning() << "Pad is not blocked yet, could not switch video sink";
+-        GstState identityElementState = GST_STATE_NULL;
++#if defined(ZDO_TEST)
++	GstState convElementState = GST_STATE_NULL;
++        gst_element_get_state(m_videoConverter, &convElementState, NULL, GST_CLOCK_TIME_NONE);
++        if (convElementState != GST_STATE_NULL) {
++            gst_object_unref(GST_OBJECT(srcPad));
++            return; //can't change vo yet, received async call from the previous change
++        }
++#else
++	GstState identityElementState = GST_STATE_NULL;
+         gst_element_get_state(m_videoIdentity, &identityElementState, NULL, GST_CLOCK_TIME_NONE);
+         if (identityElementState != GST_STATE_NULL) {
+             gst_object_unref(GST_OBJECT(srcPad));
+             return; //can't change vo yet, received async call from the previous change
+         }
++#endif
+     }
+ 
+     if (m_pendingVideoSink == m_videoSink) {
+@@ -874,8 +873,8 @@ void QGstreamerPlayerSession::finishVideoOutputChange()
+             gst_pad_set_blocked_async(srcPad, false, &block_pad_cb, 0);
+ #endif
+ 
+-        m_pendingVideoSink = 0;
+-        gst_object_unref(GST_OBJECT(srcPad));
++	m_pendingVideoSink = 0;
++	gst_object_unref(GST_OBJECT(srcPad));
+         return;
+     }
+ 
+@@ -891,21 +890,39 @@ void QGstreamerPlayerSession::finishVideoOutputChange()
+     {
+ #endif
+         gst_element_set_state(m_videoSink, GST_STATE_NULL);
+-        gst_element_unlink(m_videoIdentity, m_videoSink);
++#if defined(ZDO_TEST)
++	qWarning() << Q_FUNC_INFO << "skip unlinking converter and video sink";
++#else
++	gst_element_unlink(m_videoIdentity, m_videoSink);
++#endif
+     }
+ 
+-    removeVideoBufferProbe();
++#if !defined(ZDO_TEST)
++   removeVideoBufferProbe();
+ 
+     gst_bin_remove(GST_BIN(m_videoOutputBin), m_videoSink);
++#endif
++
++    qDebug() << Q_FUNC_INFO << "Setting video sink " << m_pendingVideoSink;
+ 
++#if defined(ZDO_TEST)
++    qWarning() << "EXPERIMENTAL: forcing v4l2sink" << m_v4l2sink;
++    m_videoSink = m_v4l2sink;
++#else
+     m_videoSink = m_pendingVideoSink;
++#endif
+     m_pendingVideoSink = 0;
+ 
+     gst_bin_add(GST_BIN(m_videoOutputBin), m_videoSink);
+ 
+     addVideoBufferProbe();
+ 
++#if defined(ZDO_TEST)
++    bool linked = true;
++#else
+     bool linked = gst_element_link(m_videoIdentity, m_videoSink);
++#endif
++
+ #if !GST_CHECK_VERSION(1,0,0)
+     m_usingColorspaceElement = false;
+     if (!linked) {
+@@ -1086,9 +1103,9 @@ bool QGstreamerPlayerSession::pause()
+ #endif
+     if (m_playbin) {
+         m_pendingState = QMediaPlayer::PausedState;
+-        if (m_pendingVideoSink != 0)
+-            return true;
+-
++        if (m_pendingVideoSink != 0) {
++		return true;
++	}
+         if (gst_element_set_state(m_playbin, GST_STATE_PAUSED) == GST_STATE_CHANGE_FAILURE) {
+             if (!m_isPlaylist) {
+                 qWarning() << "GStreamer; Unable to pause -" << m_request.url().toString();
+@@ -1264,7 +1281,7 @@ bool QGstreamerPlayerSession::processBusMessage(const QGstreamerMessage &message
+                     case GST_STATE_VOID_PENDING:
+                     case GST_STATE_NULL:
+                         setSeekable(false);
+-                        finishVideoOutputChange();
++			finishVideoOutputChange();
+                         if (m_state != QMediaPlayer::StoppedState)
+                             emit stateChanged(m_state = QMediaPlayer::StoppedState);
+                         break;
+@@ -1906,6 +1923,10 @@ void QGstreamerPlayerSession::handleElementAdded(GstBin *bin, GstElement *elemen
+         //Don't touch other bins since they may have unrelated queues
+         g_signal_connect(element, "element-added",
+                          G_CALLBACK(handleElementAdded), session);
++    } else if (g_strrstr(elementName,"video4dec") || g_strrstr(elementName,"video7dec")) {
++	/* setup dma buffers to avoid memcpy */
++	qDebug("*** DECODER ELEMENT ADDED ***\n");
++	setup_hw_decoder(element);
+     }
+ 
+     g_free(elementName);
+-- 
+2.4.5
+

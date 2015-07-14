@@ -1,0 +1,165 @@
+From 9b812ecbc5e595fc759bce0eb1ca0fec69de7919 Mon Sep 17 00:00:00 2001
+From: Patrick Stumpf <pstumpf@data-modul.com>
+Date: Tue, 30 Jun 2015 14:18:13 +0200
+Subject: [PATCH 2/7] gstreamer: get right window position
+
+This is a fix to get the right window coordinates for the gstreamer v4l2sink
+crop window. The patch is probably a temporary solution.
+
+Signed-off-by: Zahari Doychev <zahari.doychev@linux.com>
+---
+ .../mediaplayer/qgstreamerplayercontrol.cpp        |  6 ++-
+ .../mediaplayer/qgstreamerplayercontrol.h          |  2 +
+ .../mediaplayer/qgstreamerplayersession.cpp        | 61 ++++++++++++++++++----
+ 3 files changed, 57 insertions(+), 12 deletions(-)
+
+diff --git a/src/plugins/gstreamer/mediaplayer/qgstreamerplayercontrol.cpp b/src/plugins/gstreamer/mediaplayer/qgstreamerplayercontrol.cpp
+index 4846353..20f1ab4 100644
+--- a/src/plugins/gstreamer/mediaplayer/qgstreamerplayercontrol.cpp
++++ b/src/plugins/gstreamer/mediaplayer/qgstreamerplayercontrol.cpp
+@@ -62,6 +62,7 @@ QGstreamerPlayerControl::QGstreamerPlayerControl(QGstreamerPlayerSession *sessio
+     , m_pendingSeekPosition(-1)
+     , m_setMediaPending(false)
+     , m_stream(0)
++    , m_output(0)
+ {
+     m_resources = QMediaResourcePolicy::createResourceSet<QMediaPlayerResourceSetInterface>();
+     Q_ASSERT(m_resources);
+@@ -341,6 +342,8 @@ const QIODevice *QGstreamerPlayerControl::mediaStream() const
+ 
+ void QGstreamerPlayerControl::setMedia(const QMediaContent &content, QIODevice *stream)
+ {
++    m_session->setVideoRenderer(m_output);
++
+ #ifdef DEBUG_PLAYBIN
+     qDebug() << Q_FUNC_INFO;
+ #endif
+@@ -424,7 +427,8 @@ void QGstreamerPlayerControl::setMedia(const QMediaContent &content, QIODevice *
+ 
+ void QGstreamerPlayerControl::setVideoOutput(QObject *output)
+ {
+-    m_session->setVideoRenderer(output);
++    m_output = output;
++//    m_session->setVideoRenderer(output);
+ }
+ 
+ bool QGstreamerPlayerControl::isAudioAvailable() const
+diff --git a/src/plugins/gstreamer/mediaplayer/qgstreamerplayercontrol.h b/src/plugins/gstreamer/mediaplayer/qgstreamerplayercontrol.h
+index c9621b7..ee7f76c 100644
+--- a/src/plugins/gstreamer/mediaplayer/qgstreamerplayercontrol.h
++++ b/src/plugins/gstreamer/mediaplayer/qgstreamerplayercontrol.h
+@@ -130,6 +130,8 @@ private:
+     QIODevice *m_stream;
+ 
+     QMediaPlayerResourceSetInterface *m_resources;
++
++    QObject *m_output;
+ };
+ 
+ QT_END_NAMESPACE
+diff --git a/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp b/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp
+index a1cafdd..01454ae 100644
+--- a/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp
++++ b/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp
+@@ -34,6 +34,11 @@
+ #include "qgstreamerplayersession.h"
+ #include <private/qgstreamerbushelper_p.h>
+ 
++#include <QApplication>
++#include <QMainWindow>
++#include <QtMultimediaWidgets/QVideoWidget>
++#include <qgstreamerplayerservice.h>
++
+ #include <private/qgstreameraudioprobecontrol_p.h>
+ #include <private/qgstreamervideoprobecontrol_p.h>
+ #include <private/qgstreamervideorendererinterface_p.h>
+@@ -630,34 +635,67 @@ void QGstreamerPlayerSession::setVideoRenderer(QObject *videoOutput)
+ 
+ #if defined(ZDO_TEST)
+ 	bool linked = true;
++
++	// -------------------		  // PST
++	QPoint videoposition;
++	QSize videosize;
++	bool success = false;
++	qDebug() << "GST setVideoRenderer()";
++	qDebug() << "GST" << qApp;
++	QList<QVideoWidget*> widgets = qApp->activeWindow()->findChildren<QVideoWidget*>();	// problem 1: activeWindow is not set yet at this point
++	qDebug() << "GST" << widgets;
++	foreach(QVideoWidget* widget, widgets)
++	{
++		if(widget->mediaObject()->service() == this->parent())
++		{
++			success = true;
++			videoposition = widget->mapToGlobal(QPoint(0,0)); // problem 2: window is not layed out at this point, so we get wrong coordinates
++									  // current solution: call this function from setMedia() instead of
++									  //                   setVideoOutput() in qgstreamerplayercontrol.cpp
++									  //                   (maybe find a better place, anywhere after show() has been called on the window...)
++			videosize = widget->size();
++			// do some calculations depending on fill mode (stretch, keepaspect)
++			qDebug() << "GST" << videoposition << videosize;
++		}
++	}
++	if(!success)
++		qWarning() << "could not find QVideoWidget!";
++	// -------------------
++
+ 	if (!m_v4l2sink) {
+ 		qWarning() << "EXPERIMENTAL: force v4l2sink";
+ 		m_v4l2sink = gst_element_factory_make("v4l2sink", "v4l2sink");
+ 
++
++
+ 		GstCaps *caps;
+ 		caps =
+ 		     gst_caps_new_simple("video/x-raw", "format", G_TYPE_STRING, "RGB",
+-						"width", G_TYPE_INT, 800,
+-						"height", G_TYPE_INT, 480, NULL);
++						"width", G_TYPE_INT, videosize.rwidth(),
++						"height", G_TYPE_INT, videosize.rheight(), NULL);
+ 
+ 		/* setup IPU converter */
+ 		g_object_set(m_videoConverter, /*"output-io-mode", 5,*/
+ 					"capture-io-mode", 4,
+ 						   NULL);
+-		/* setup IPU overlay output */
+-		g_object_set(m_v4l2sink,
+-			     "device", "/dev/video/by-name/imx-ipuv3-ovl-0",
+-			     "io-mode", 5,
+-			     "sync", TRUE,
+-			     "overlay-top", 130,
+-			     "overlay-left", 30,
+-			     "overlay-width", 800,
+-			     "overlay-height", 480, NULL);
++
++
+ 		gst_bin_add(GST_BIN(m_videoOutputBin), m_v4l2sink);
+ 		linked = gst_element_link_filtered(m_videoConverter, m_v4l2sink, caps);
+ 		gst_caps_unref(caps);
+ 	}	
+ 	m_videoSink = m_v4l2sink;
++
++	/* setup IPU overlay output */
++	g_object_set(m_v4l2sink,
++		     "device", "/dev/video/by-name/imx-ipuv3-ovl-0",
++		     "io-mode", 5,
++		     "sync", TRUE,
++		     "overlay-top", videoposition.rx(),
++		     "overlay-left", videoposition.ry(),
++		     "overlay-width", videosize.rwidth(),
++		     "overlay-height", videosize.rheight(), NULL);
++
+ #else
+         gst_bin_remove(GST_BIN(m_videoOutputBin), m_videoSink);
+ 
+@@ -1483,6 +1521,7 @@ void QGstreamerPlayerSession::updateVideoResolutionTag()
+ #endif
+     QSize size;
+     QSize aspectRatio;
++
+     GstPad *pad = gst_element_get_static_pad(m_videoIdentity, "src");
+     GstCaps *caps = qt_gst_pad_get_current_caps(pad);
+ 
+-- 
+2.4.5
+

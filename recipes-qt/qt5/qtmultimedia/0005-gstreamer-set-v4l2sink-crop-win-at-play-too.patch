@@ -1,0 +1,98 @@
+From 73f022ffa2805a96f5490d4a6f822a50fbe6932f Mon Sep 17 00:00:00 2001
+From: Zahari Doychev <zahari.doychev@linux.com>
+Date: Thu, 2 Jul 2015 10:11:16 +0200
+Subject: [PATCH 5/7] gstreamer: set v4l2sink crop win at play too
+
+Set the windows position at playback start to make sure the window stays on the
+original position. The qml applications seem to change this at playback restart.
+
+Signed-off-by: Zahari Doychev <zahari.doychev@linux.com>
+---
+ .../mediaplayer/qgstreamerplayersession.cpp        | 32 ++++++++++++++++------
+ .../mediaplayer/qgstreamerplayersession.h          |  6 ++++
+ 2 files changed, 29 insertions(+), 9 deletions(-)
+
+diff --git a/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp b/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp
+index 3e75f1e..8d45d15 100644
+--- a/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp
++++ b/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp
+@@ -739,21 +739,23 @@ void QGstreamerPlayerSession::setVideoRenderer(QObject *videoOutput)
+ 		gst_caps_unref(caps);
+ 	}	
+ 	m_videoSink = m_v4l2sink;
++	m_wpos = videoposition;
++	m_wsz = videosize;
+ 
+ 	qDebug("win: (%u,%u,%u,%u)\n",
+-			videoposition.rx(),
+-			videoposition.ry(),
+-			videosize.rwidth(),
+-			videosize.rheight());
++			m_wpos.rx(),
++			m_wpos.ry(),
++			m_wsz.rwidth(),
++			m_wsz.rheight());
+ 	/* setup IPU overlay output */
+ 	g_object_set(m_v4l2sink,
+ 		     "device", "/dev/video/by-name/imx-ipuv3-ovl-0",
+ 		     "io-mode", 5,
+ 		     "sync", TRUE,
+-		     "overlay-top", videoposition.rx(),
+-		     "overlay-left", videoposition.ry(),
+-		     "overlay-width", videosize.rwidth(),
+-		     "overlay-height", videosize.rheight(), NULL);
++		     "overlay-top", m_wpos.rx(),
++		     "overlay-left", m_wpos.ry(),
++		     "overlay-width", m_wsz.rwidth(),
++		     "overlay-height", m_wsz.rheight(), NULL);
+ 
+ 	g_signal_connect(m_playbin, "element-added",
+ 			G_CALLBACK(element_added_handler), NULL);
+@@ -1048,7 +1050,19 @@ bool QGstreamerPlayerSession::play()
+     m_everPlayed = false;
+     if (m_playbin) {
+         m_pendingState = QMediaPlayer::PlayingState;
+-        if (gst_element_set_state(m_playbin, GST_STATE_PLAYING) == GST_STATE_CHANGE_FAILURE) {
++#if defined(ZDO_TEST)
++	/* setup IPU overlay output */
++	g_object_set(m_v4l2sink,
++		     "device", "/dev/video/by-name/imx-ipuv3-ovl-0",
++		     "io-mode", 5,
++		     "sync", TRUE,
++		     "overlay-top", m_wpos.rx(),
++		     "overlay-left", m_wpos.ry(),
++		     "overlay-width", m_wsz.rwidth(),
++		     "overlay-height", m_wsz.rheight(), NULL);
++#endif
++
++	if (gst_element_set_state(m_playbin, GST_STATE_PLAYING) == GST_STATE_CHANGE_FAILURE) {
+             if (!m_isPlaylist) {
+                 qWarning() << "GStreamer; Unable to play -" << m_request.url().toString();
+                 m_pendingState = m_state = QMediaPlayer::StoppedState;
+diff --git a/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.h b/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.h
+index 888a553..4c79b4b 100644
+--- a/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.h
++++ b/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.h
+@@ -42,6 +42,9 @@
+ #include <qmediaplayer.h>
+ #include <qmediastreamscontrol.h>
+ #include <qaudioformat.h>
++#include <QApplication>
++#include <QMainWindow>
++#include <QtMultimediaWidgets/QVideoWidget>
+ 
+ #if defined(HAVE_GST_APPSRC)
+ #include <private/qgstappsrc_p.h>
+@@ -214,6 +217,9 @@ private:
+     QObject *m_videoOutput;
+     QGstreamerVideoRendererInterface *m_renderer;
+ 
++    QPoint m_wpos;
++    QSize  m_wsz;
++
+ #if defined(HAVE_GST_APPSRC)
+     QGstAppSrc *m_appSrc;
+ #endif
+-- 
+2.4.5
+

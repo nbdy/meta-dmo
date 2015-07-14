@@ -1,0 +1,89 @@
+From 9212a05c8df6d53943cebf73fe4d22e5a5ec6b7a Mon Sep 17 00:00:00 2001
+From: Patrick Stumpf <pstumpf@data-modul.com>
+Date: Thu, 2 Jul 2015 09:16:14 +0200
+Subject: [PATCH 3/7] gstreamer: fix for qml window crop coordinates
+
+This fix allows to get the qml window coordinates and pass them to the gst
+pipeline.
+
+Signed-off-by: Zahari Doychev <zahari.doychev@linux.com>
+---
+ src/plugins/gstreamer/common.pri                   |  2 +-
+ .../mediaplayer/qgstreamerplayersession.cpp        | 36 ++++++++++++++++++++--
+ 2 files changed, 35 insertions(+), 3 deletions(-)
+
+diff --git a/src/plugins/gstreamer/common.pri b/src/plugins/gstreamer/common.pri
+index eb6a299..87ac8f6 100644
+--- a/src/plugins/gstreamer/common.pri
++++ b/src/plugins/gstreamer/common.pri
+@@ -1,5 +1,5 @@
+ 
+-QT += core-private multimedia-private network
++QT += core-private multimedia-private network quick
+ CONFIG += no_private_qt_headers_warning
+ 
+ qtHaveModule(widgets) {
+diff --git a/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp b/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp
+index 01454ae..c68dbe3 100644
+--- a/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp
++++ b/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp
+@@ -39,6 +39,9 @@
+ #include <QtMultimediaWidgets/QVideoWidget>
+ #include <qgstreamerplayerservice.h>
+ 
++#include <QtQuick/QQuickItem>
++#include <QtQuick/QQuickView>
++
+ #include <private/qgstreameraudioprobecontrol_p.h>
+ #include <private/qgstreamervideoprobecontrol_p.h>
+ #include <private/qgstreamervideorendererinterface_p.h>
+@@ -61,8 +64,8 @@
+ #include <QtCore/qdir.h>
+ #include <QtCore/qstandardpaths.h>
+ 
+-#define DEBUG_PLAYBIN
+-#define DEBUG_VO_BIN_DUMP
++//#define DEBUG_PLAYBIN
++//#define DEBUG_VO_BIN_DUMP
+ 
+ #define ZDO_TEST
+ 
+@@ -656,6 +659,35 @@ void QGstreamerPlayerSession::setVideoRenderer(QObject *videoOutput)
+ 			videosize = widget->size();
+ 			// do some calculations depending on fill mode (stretch, keepaspect)
+ 			qDebug() << "GST" << videoposition << videosize;
++			break;
++		}
++	}
++
++	if(!success)
++	{
++		QWindowList windows = qApp->allWindows();
++		if(windows.size() > 0 && (QString)windows.first()->metaObject()->className() == "QQuickView")
++		{
++			QQuickView* view = (QQuickView*)windows.first();
++			QList<QQuickItem*> items = view->rootObject()->findChildren<QQuickItem*>();
++			foreach(QQuickItem* item, items)
++			{
++				if((QString)item->metaObject()->className() == "QDeclarativeVideoOutput"
++					|| (QString)item->metaObject()->superClass()->className() == "QDeclarativeVideoOutput")
++							// this will always get the first videooutput, if we want to support more we have to get
++							// m_mediaObject from qdeclarativevideooutput_p.h (currently private) and compare the
++							// service again, like above
++				{
++					success = true;
++					QPointF tmp = item->mapToScene(QPointF());
++					videoposition = QPoint(tmp.y(), tmp.x());
++					videoposition += view->position();
++					videosize = QSize(item->width(), item->height());
++					// do some calculations depending on fill mode (stretch, keepaspect)
++					qDebug() << "GST" << videoposition << videosize;
++					break;
++				}
++			}
+ 		}
+ 	}
+ 	if(!success)
+-- 
+2.4.5
+

@@ -1,0 +1,94 @@
+From cf2863e57a1dd0e7ecc9b4691f339f9a7151cf1e Mon Sep 17 00:00:00 2001
+From: Zahari Doychev <zahari.doychev@linux.com>
+Date: Thu, 2 Jul 2015 09:18:40 +0200
+Subject: [PATCH 4/7] gstreamer: use dma between decoder and converter
+
+This patch enables the usage of dma buffers between the imx6 decoder and
+converter. This improves the playback performance.
+
+Signed-off-by: Zahari Doychev <zahari.doychev@linux.com>
+---
+ .../mediaplayer/qgstreamerplayersession.cpp        | 37 +++++++++++++++++++---
+ 1 file changed, 33 insertions(+), 4 deletions(-)
+
+diff --git a/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp b/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp
+index c68dbe3..3e75f1e 100644
+--- a/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp
++++ b/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp
+@@ -516,6 +516,31 @@ bool QGstreamerPlayerSession::isAudioAvailable() const
+     return m_audioAvailable;
+ }
+ 
++#if defined(ZDO_TEST)
++static void setup_hw_decoder(GstElement *e)
++{
++	qDebug("hwdec: set dma buffer output\n");
++	g_object_set(e, "capture-io-mode", 4, NULL);
++}
++
++static void element_added_handler (GstBin *bin, GstElement *e, void *data)
++{
++	gchar *name = gst_element_get_name(e);
++	(void) bin;
++	if (name) {
++		if (g_strrstr(name,"decode")) {
++			g_signal_connect(e, "element-added",
++				G_CALLBACK(element_added_handler), data);
++		}
++		if (g_strrstr(name,"videodec") || g_strrstr(name,"video7dec")) {
++			qDebug("*** DECODER ELEMENT ADDED ***\n");
++			setup_hw_decoder(e);
++		}
++		g_free(name);
++	}
++}
++#endif
++
+ #if GST_CHECK_VERSION(1,0,0)
+ static GstPadProbeReturn block_pad_cb(GstPad *pad, GstPadProbeInfo *info, gpointer user_data)
+ #else
+@@ -698,8 +723,6 @@ void QGstreamerPlayerSession::setVideoRenderer(QObject *videoOutput)
+ 		qWarning() << "EXPERIMENTAL: force v4l2sink";
+ 		m_v4l2sink = gst_element_factory_make("v4l2sink", "v4l2sink");
+ 
+-
+-
+ 		GstCaps *caps;
+ 		caps =
+ 		     gst_caps_new_simple("video/x-raw", "format", G_TYPE_STRING, "RGB",
+@@ -707,17 +730,21 @@ void QGstreamerPlayerSession::setVideoRenderer(QObject *videoOutput)
+ 						"height", G_TYPE_INT, videosize.rheight(), NULL);
+ 
+ 		/* setup IPU converter */
+-		g_object_set(m_videoConverter, /*"output-io-mode", 5,*/
++		g_object_set(m_videoConverter, "output-io-mode", 5,
+ 					"capture-io-mode", 4,
+ 						   NULL);
+ 
+-
+ 		gst_bin_add(GST_BIN(m_videoOutputBin), m_v4l2sink);
+ 		linked = gst_element_link_filtered(m_videoConverter, m_v4l2sink, caps);
+ 		gst_caps_unref(caps);
+ 	}	
+ 	m_videoSink = m_v4l2sink;
+ 
++	qDebug("win: (%u,%u,%u,%u)\n",
++			videoposition.rx(),
++			videoposition.ry(),
++			videosize.rwidth(),
++			videosize.rheight());
+ 	/* setup IPU overlay output */
+ 	g_object_set(m_v4l2sink,
+ 		     "device", "/dev/video/by-name/imx-ipuv3-ovl-0",
+@@ -728,6 +755,8 @@ void QGstreamerPlayerSession::setVideoRenderer(QObject *videoOutput)
+ 		     "overlay-width", videosize.rwidth(),
+ 		     "overlay-height", videosize.rheight(), NULL);
+ 
++	g_signal_connect(m_playbin, "element-added",
++			G_CALLBACK(element_added_handler), NULL);
+ #else
+         gst_bin_remove(GST_BIN(m_videoOutputBin), m_videoSink);
+ 
+-- 
+2.4.5
+
