@@ -4,7 +4,7 @@
 DESCRIPTION = "Some scripts to start video over gst-launch"
 HOMEPAGE="https://emb.data-modul.com"
 LICENSE = "MIT"
-DEPENDS = "gstreamer"
+DEPENDS = "gstreamer1.0"
 LIC_FILES_CHKSUM = "file://${WORKDIR}/MIT-license.txt;md5=84c2f27af54cb640d5fa0a101671f386"
 PACKAGE_ARCH = "all"
 
