@@ -1,14 +1,12 @@
-
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
-
-SRC_URI += "file://v4l-coda960-imx6q.bin \
-            file://v4l-coda960-imx6dl.bin"
+DEPENDS += "convert-vpu-firmware-native"
 
 FIRMWARE_NAME_mx6q = "v4l-coda960-imx6q.bin"
 FIRMWARE_NAME_mx6dl = "v4l-coda960-imx6dl.bin"
+SOURCE_FW_NAME_mx6q = "vpu_fw_imx6q.bin"
+SOURCE_FW_NAME_mx6dl = "vpu_fw_imx6d.bin"
 
 do_install_append () {
-    install ${WORKDIR}/${FIRMWARE_NAME} ${D}/lib/firmware/
+    ${STAGING_BINDIR_NATIVE}/convert-vpu-firmware ${S}/firmware/vpu/${SOURCE_FW_NAME} ${D}/lib/firmware/${FIRMWARE_NAME}
     ln -sf ../${FIRMWARE_NAME} ${D}/lib/firmware/vpu/${FIRMWARE_NAME}
 }
 
