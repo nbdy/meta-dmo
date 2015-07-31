@@ -1,0 +1,11 @@
+--- .orig/dmlauncher.service
++++ ./dmlauncher.service
+@@ -4,7 +4,7 @@ Description=DM Launcher
+ [Service]
+ User=root
+ Type=simple
+-Environment="QT_QPA_PLATFORM=eglfs"
++Environment="QT_QPA_PLATFORM=xcb"
+ Environment="DISPLAY=:0" "QML2_IMPORT_PATH=/usr/lib/qt5/qml" "QT_QPA_PLATFORM_PLUGIN_PATH=/usr/lib/qt5/plugins/platforms/" "QML_IMPORT_PATH=/usr/lib/qt5/qml" "QT_QPA_FONTDIR=/usr/lib/fonts" "QT_PLUGIN_PATH=/usr/lib/qt5/plugins"
+ ExecStart=/usr/bin/dmlauncher
+ Restart=always

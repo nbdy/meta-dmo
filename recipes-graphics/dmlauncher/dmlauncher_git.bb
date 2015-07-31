@@ -24,6 +24,13 @@ OE_QMAKE_QMAKE = "bin/qmake"
 
 S="${WORKDIR}/git"
 
+SRC_URI_append_dmo-x11 += 'file://0001-x11-qtplatform-xcb'
+
+python do_unpack_append_dmo-x11() {
+
+    os.system("patch -p1 < 0001-x11-qtplatform-xcb")
+}
+
 do_configure() {
     if [ ! -e ${B}/bin/qmake ]; then
         mkdir ${B}/bin
