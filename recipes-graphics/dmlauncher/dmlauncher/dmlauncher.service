@@ -5,7 +5,7 @@ Description=DM Launcher
 User=root
 Type=simple
 Environment="QT_QPA_PLATFORM=eglfs"
-Environment="DISPLAY=:0" "QML2_IMPORT_PATH=/usr/lib/qt5/qml" "QT_QPA_PLATFORM_PLUGIN_PATH=/usr/lib/qt5/plugins/platforms/" "QML_IMPORT_PATH=/usr/lib/qt5/qml" "QT_QPA_FONTDIR=/usr/lib/fonts" "QT_PLUGIN_PATH=/usr/lib/qt5/plugins"
+Environment="DISPLAY=:0"
 ExecStart=/usr/bin/dmlauncher -b
 Restart=always
 RestartSec=2
