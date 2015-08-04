@@ -204,9 +204,3 @@ ssh_allow_empty_password_append() {
     fi
 }
 
-python do_rootfs_append() {
-
-    fp = open("${IMAGE_ROOTFS}/etc/hosts", 'a')
-    fp.write('127.0.0.1    ${MACHINE}\n')
-    fp.close()
-}
