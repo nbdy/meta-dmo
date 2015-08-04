@@ -203,3 +203,10 @@ ssh_allow_empty_password_append() {
         sed -i 's/^[#[:space:]]*PermitEmptyPasswords.*/PermitEmptyPasswords yes/' ${IMAGE_ROOTFS}${sysconfdir}/ssh/sshd_config_readonly
     fi
 }
+
+python do_rootfs_append() {
+
+    fp = open("${IMAGE_ROOTFS}/etc/hosts", 'a')
+    fp.write('127.0.0.1    ${MACHINE}\n')
+    fp.close()
+}
