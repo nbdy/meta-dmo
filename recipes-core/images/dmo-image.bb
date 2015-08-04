@@ -50,7 +50,6 @@ IMAGE_INSTALL = " \
     pciutils \
     powertop \
     procps \
-    psplash \
     root-user-homedir \
     systemd-vconsole-setup \
     strace \
