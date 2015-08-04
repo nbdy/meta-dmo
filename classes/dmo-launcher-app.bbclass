@@ -38,11 +38,6 @@ def writeappfile(targetdir, execpath, name, desc, icon):
     if not os.path.exists(targetdir):
         os.makedirs(targetdir)
 
-    bb.warn(execpath)
-    bb.warn(name)
-    bb.warn(desc)
-    bb.warn(icon)
-
     fp = open(appfile, 'w')
     fp.write('Exec=' + execpath + '\n')
     fp.write('Name=' + name + '\n')
