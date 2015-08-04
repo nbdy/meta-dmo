@@ -1,9 +1,8 @@
-require qt5-dmo.inc
 FILESEXTRAPATHS_prepend := "${THISDIR}/qtmultimedia:"
 
 PACKAGECONFIG_append += "gstreamer"
 
-SRC_URI += "file://0002-Fix-porting-effort-to-GStreamer-patch.patch \
+SRC_URI += "\
 	    file://0001-gstreamer-hack-v4l2sink-in-playbin.patch \
 	    file://0002-gstreamer-get-right-window-position.patch \
 	    file://0003-gstreamer-fix-for-qml-window-crop-coordinates.patch \
