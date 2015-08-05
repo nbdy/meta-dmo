@@ -1,6 +1,5 @@
 require conf/distro/poky.conf
 
-QT5_VERSION = "5.4.1+git%"
 QT_MODULE_BRANCH = "5.5"
 PREFERRED_VERSION_gstreamer1.0 = "1.5.2"
 PREFERRED_VERSION_gstreamer1.0-meta-base = "1.5.2"
