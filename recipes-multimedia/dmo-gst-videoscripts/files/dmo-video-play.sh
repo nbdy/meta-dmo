@@ -55,8 +55,9 @@ scdev=$2
 cmd=$3
 fn=$4
 aud=$5
+win=$6
 
-echo "$cmd $fn $ovldev $scdev $aud"
+echo "$cmd $fn $ovldev $scdev $aud ${win[*]}"
 
 aud_append=" "
 if [[ $aud != "no" ]]; then
@@ -75,9 +76,9 @@ $cmd -v filesrc location=$fn \
 		! video/x-h264,stream-format=byte-stream \
 		! $dec_plugin capture-io-mode=dmabuf \
 		! $scdev output-io-mode=dmabuf-import capture-io-mode=dmabuf \
-		! video/x-raw,format=RGB,width=540,height=300 \
+		! video/x-raw,format=RGB,width=${win[2]},height=${win[3]} \
 		! v4l2sink device=$ovldev io-mode=dmabuf-import sync=true \
-		overlay-left=450 overlay-top=300 overlay-width=540 overlay-height=300
+		overlay-left=${win[0]} overlay-top=${win[1]} overlay-width=${win[2]} overlay-height=${win[3]}
 
 }
 
@@ -89,8 +90,9 @@ scdev=$1
 cmd=$2
 fn=$3
 aud=$4
+win=$5
 
-echo "$cmd $fn $scdev $aud"
+echo "$cmd $fn $scdev $aud ${win[*]}"
 
 aud_append=" "
 if [[ $aud != "no" ]]; then
@@ -107,7 +109,7 @@ $cmd -v filesrc location=$fn \
 		! video/x-h264,stream-format=byte-stream \
 		! $dec_plugin capture-io-mode=dmabuf \
 		! $scdev  output-io-mode=dmabuf-import \
-		! video/x-raw,width=480,height=320 \
+		! video/x-raw,width=${win[2]},height=${win[3]} \
 		! ximagesink sync=true name=videosink0
 }
 
@@ -169,10 +171,10 @@ fi
 
 
 
-printf "vout1: \033[1;33m$vout1_dev\033[0m\nvout2: \033[1;33m$vout2_dev\033[0m\n"
-printf "ovl1: \033[1;33m$ovl1_dev\033[0m\novl2: \033[1;33m$ovl2_dev\033[0m\n"
-printf "scale1: \033[1;33m$scale1_dev ($scale1_plugin)\033[0m\nsclae2: \033[1;33m$scale2_dev ($scale2_plugin)\033[0m\n"
-printf "decoder: \033[1;33m$dec_dev ($dec_plugin)\033[0m\nencoder: \033[1;33m$enc_dev\033[0m\n"
+printf "vout1: $vout1_dev\nvout2: $vout2_dev\n"
+printf "ovl1: $ovl1_dev\novl2: $ovl2_dev\n"
+printf "scale1: $scale1_dev ($scale1_plugin)\nsclae2: $scale2_dev ($scale2_plugin)\n"
+printf "decoder: $dec_dev ($dec_plugin)\nencoder: $enc_dev\n"
 
 }
 
@@ -184,36 +186,96 @@ if [[ $soundcard == "--- no soundcards ---" ]]; then
 	audio="no"
 else
 	echo "sound: yes"
+	audio="yes"
 fi
 echo "==============================="
 }
 
 function usage
 {
-	echo "Usage: $0 <video file> <test=fs|ovl|xv> <audio=on|off> <output_device=1|2> <loop>"
+ 	printf "\n-----------------------------------------------------\n"
+	printf "Usage: $0  -t test [-a]  -o device -l [-w l,t,w,h] FILE\n"
+	printf "Test video playback\n\n"
+	printf "   -t test=fs|ovl|xv	fs=fullscreen, ovl=hardware window mode, xv=xvimagesink window mode\n"
+	printf "   -a			enable audio\n"
+	printf "   -o device=0|1	devices to use in the pipeline i.e first or second voutbg,imx-ipuv3-scale and imx-ipuv3-ovl device\n"
+	printf "   -l			loop over and play the files in the direcory specified by FILE\n"
+	printf "   -w l,t,w,h		rect position (left,top,width,height) only needed for ovl and xv\n\n"
 }
 
-fn=$1
-tst=$2
-sound=$3
-output_device=$4
-loop=$5
+sound=0
+loop=0
 
-if [[ -z $fn || -z $tst || -z $sound ||-z $output_device ]]; then
+while getopts "t:ao:lw:" Option
+do
+	case $Option in
+		t ) tst=${OPTARG};;
+		a ) sound=1;;
+		o ) output_device=${OPTARG};;
+		l ) loop=1;;
+		w ) rect=${OPTARG};;
+	esac
+done
+shift $(($OPTIND-1))
+
+fn=$1
+
+if [[ -z $fn || -z $tst || -z $output_device || ($tst != "fs" && -z $rect) ]]; then
 	usage
 	exit 1
 fi
 
-# export GST_DEBUG=v4l2videodec:5,v4l2*:8
-#,v4l2allocator:5
-# export GST_DEBUG=qtdemux*:5,h264parse*:5,v4l*:5
-# export GST_DEBUG=h264parse*:5
-# export GST_DEBUG=v4l2*:5
-# . /gst-env.sh /gst-git
-# trace-cmd record -e v4l2:*
-# cmd="trace-cmd record -e coda:* /usr/bin/gst-launch-1.0"
-cmd="$DBG_GST_PBASE/usr/bin/gst-launch-1.0"
+if [[ $loop -eq 1 && ! -d $fn ]]; then
+	echo "ERROR: File is not directory."
+	exit 1
+fi
 
+
+OIFS=$IFS
+
+IFS=', '
+win=($rect)
+
+if [[ -d $fn ]]; then
+fsrc=`ls -1 $fn | head -1`
+filesrc=${fn}/${fsrc}
+else
+filesrc=$fn
+fi
+
+video_fmt=`gst-discoverer-1.0  -v ${filesrc}  |grep video:`
+for i in $video_fmt; do
+	if [[ $i =~ .*width=\(int\).* ]]; then
+		width=${i#width=(int)}
+	fi
+	if [[ $i =~ .*height=\(int\).* ]]; then
+		height=${i#height=(int)}
+	fi
+done
+
+IFS=$OIFS
+
+max_scale_x=$(((width*4)-20))
+max_scale_y=$(((height*4)-20))
+min_scale_x=$(((width/4)+20))
+min_scale_y=$(((height/4)+20))
+printf "+---+\n"
+printf "video resolution: ${width}x${height} scale limits:[${min_scale_x}x${min_scale_y}..${max_scale_x}x${max_scale_y}]\n"
+printf "scale win: ${win[2]}x${win[3]}\n"
+
+
+if [[ ${#win[@]} -ne 4 ]]; then
+	printf "ERROR: Invalid window coordinates.\n"
+	exit 1
+fi
+
+if [[ "${win[2]}" -lt "$min_scale_x" || "${win[2]}" -gt "$max_scale_x" ||
+      "${win[3]}" -lt "$min_scale_y" || "${win[3]}" -gt "$max_scale_y" ]]; then
+	printf "ERROR: Scaling limits exceeded.\n"
+	exit 1
+fi
+
+cmd="/usr/bin/gst-launch-1.0"
 
 get_v4l2_devices
 
@@ -244,19 +306,21 @@ esac
 echo ""
 echo "$func_name"
 
-if [[ $sound == "on" ]]; then
+if [[ $sound -eq 1 ]]; then
 	check_for_sound
 else
 	audio="no"
 fi
 
-if [[ -z $loop ]]; then
-	$func_name $cmd $fn $audio
-else
+if [[ $loop -eq 0 ]]; then
+	$func_name $cmd $fn $audio $win
+fi
+
+if [[ $loop -eq 1 ]]; then
 cd $fn
 while [[ true ]]; do
 	for f in `ls -1`; do
-		$func_name $cmd $f $audio
+		$func_name $cmd $f $audio $win
 	done
 done	
 fi

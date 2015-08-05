@@ -10,7 +10,7 @@ PACKAGE_ARCH = "all"
 
 SRC_URI = " \
     file://MIT-license.txt \
-    file://dmo-play2.sh;name=playback \
+    file://dmo-video-play.sh;name=playback \
 "
 
 do_install () {
@@ -19,6 +19,6 @@ do_install () {
                    ${D}/usr/bin
 }
 
-SRC_URI[playback.md5sum] = "8448648b7e428861b5b9928db5368550"
-SRC_URI[playback.sha256] = "42206ab68b71be838eed180cac221844d1082396101fb489d917751d4789bb46"
+SRC_URI[playback.md5sum] = "723fcdaa332ec944a9f157a359e9ee11"
+SRC_URI[playback.sha256] = "df363768933748163f31ee4cf853b6e893c4374c8e29a555e80948b61267cc47"
 
