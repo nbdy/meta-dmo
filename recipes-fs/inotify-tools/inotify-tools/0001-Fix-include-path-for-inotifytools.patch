@@ -1,0 +1,30 @@
+Index: inotify-tools-3.14/src/inotifywait.c
+===================================================================
+--- inotify-tools-3.14.orig/src/inotifywait.c
++++ inotify-tools-3.14/src/inotifywait.c
+@@ -20,8 +20,8 @@
+ #include <syslog.h>
+ #include <unistd.h>
+ 
+-#include <inotifytools/inotifytools.h>
+-#include <inotifytools/inotify.h>
++#include "../libinotifytools/src/inotifytools/inotifytools.h"
++#include "../libinotifytools/src/inotifytools/inotify.h"
+ 
+ extern char *optarg;
+ extern int optind, opterr, optopt;
+Index: inotify-tools-3.14/src/inotifywatch.c
+===================================================================
+--- inotify-tools-3.14.orig/src/inotifywatch.c
++++ inotify-tools-3.14/src/inotifywatch.c
+@@ -20,8 +20,8 @@
+ #include <string.h>
+ #include <unistd.h>
+ 
+-#include <inotifytools/inotifytools.h>
+-#include <inotifytools/inotify.h>
++#include "../libinotifytools/src/inotifytools/inotifytools.h"
++#include "../libinotifytools/src/inotifytools/inotify.h"
+ 
+ 
+ extern char *optarg;
