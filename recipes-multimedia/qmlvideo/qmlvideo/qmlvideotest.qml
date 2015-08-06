@@ -19,7 +19,10 @@ Item {
             if(file.readyState === XMLHttpRequest.DONE) {
                 playlist = file.responseText.split("\n");
                 usePlaylist = true;
-                if(playlist.length > 0) {
+               	var i;    
+                for (i = 0; i < playlist.length; i++)
+			console.warn("*** name ", playlist[i]);
+		if(playlist.length > 0) {
                     video.source = "file://" + playlist[currentIndex];
                     video.play();
                 }
@@ -52,10 +55,11 @@ Item {
                 fillMode: VideoOutput.Stretch
                 onStopped: {
                     if(usePlaylist) {
-                        currentIndex = (currentIndex + 1) % playlist.length;
-                        source = "file://" + playlist[currentIndex];
-                        play();
-                    }
+			currentIndex = (currentIndex + 1) % (playlist.length - 1);
+			console.warn("ind: ", currentIndex, " len: ", playlist.length, " file: ", playlist[currentIndex]);
+			source = "file://" + playlist[currentIndex];
+			play();
+		    }
                 }
             }
         }
@@ -71,7 +75,7 @@ Item {
             id: textinput
             height: parent.height
             width: parent.width * 0.6
-            text: "/home/ps/Videos/BUCHERER.VOB"
+            text: "/play2.txt"
             font.pointSize: parent.height * 0.6
             color: "white"
         }
