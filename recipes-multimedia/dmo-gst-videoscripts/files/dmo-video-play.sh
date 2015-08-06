@@ -26,7 +26,6 @@ odev=$1
 cmd=$2
 fn=$3
 aud=$4
-echo "$cmd $fn $odev $aud"
 
 aud_append=" "
 if [[ $aud != "no" ]]; then
@@ -57,16 +56,12 @@ fn=$4
 aud=$5
 win=$6
 
-echo "$cmd $fn $ovldev $scdev $aud ${win[*]}"
-
 aud_append=" "
 if [[ $aud != "no" ]]; then
 aud_append="demux.audio_0 \
 	    ! queue \
 	    ! aacparse ! faad ! alsasink "
 fi
-
-DISPLAY=:0
 
 $cmd -v filesrc location=$fn \
 		! qtdemux name=demux $aud_append \
@@ -91,8 +86,6 @@ cmd=$2
 fn=$3
 aud=$4
 win=$5
-
-echo "$cmd $fn $scdev $aud ${win[*]}"
 
 aud_append=" "
 if [[ $aud != "no" ]]; then
@@ -193,14 +186,22 @@ echo "==============================="
 
 function usage
 {
- 	printf "\n-----------------------------------------------------\n"
+ 	printf "\n--------------------------------------------------------------------------\n"
 	printf "Usage: $0  -t test [-a]  -o device -l [-w l,t,w,h] FILE\n"
 	printf "Test video playback\n\n"
 	printf "   -t test=fs|ovl|xv	fs=fullscreen, ovl=hardware window mode, xv=xvimagesink window mode\n"
 	printf "   -a			enable audio\n"
-	printf "   -o device=0|1	devices to use in the pipeline i.e first or second voutbg,imx-ipuv3-scale and imx-ipuv3-ovl device\n"
+	printf "   -o device=0|1	devices to use in the pipeline i.e first or second voutbg,\n"
+	printf "                        imx-ipuv3-scale and imx-ipuv3-ovl device\n"
 	printf "   -l			loop over and play the files in the direcory specified by FILE\n"
-	printf "   -w l,t,w,h		rect position (left,top,width,height) only needed for ovl and xv\n\n"
+	printf "   -w l,t,w,h		rect position (left,top,width,height) only needed for ovl and xv\n\n\n"
+	printf "Examples:\n"
+	printf "    Start full screen playback.\n"
+	printf "        dmo-video-play.sh -t fs -o 1 test.mp4\n"
+	printf "    Start playback in hardware overlayed window.\n"
+	printf "        dmo-video-play.sh -t ovl -o 1 -w 50,50,540,480 test.mp4\n"
+	printf "    Start full screen playback loop.\n"
+	printf "        dmo-video-play.sh -t fs -o 1 -l /videos\n\n\n"
 }
 
 sound=0
@@ -230,6 +231,8 @@ if [[ $loop -eq 1 && ! -d $fn ]]; then
 	exit 1
 fi
 
+# only for window modes
+if [[ "$tst" != "fs" ]]; then
 
 OIFS=$IFS
 
@@ -255,6 +258,7 @@ done
 
 IFS=$OIFS
 
+
 max_scale_x=$(((width*4)-20))
 max_scale_y=$(((height*4)-20))
 min_scale_x=$(((width/4)+20))
@@ -274,6 +278,8 @@ if [[ "${win[2]}" -lt "$min_scale_x" || "${win[2]}" -gt "$max_scale_x" ||
 	printf "ERROR: Scaling limits exceeded.\n"
 	exit 1
 fi
+
+fi # tst != fs
 
 cmd="/usr/bin/gst-launch-1.0"
 
@@ -299,12 +305,7 @@ case $tst in
 	ovl)
 		func_name="play_scale_ovl $ovl $scale"
 		;;
-	*)
-		func_name="play_fs"
 esac
-
-echo ""
-echo "$func_name"
 
 if [[ $sound -eq 1 ]]; then
 	check_for_sound
