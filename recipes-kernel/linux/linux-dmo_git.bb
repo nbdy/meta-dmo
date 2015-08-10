@@ -48,7 +48,6 @@ require recipes-kernel/linux/linux-yocto.inc
 # Override SRC_URI in a bbappend file to point at a different source
 # tree if you do not want to build from Linus' tree.
 SRC_URI = "git://git@emb.data-modul.com/development/linux;branch=sfr/release-2015.08;protocol=ssh;name=kernel"
-SRC_URI_append_mx6 += "file://defconfig"
 SRC_URI_append_mx6 += "file://debug.cfg"
 SRC_URI_append_mx6 += "file://hardware.cfg"
 SRC_URI_append_mx6 += "file://zconfig.cfg"
@@ -63,6 +62,7 @@ SRCREV_kernel="${AUTOREV}"
 PV = "${LINUX_VERSION}-${PR}+git${SRCPV}"
 
 KCONFIG_MODE="--alldefconfig"
+KBUILD_DEFCONFIG_mx6 ?= "imx_v6_v7_defconfig"
 
 # Override COMPATIBLE_MACHINE to include your machine in a bbappend
 # file. Leaving it empty here ensures an early explicit build failure.
