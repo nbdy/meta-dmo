@@ -5,9 +5,17 @@ FIRMWARE_NAME_mx6dl = "v4l-coda960-imx6dl.bin"
 SOURCE_FW_NAME_mx6q = "vpu_fw_imx6q.bin"
 SOURCE_FW_NAME_mx6dl = "vpu_fw_imx6d.bin"
 
-do_install_append () {
+convert_firmware () {
     ${STAGING_BINDIR_NATIVE}/convert-vpu-firmware ${S}/firmware/vpu/${SOURCE_FW_NAME} ${D}/lib/firmware/${FIRMWARE_NAME}
     ln -sf ../${FIRMWARE_NAME} ${D}/lib/firmware/vpu/${FIRMWARE_NAME}
+}
+
+do_install_append_mx6q() {
+    convert_firmware
+}
+
+do_install_append_mx6dl() {
+    convert_firmware
 }
 
 FILES_${PN}-vpu-imx6q += "lib/firmware/v4l-coda960-imx6q.bin"
