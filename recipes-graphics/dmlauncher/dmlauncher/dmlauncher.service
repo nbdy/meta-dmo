@@ -6,7 +6,7 @@ User=root
 Type=simple
 Environment="QT_QPA_PLATFORM=eglfs"
 Environment="DISPLAY=:0"
-ExecStart=/usr/bin/dmlauncher -b
+ExecStart=/usr/bin/dmlauncher -t
 Restart=always
 RestartSec=2
 
