@@ -19,7 +19,7 @@ SRC_URI = " \
 SRCREV = "${AUTOREV}"
 PV = "${SRCPV}"
 
-S="${WORKDIR}/git"
+S = "${WORKDIR}/git"
 
 SRC_URI_append_dmo-x11 += "file://0001-x11-qtplatform-xcb.patch;patchdir=.."
 
