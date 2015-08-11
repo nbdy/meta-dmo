@@ -19,21 +19,9 @@ SRC_URI = " \
 SRCREV = "${AUTOREV}"
 PV = "${SRCPV}"
 
-OE_QMAKE_QMAKE_ORIG = "${STAGING_BINDIR_NATIVE}/${QT_DIR_NAME}//qmake"
-OE_QMAKE_QMAKE = "bin/qmake"
-
 S="${WORKDIR}/git"
 
 SRC_URI_append_dmo-x11 += "file://0001-x11-qtplatform-xcb.patch;patchdir=.."
-
-do_configure() {
-    if [ ! -e ${B}/bin/qmake ]; then
-        mkdir ${B}/bin
-        ln -sf ${OE_QMAKE_QMAKE_ORIG} ${B}/bin/qmake
-    fi
-    
-    ${B}/bin/qmake ${S}/dmlauncher.pro
-}
 
 do_install() {
     install -d ${D}/usr/bin
