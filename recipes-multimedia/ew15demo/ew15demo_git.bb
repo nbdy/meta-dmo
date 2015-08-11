@@ -24,19 +24,7 @@ SRC_URI = " \
 SRCREV = "${AUTOREV}"
 PV = "${SRCPV}"
 
-OE_QMAKE_QMAKE_ORIG = "${STAGING_BINDIR_NATIVE}/${QT_DIR_NAME}//qmake"
-OE_QMAKE_QMAKE = "bin/qmake"
-
 S="${WORKDIR}/git"
-
-do_configure() {
-    if [ ! -e ${B}/bin/qmake ]; then
-        mkdir ${B}/bin
-        ln -sf ${OE_QMAKE_QMAKE_ORIG} ${B}/bin/qmake
-    fi
-    
-    ${B}/bin/qmake ${S}/ew15demo.pro
-}
 
 do_install() {
     install -d ${D}/usr/bin
