@@ -24,7 +24,7 @@ SRC_URI = " \
 SRCREV = "${AUTOREV}"
 PV = "${SRCPV}"
 
-S="${WORKDIR}/git"
+S = "${WORKDIR}/git"
 
 do_install() {
     install -d ${D}/usr/bin
