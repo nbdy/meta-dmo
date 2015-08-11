@@ -11,7 +11,7 @@ SRC_URI = "git://git@emb.data-modul.com/development/initscripts;branch=master;pr
 SRCREV_initrd = "${AUTOREV}"
 
 S = "${WORKDIR}/git"
-PV = "${SRCPV}"
+PV = "1.0+git${SRCPV}"
 
 do_install(){
     install -m 0755 ${S}/init-overlay.sh ${D}/init

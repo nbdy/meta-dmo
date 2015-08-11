@@ -22,7 +22,7 @@ SRC_URI = " \
             git://git@emb.data-modul.com/userrepos/pst/ew15demo;protocol=ssh \
             "
 SRCREV = "${AUTOREV}"
-PV = "${SRCPV}"
+PV = "1.0+git${SRCPV}"
 
 S = "${WORKDIR}/git"
 

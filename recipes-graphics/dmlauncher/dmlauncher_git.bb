@@ -17,7 +17,7 @@ SRC_URI = " \
             file://dmlauncher.service \
             "
 SRCREV = "${AUTOREV}"
-PV = "${SRCPV}"
+PV = "0.3.0+git${SRCPV}"
 
 S = "${WORKDIR}/git"
 

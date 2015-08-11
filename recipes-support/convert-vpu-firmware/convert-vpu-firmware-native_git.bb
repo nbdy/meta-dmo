@@ -11,7 +11,7 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/COPYING.MIT;md5=3da9cfbcb788c80a0384
 SECTION = "converter"
 DEPENDS = ""
 SRCREV = "${AUTOREV}"
-PV = "${SRCPV}"
+PV = "0.1+git${SRCPV}"
 
 SRC_URI = "git://git@emb.data-modul.com/development/tools/convert-vpu-firmware;protocol=ssh"
 
