@@ -25,7 +25,7 @@ DMOFTP = "ftp://Public_EMB@ftp.data-modul.com"
 IMAGE_FEATURES += " package-management "
 
 # some license things here
-LICENSE_FLAGS_WHITELIST = "commercial_libav commercial_x264"
+LICENSE_FLAGS_WHITELIST += "commercial_libav commercial_x264"
 
 # Ship all kernel modules by default
 MACHINE_EXTRA_RRECOMMENDS = " kernel-modules"
