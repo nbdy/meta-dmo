@@ -15,7 +15,7 @@ SRC_URI = " \
 
 do_install () {
     install -d ${D}/usr/bin
-    install -m 755 ${WORKDIR}/dmo-play2.sh \
+    install -m 755 ${WORKDIR}/dmo-video-play.sh \
                    ${D}/usr/bin
 }
 
