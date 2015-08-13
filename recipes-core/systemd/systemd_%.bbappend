@@ -1,6 +1,9 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
-SRC_URI_append = "file://eth0.network"
+SRC_URI_append = " \
+                    file://eth0.network \
+                    file://0001-fix-udevd-automount.patch \
+                    "
 
 FILES_${PN}_append = "${sysconfdir}/resolv.conf"
 
