@@ -1,4 +1,5 @@
 import QtQuick 2.3
+import QtQuick.Dialogs 1.2
 import QtMultimedia 5.0
 
 Item {
@@ -19,10 +20,7 @@ Item {
             if(file.readyState === XMLHttpRequest.DONE) {
                 playlist = file.responseText.split("\n");
                 usePlaylist = true;
-               	var i;    
-                for (i = 0; i < playlist.length; i++)
-			console.warn("*** name ", playlist[i]);
-		if(playlist.length > 0) {
+                if(playlist.length > 0) {
                     video.source = "file://" + playlist[currentIndex];
                     video.play();
                 }
@@ -54,13 +52,16 @@ Item {
                 autoPlay: false
                 fillMode: VideoOutput.Stretch
                 onStopped: {
+                    visible = false;
                     if(usePlaylist) {
-			currentIndex = (currentIndex + 1) % (playlist.length - 1);
-			console.warn("ind: ", currentIndex, " len: ", playlist.length, " file: ", playlist[currentIndex]);
-			source = "file://" + playlist[currentIndex];
-			play();
-		    }
+                        currentIndex = (currentIndex + 1) % playlist.length;
+                        while(playlist[currentIndex] === "")
+                            currentIndex = (currentIndex + 1) % playlist.length;
+                        source = "file://" + playlist[currentIndex];
+                        play();
+                    }
                 }
+                onPlaying: visible = true;
             }
         }
     }
@@ -75,9 +76,21 @@ Item {
             id: textinput
             height: parent.height
             width: parent.width * 0.6
-            text: "/play2.txt"
+            text: "file:///home/ps/Videos/BUCHERER.VOB"
             font.pointSize: parent.height * 0.6
             color: "white"
+            MouseArea {
+                anchors.fill: parent
+                onClicked: fileDialog.open();
+            }
+        }
+        
+        FileDialog {
+            id: fileDialog
+            title: "Choose a video file or playlist"
+            selectMultiple: false
+            selectFolder: false
+            onAccepted: textinput.text = fileDialog.fileUrl
         }
 
         Text {
@@ -97,7 +110,7 @@ Item {
                     else if(usePlaylist)
                         video.play()
                     else {
-                        video.source = "file://" + textinput.text;
+                        video.source = textinput.text;
                         video.play()
                     }
                 }
@@ -135,6 +148,20 @@ Item {
                     currentIndex = 0;
                     video.stop()
                 }
+            }
+        }
+        Text {
+            id: closebutton
+            x: root.width - width
+            width: 30
+            height: parent.height
+            text: "X"
+            font.pointSize: parent.height * 0.6
+            color: "white"
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: Qt.quit()
             }
         }
     }

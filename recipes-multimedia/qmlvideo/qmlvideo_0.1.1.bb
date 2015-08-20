@@ -19,7 +19,7 @@ RDEPENDS_${PN} = "qtbase qtdeclarative qtdeclarative-tools"
 SRC_URI = " \
             file://qmlvideotest.qml \
             "
-PV = "0.1"
+PV = "0.1.1"
 
 S="${WORKDIR}"
 
