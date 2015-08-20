@@ -3,7 +3,7 @@
 
 inherit dmo-launcher-app
 
-DMO_LAUNCHER_EXEC = "/usr/bin/qmlvideotest"
+DMO_LAUNCHER_EXEC = "/usr/bin/qt5/qmlscene /usr/share/qmlvideotest/qmlvideotest.qml"
 DMO_LAUNCHER_NAME = "qmlvideotest"
 DMO_LAUNCHER_DESC = "Qml video test application"
 DMO_LAUNCHER_ICONPATH = "/usr/share/cinematicexperience-1.0/content/images/qt_logo.png"
@@ -18,16 +18,13 @@ RDEPENDS_${PN} = "qtbase qtdeclarative qtdeclarative-tools"
 
 SRC_URI = " \
             file://qmlvideotest.qml \
-            file://qmlvideotest \
             "
 PV = "0.1"
 
 S="${WORKDIR}"
 
 do_install() {
-    install -d ${D}/usr/bin
     install -d ${D}/usr/share/qmlvideotest
-    install -m 755 ${WORKDIR}/qmlvideotest ${D}/usr/bin
     install -m 755 ${WORKDIR}/qmlvideotest.qml ${D}/usr/share/qmlvideotest
 }
 
