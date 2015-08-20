@@ -76,7 +76,7 @@ Item {
             id: textinput
             height: parent.height
             width: parent.width * 0.6
-            text: "file:///home/ps/Videos/BUCHERER.VOB"
+            text: "/play2.txt"
             font.pointSize: parent.height * 0.6
             color: "white"
             MouseArea {
