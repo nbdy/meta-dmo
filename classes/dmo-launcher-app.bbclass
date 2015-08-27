@@ -57,7 +57,6 @@ python do_dmo_launcher_app() {
         launcher_split = (d.getVar('DMO_LAUNCHER', True)).split()
         if launcher_split:
             for e in launcher_split:
-                bb.warn(e)
                 execpath = d.getVarFlag('DMO_LAUNCHER_EXEC', e)
                 name = d.getVarFlag('DMO_LAUNCHER_NAME', e)
                 desc = d.getVarFlag('DMO_LAUNCHER_DESC', e) or ""
