@@ -12,13 +12,16 @@ diff --git a/slim.service b/slim.service
 index b894085..34ef0ac 100644
 --- a/slim.service
 +++ b/slim.service
-@@ -1,9 +1,9 @@
+@@ -1,9 +1,11 @@
  [Unit]
  Description=SLiM Simple Login Manager
 -After=systemd-user-sessions.service
  
  [Service]
- ExecStart=/usr/bin/slim -nodaemon
++Type=forking
++PIDFile=/var/run/slim.lock
++ExecStart=/usr/bin/slim -d
+-ExecStart=/usr/bin/slim -nodaemon
  
  [Install]
  Alias=display-manager.service
