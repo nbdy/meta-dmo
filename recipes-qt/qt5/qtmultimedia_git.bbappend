@@ -10,6 +10,7 @@ SRC_URI += "\
 	    file://0005-gstreamer-set-v4l2sink-crop-win-at-play-too.patch \
 	    file://0006-gstreamer-fix-stop-function.patch \
 	    file://0007-gstreamer-detect-v4l2-device.patch \
+	    file://0008-gstreamer-fix-overlay-window-coordinates.patch \
 "
 
 

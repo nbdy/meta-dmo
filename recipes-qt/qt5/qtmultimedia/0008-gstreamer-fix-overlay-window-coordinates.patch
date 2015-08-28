@@ -1,0 +1,217 @@
+From 72f802dd0a2d4334acc203477e5e1cdee63188da Mon Sep 17 00:00:00 2001
+From: Zahari Doychev <zahari.doychev@linux.com>
+Date: Fri, 28 Aug 2015 14:32:13 +0200
+Subject: [PATCH] gstreamer: fix overlay window coordinates
+
+All main window children have to be searched to find the correct window
+coordinates.
+
+Signed-off-by: Zahari Doychev <zahari.doychev@linux.com>
+---
+ .../mediaplayer/qgstreamerplayersession.cpp        | 143 +++++++++++----------
+ .../mediaplayer/qgstreamerplayersession.h          |   1 +
+ 2 files changed, 74 insertions(+), 70 deletions(-)
+
+diff --git a/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp b/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp
+index 688e554..aa85b16 100644
+--- a/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp
++++ b/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp
+@@ -369,6 +369,72 @@ int QGstreamerPlayerSession::GetOvlDevName(std::string& OvlDevName)
+ 	return rv;
+ }
+ 
++bool QGstreamerPlayerSession::GetOvlWin()
++{
++	// -------------------		  // PST
++	bool success = false;
++	qDebug() << "GST config setVideoRenderer()";
++	qDebug() << "GST" << qApp;
++	QList<QVideoWidget*> widgets = qApp->activeWindow()->findChildren<QVideoWidget*>();	// problem 1: activeWindow is not set yet at this point
++	qDebug() << "GST" << widgets;
++	foreach(QVideoWidget* widget, widgets)
++	{
++		if(widget->mediaObject()->service() == this->parent())
++		{
++			success = true;
++			m_wpos = widget->mapToGlobal(QPoint(0,0)); // problem 2: window is not layed out at this point, so we get wrong coordinates
++									  // current solution: call this function from setMedia() instead of
++									  //                   setVideoOutput() in qgstreamerplayercontrol.cpp
++									  //                   (maybe find a better place, anywhere after show() has been called on the window...)
++			m_wsz = widget->size();
++			// do some calculations depending on fill mode (stretch, keepaspect)
++			qDebug() << "GST" << m_wpos << m_wsz;
++			break;
++		}
++	}
++
++	if(!success)
++	{
++		QWindowList windows = qApp->allWindows();
++		for(int j = 0; j < windows.size(); j++)
++		{
++			if((QString)windows.at(j)->metaObject()->className() == "QQuickView")
++			{
++				QQuickView* view = (QQuickView*)windows.at(j);
++				QList<QQuickItem*> items = view->rootObject()->findChildren<QQuickItem*>();
++				foreach(QQuickItem* item, items)
++				{
++					if((QString)item->metaObject()->className() == "QDeclarativeVideoOutput"
++						|| (QString)item->metaObject()->superClass()->className() == "QDeclarativeVideoOutput")
++							// this will always get the first videooutput, if we want to support more we have to get
++							// m_mediaObject from qdeclarativevideooutput_p.h (currently private) and compare the
++							// service again, like above
++					{
++						success = true;
++						QPointF tmp = item->mapToScene(QPointF());
++						m_wpos = QPoint(tmp.x(), tmp.y());
++						m_wpos += view->position();
++						m_wsz = QSize(item->width(), item->height());
++						// do some calculations depending on fill mode (stretch, keepaspect)
++						qDebug() << "GST" << m_wpos << m_wsz;
++						break;
++					}
++				}
++			}
++		}
++	}
++	if(!success)
++		qWarning() << "could not find QVideoWidget!";
++	// -------------------
++	qDebug("win: (%u,%u,%u,%u)",
++			m_wpos.rx(),
++			m_wpos.ry(),
++			m_wsz.rwidth(),
++			m_wsz.rheight());
++
++	return success;
++}
++
+ #endif
+ 
+ GstElement *QGstreamerPlayerSession::playbin() const
+@@ -722,63 +788,7 @@ void QGstreamerPlayerSession::setVideoRenderer(QObject *videoOutput)
+         removeVideoBufferProbe();
+ 
+ #if defined(ZDO_TEST)
+-	bool linked = true;
+-
+-	// -------------------		  // PST
+-	QPoint videoposition;
+-	QSize videosize;
+-	bool success = false;
+-	qDebug() << "GST setVideoRenderer()";
+-	qDebug() << "GST" << qApp;
+-	QList<QVideoWidget*> widgets = qApp->activeWindow()->findChildren<QVideoWidget*>();	// problem 1: activeWindow is not set yet at this point
+-	qDebug() << "GST" << widgets;
+-	foreach(QVideoWidget* widget, widgets)
+-	{
+-		if(widget->mediaObject()->service() == this->parent())
+-		{
+-			success = true;
+-			videoposition = widget->mapToGlobal(QPoint(0,0)); // problem 2: window is not layed out at this point, so we get wrong coordinates
+-									  // current solution: call this function from setMedia() instead of
+-									  //                   setVideoOutput() in qgstreamerplayercontrol.cpp
+-									  //                   (maybe find a better place, anywhere after show() has been called on the window...)
+-			videosize = widget->size();
+-			// do some calculations depending on fill mode (stretch, keepaspect)
+-			qDebug() << "GST" << videoposition << videosize;
+-			break;
+-		}
+-	}
+-
+-	if(!success)
+-	{
+-		QWindowList windows = qApp->allWindows();
+-		if(windows.size() > 0 && (QString)windows.first()->metaObject()->className() == "QQuickView")
+-		{
+-			QQuickView* view = (QQuickView*)windows.first();
+-			QList<QQuickItem*> items = view->rootObject()->findChildren<QQuickItem*>();
+-			foreach(QQuickItem* item, items)
+-			{
+-				if((QString)item->metaObject()->className() == "QDeclarativeVideoOutput"
+-					|| (QString)item->metaObject()->superClass()->className() == "QDeclarativeVideoOutput")
+-							// this will always get the first videooutput, if we want to support more we have to get
+-							// m_mediaObject from qdeclarativevideooutput_p.h (currently private) and compare the
+-							// service again, like above
+-				{
+-					success = true;
+-					QPointF tmp = item->mapToScene(QPointF());
+-					videoposition = QPoint(tmp.y(), tmp.x());
+-					videoposition += view->position();
+-					videosize = QSize(item->width(), item->height());
+-					// do some calculations depending on fill mode (stretch, keepaspect)
+-					qDebug() << "GST" << videoposition << videosize;
+-					break;
+-				}
+-			}
+-		}
+-	}
+-	if(!success)
+-		qWarning() << "could not find QVideoWidget!";
+-	// -------------------
+-
++	bool linked = GetOvlWin();
+ 	if (!m_v4l2sink) {
+ 		qWarning() << "EXPERIMENTAL: force v4l2sink";
+ 		m_v4l2sink = gst_element_factory_make("v4l2sink", "v4l2sink");
+@@ -786,8 +796,8 @@ void QGstreamerPlayerSession::setVideoRenderer(QObject *videoOutput)
+ 		GstCaps *caps;
+ 		caps =
+ 		     gst_caps_new_simple("video/x-raw", "format", G_TYPE_STRING, "RGB",
+-						"width", G_TYPE_INT, videosize.rwidth(),
+-						"height", G_TYPE_INT, videosize.rheight(), NULL);
++						"width", G_TYPE_INT, m_wsz.rwidth(),
++						"height", G_TYPE_INT, m_wsz.rheight(), NULL);
+ 
+ 		/* setup IPU converter */
+ 		g_object_set(m_videoConverter, "output-io-mode", 5,
+@@ -799,21 +809,14 @@ void QGstreamerPlayerSession::setVideoRenderer(QObject *videoOutput)
+ 		gst_caps_unref(caps);
+ 	}	
+ 	m_videoSink = m_v4l2sink;
+-	m_wpos = videoposition;
+-	m_wsz = videosize;
+ 
+-	qDebug("win: (%u,%u,%u,%u)",
+-			m_wpos.rx(),
+-			m_wpos.ry(),
+-			m_wsz.rwidth(),
+-			m_wsz.rheight());
+ 	/* setup IPU overlay output */
+ 	g_object_set(m_v4l2sink,
+ 		     "device", m_OvlDeviceName.c_str(),
+ 		     "io-mode", 5,
+ 		     "sync", TRUE,
+-		     "overlay-top", m_wpos.rx(),
+-		     "overlay-left", m_wpos.ry(),
++		     "overlay-left", m_wpos.rx(),
++		     "overlay-top",  m_wpos.ry(),
+ 		     "overlay-width", m_wsz.rwidth(),
+ 		     "overlay-height", m_wsz.rheight(), NULL);
+ #else
+@@ -1150,8 +1153,8 @@ bool QGstreamerPlayerSession::play()
+ 		     "device", m_OvlDeviceName.c_str(),
+ 		     "io-mode", 5,
+ 		     "sync", TRUE,
+-		     "overlay-top", m_wpos.rx(),
+-		     "overlay-left", m_wpos.ry(),
++		     "overlay-left", m_wpos.rx(),
++		     "overlay-top", m_wpos.ry(),
+ 		     "overlay-width", m_wsz.rwidth(),
+ 		     "overlay-height", m_wsz.rheight(), NULL);
+ #endif
+diff --git a/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.h b/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.h
+index 4b6d447..5cd2da1 100644
+--- a/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.h
++++ b/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.h
+@@ -197,6 +197,7 @@ private:
+     int GetConvPluginName(std::string& ConvPluginName);
+     int GetV4L2ConvName(GstPluginFeature *feature, std::string& name);
+     int GetOvlDevName(std::string& OvlDevName);
++    bool GetOvlWin();
+ #endif
+ 
+ 
+-- 
+2.5.0
+
