@@ -24,8 +24,6 @@ IMAGE_INSTALL = " \
     e2fsprogs-mke2fs \
     e2fsprogs-tune2fs \
     fb-test \
-    imx-gpu-viv \
-    imx-gpu-viv-demos \
     gstreamer1.0 \
     gstreamer1.0-plugins-bad-meta \
     gstreamer1.0-plugins-base-meta \
@@ -75,7 +73,6 @@ IMAGE_INSTALL_append_dmo-x11 = " \
     xdg-utils \
     xf86-input-evdev \
     xf86-video-fbdev \
-    xf86-video-imxfb-vivante \
     xhost \
     xinput-calibrator \
     xmodmap \
@@ -120,6 +117,11 @@ IMAGE_INSTALL_append_mx6q = " \
 "
 IMAGE_INSTALL_append_mx6dl = " \
     firmware-imx-vpu-imx6d \
+"
+IMAGE_INSTALL_append_mx6 = " \
+    imx-gpu-viv \
+    imx-gpu-viv-demos \
+    ${@bb.utils.contains('DISTRO', 'dmo-x11', 'xf86-video-imxfb-vivante', '', d)} \
 "
 
 SDCARD = "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.without-homefs.img"
