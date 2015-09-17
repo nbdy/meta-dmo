@@ -1,0 +1,51 @@
+diff --git a/src/hardwareintegration/client/wayland-egl/qwaylandeglwindow.cpp b/src/hardwareintegration/client/wayland-egl/qwaylandeglwindow.cpp
+index 2c3697b..7be03b4 100644
+--- a/src/hardwareintegration/client/wayland-egl/qwaylandeglwindow.cpp
++++ b/src/hardwareintegration/client/wayland-egl/qwaylandeglwindow.cpp
+@@ -76,8 +76,10 @@ QWaylandEglWindow::~QWaylandEglWindow()
+     }
+ 
+     if (m_waylandEglWindow)
+-        wl_egl_window_destroy(m_waylandEglWindow);
+-
++    {
++	if(*((int*)m_waylandEglWindow))
++            wl_egl_window_destroy(m_waylandEglWindow);
++    }
+     delete m_contentFBO;
+ }
+ 
+@@ -112,7 +114,10 @@ void QWaylandEglWindow::updateSurface(bool create)
+             m_eglSurface = 0;
+         }
+         if (m_waylandEglWindow) {
+-            wl_egl_window_destroy(m_waylandEglWindow);
++	    if(*((int*)m_waylandEglWindow))
++	    {
++                wl_egl_window_destroy(m_waylandEglWindow);
++	    }
+             m_waylandEglWindow = 0;
+         }
+         mOffset = QPoint();
+diff --git a/src/hardwareintegration/client/wayland-egl/qwaylandglcontext.cpp b/src/hardwareintegration/client/wayland-egl/qwaylandglcontext.cpp
+index 18ed1d6..d2152db 100644
+--- a/src/hardwareintegration/client/wayland-egl/qwaylandglcontext.cpp
++++ b/src/hardwareintegration/client/wayland-egl/qwaylandglcontext.cpp
+@@ -347,8 +347,15 @@ void QWaylandGLContext::updateGLFormat()
+         eglMakeCurrent(prevDisplay, prevSurfaceDraw, prevSurfaceRead, prevContext);
+     }
+     eglDestroySurface(m_eglDisplay, eglSurface);
+-    wl_egl_window_destroy(eglWindow);
+-    wl_surface_destroy(wlSurface);
++
++    if(eglWindow)
++    {
++	if(*((int*)eglWindow))
++	{
++	    wl_egl_window_destroy(eglWindow);
++	    wl_surface_destroy(wlSurface);
++	}
++    }
+ }
+ 
+ QWaylandGLContext::~QWaylandGLContext()
