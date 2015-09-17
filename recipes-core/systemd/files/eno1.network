@@ -1,0 +1,11 @@
+[Match]
+Name=eno1
+
+[Network]
+#DHCP setup
+DHCP=v4
+
+#Static setup
+#Address=10.0.0.2/24
+#Gateway=10.0.0.1
+
