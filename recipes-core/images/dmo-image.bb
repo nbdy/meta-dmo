@@ -123,6 +123,14 @@ IMAGE_INSTALL_append_mx6 = " \
     imx-gpu-viv-demos \
     ${@bb.utils.contains('DISTRO', 'dmo-x11', 'xf86-video-imxfb-vivante', '', d)} \
 "
+IMAGE_INSTALL_append_dmo-edm-comb-bw6 = " \
+    alsa-utils \
+    gstreamer-vaapi-1.0 \
+    libva-intel-driver \
+    mesa-megadriver \
+    xf86-video-intel \
+    xserver-xorg-extension-glx \
+"
 
 SDCARD = "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.without-homefs.img"
 SDCARD_HOME = "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.with-homefs.img"
