@@ -2,9 +2,11 @@ Index: git/units/systemd-udevd.service.in
 ===================================================================
 --- git.orig/units/systemd-udevd.service.in
 +++ git/units/systemd-udevd.service.in
-@@ -21,4 +21,4 @@ Sockets=systemd-udevd-control.socket sys
+@@ -21,6 +21,6 @@ Sockets=systemd-udevd-control.socket sys
  Restart=always
  RestartSec=0
  ExecStart=@rootlibexecdir@/systemd-udevd
 -MountFlags=slave
 +MountFlags=shared
+ KillMode=mixed
+ WatchdogSec=1min
