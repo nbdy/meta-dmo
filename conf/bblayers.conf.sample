@@ -14,6 +14,7 @@ BBLAYERS ?= " \
 	##COREBASE##/meta-browser \
 	##COREBASE##/meta-qt5 \
 	##COREBASE##/meta-openembedded/meta-oe \
+	##COREBASE##/meta-openembedded/meta-python \
 	##COREBASE##/meta-openembedded/meta-gnome \
 	##COREBASE##/meta-openembedded/meta-xfce \
 	##COREBASE##/meta-openembedded/meta-multimedia \
