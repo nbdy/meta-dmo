@@ -16,7 +16,7 @@ IMAGE_INSTALL = " \
     bash \
     blanking \
     bluez-hcidump \
-    bluez4 \
+    bluez5 \
     canutils \
     coreutils \
     dmo-gst-videoscripts \
