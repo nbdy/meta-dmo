@@ -22,8 +22,8 @@ do_install () {
     elif ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'true', 'false', d)}; then
         install -d ${D}/usr/bin
         install -m 755 ${WORKDIR}/blanking.sh ${D}/usr/bin
-        install -d ${D}/usr/lib/systemd/system/
-        install -m 644 ${WORKDIR}/blanking.service ${D}/usr/lib/systemd/system/
+        install -d ${D}${systemd_unitdir}/system
+        install -m 644 ${WORKDIR}/blanking.service ${D}${systemd_unitdir}/system
     fi
 }
 

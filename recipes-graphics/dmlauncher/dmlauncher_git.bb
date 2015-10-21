@@ -29,8 +29,8 @@ do_install() {
     install -m 755 ./dmlauncher ${D}/usr/bin
 
     if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'true', 'flase', d)}; then
-        install -d ${D}/usr/lib/systemd/system/
-        install -m 644 ${WORKDIR}/dmlauncher.service ${D}/usr/lib/systemd/system
+        install -d ${D}${systemd_unitdir}/system/
+        install -m 644 ${WORKDIR}/dmlauncher.service ${D}${systemd_unitdir}/system
     fi
 }
 
