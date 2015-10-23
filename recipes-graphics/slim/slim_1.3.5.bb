@@ -22,7 +22,7 @@ CONFFILES_${PN} += "${sysconfdir}/slim.conf"
 RDEPENDS_${PN} = "xauth"
 
 PACKAGES += "${PN}-systemd"
-FILES_${PN}-systemd = "/usr/lib/systemd"
+FILES_${PN}-systemd = "/lib/systemd"
 
 SYSTEMD_PACKAGES = "${PN}-systemd"
 SYSTEMD_SERVICE_${PN}-systemd = "slim.service"
@@ -33,7 +33,12 @@ do_install_append() {
         install -m 755 ${WORKDIR}/slim.sh ${D}/${sysconfdir}/init.d
         ln -sf ../init.d/slim.sh ${D}/${sysconfdir}/rc5.d/S99slim
     fi
-
+    
+    if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'true', 'false', d)}; then
+        install -d ${D}${systemd_unitdir}/system
+        install -m 644 ${S}/slim.service ${D}${systemd_unitdir}/system
+        rm -rf ${D}/usr/lib
+    fi
     # Enable auto login for root user
     sed -e "s/#\s*default_user\s*simone/default_user root/" -i ${D}/${sysconfdir}/slim.conf
     sed -e "s/#\s*auto_login\s*no/auto_login yes/" -i ${D}/${sysconfdir}/slim.conf
