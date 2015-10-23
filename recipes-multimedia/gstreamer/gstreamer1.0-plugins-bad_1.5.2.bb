@@ -8,5 +8,8 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=73a5855a8119deb017f5f13cf327095d \
 SRC_URI[md5sum] = "8735273f25226190827826cb0966a888"
 SRC_URI[sha256sum] = "380ca225531136e249c4748abee855eb0c93090abdea4808703a58028c65113f"
 
+# This patch is added by meta-fsl-arm layer, but does not apply on this version
+SRC_URI_remove = "file://0001-PATCH-install-gstaggregator-and-gstvideoaggregator-h.patch"
+
 S = "${WORKDIR}/gst-plugins-bad-${PV}"
 
