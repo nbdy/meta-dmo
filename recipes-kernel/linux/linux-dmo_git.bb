@@ -43,6 +43,7 @@
 
 inherit kernel
 inherit dmo-checksum
+inherit fsl-vivante-kernel-driver-handler
 require recipes-kernel/linux/linux-yocto.inc
 
 # Override SRC_URI in a bbappend file to point at a different source

@@ -38,3 +38,6 @@ PREFERRED_PROVIDER_jpeg-native = "jpeg-native"
 
 PREFERRED_VERSION_kern-tools-native_git = "0.2+git83f468ab8ef748a8880cba7d26779c35abfcc0bf"
 
+# We disable the vivante kernel modul, as we are using our own kernel
+MACHINE_USES_VIVANTE_KERNEL_DRIVER_MODULE = "0"
+
