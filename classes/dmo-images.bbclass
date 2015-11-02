@@ -19,6 +19,11 @@ do_rootfs[depends] += "${IMAGE_BOOTLOADER}:do_deploy"
 do_rootfs[depends] += "virtual/kernel:do_deploy"
 
 IMAGE_CMD_dmosdcard () {
+    if [ -z "${SDCARD_ROOTFS}" ]; then
+            bberror "SDCARD_ROOTFS is undefined. To use sdcard image from Data-Moudl BSP it needs to be defined."
+            exit 1
+    fi
+
     # create SDCARD
     bbnote "creating sdcard"
     truncate -s $(expr ${SDCARD_SIZE} \* 1024) ${SDCARD_WITH_HOMEFS}
