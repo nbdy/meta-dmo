@@ -142,7 +142,7 @@ IMAGE_OVERHEAD_FACTOR = "1"
 IMAGE_ROOTFS_EXTRA_SPACE = "0"
 
 HOMEFS_SPACE = "204799"
-HOMEFS_IMAGE = "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.homefs.ext3"
+HOMEFS_IMAGE = "${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.homefs.ext4"
 
 create_homefs_and_image () {
     HOMEFS="${WORKDIR}/homefs"
@@ -156,7 +156,7 @@ create_homefs_and_image () {
     dd if=/dev/zero of=${HOMEFS_IMAGE} count=0 bs=1k seek=${HOMEFS_SPACE}
 
     # Create a sparse image block
-    mkfs.ext3 -F ${HOMEFS_IMAGE} -d ${HOMEFS}
+    mkfs.ext4 -F ${HOMEFS_IMAGE} -d ${HOMEFS}
 }
 
 dmo_image_removeFiles () {
@@ -187,8 +187,8 @@ dmo_imageRemoveLibavX264Files () {
 }
 
 do_deploy () {
-    dmo_do_checksum ${DEPLOY_DIR_IMAGE} ${IMAGE_NAME}".homefs.ext3"
-    dmo_do_checksum ${DEPLOY_DIR_IMAGE} ${IMAGE_NAME}".rootfs.ext3"
+    dmo_do_checksum ${DEPLOY_DIR_IMAGE} ${IMAGE_NAME}".homefs.ext4"
+    dmo_do_checksum ${DEPLOY_DIR_IMAGE} ${IMAGE_NAME}".rootfs.ext4"
     dmo_do_checksum ${DEPLOY_DIR_IMAGE} ${IMAGE_NAME}".rootfs.manifest"
     dmo_do_checksum ${DEPLOY_DIR_IMAGE} ${IMAGE_NAME}".rootfs.tar.bz2"
     dmo_do_checksum ${DEPLOY_DIR_IMAGE} ${IMAGE_NAME}".with-homefs.sdcard2"
