@@ -1,0 +1,26 @@
+Index: xserver-xorg-video-imx-viv-5.0.11.p7.1/EXA/src/vivante_fbdev/vivante_fbdev_driver.c
+===================================================================
+--- xserver-xorg-video-imx-viv-5.0.11.p7.1.orig/EXA/src/vivante_fbdev/vivante_fbdev_driver.c
++++ xserver-xorg-video-imx-viv-5.0.11.p7.1/EXA/src/vivante_fbdev/vivante_fbdev_driver.c
+@@ -49,7 +49,7 @@ static Bool gEnableXRandR = FALSE;
+ static Bool gEnableDRI = FALSE;
+ static Bool gEnableFbSyncExt = FALSE;
+ #endif
+-int WIDTH_ALIGNMENT = 64;
++int WIDTH_ALIGNMENT = 16;
+ 
+ #define XV 1
+ 
+Index: xserver-xorg-video-imx-viv-5.0.11.p7.1/EXA/src/vivante_util/vivante_common.h
+===================================================================
+--- xserver-xorg-video-imx-viv-5.0.11.p7.1.orig/EXA/src/vivante_util/vivante_common.h
++++ xserver-xorg-video-imx-viv-5.0.11.p7.1/EXA/src/vivante_util/vivante_common.h
+@@ -87,7 +87,7 @@ extern "C" {
+ // NO_RESOLVE support: must align to 64
+ //#define WIDTH_ALIGNMENT 64
+ extern int WIDTH_ALIGNMENT;
+-#define HEIGHT_ALIGNMENT 64
++#define HEIGHT_ALIGNMENT 16
+ #define BITSTOBYTES(x) (((x)+7)/8)
+ 
+ #define    IMX_EXA_NONCACHESURF_WIDTH 1024
