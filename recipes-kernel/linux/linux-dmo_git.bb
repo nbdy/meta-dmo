@@ -48,7 +48,7 @@ require recipes-kernel/linux/linux-yocto.inc
 
 # Override SRC_URI in a bbappend file to point at a different source
 # tree if you do not want to build from Linus' tree.
-SRC_URI = "git://git@emb.data-modul.com/development/linux;branch=sfr/release-2015.08;protocol=ssh;name=kernel"
+SRC_URI = "git://git@emb.data-modul.com/development/linux;branch=zdo/201602/release;protocol=ssh;name=kernel"
 SRC_URI_append_mx6 += "file://debug.cfg"
 SRC_URI_append_mx6 += "file://hardware.cfg"
 SRC_URI_append_mx6 += "file://zconfig.cfg"
