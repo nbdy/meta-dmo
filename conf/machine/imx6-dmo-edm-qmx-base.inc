@@ -30,3 +30,6 @@ MACHINE_FEATURES += " pci"
 SDCARD_WITH_SEPARATED_BARBOXENV = "false"
 
 DMOFTP_append = "/edm-qmx6/source/"
+
+MACHINEOVERRIDES.=":imx6-dmo-edm-qmx"
+
