@@ -27,6 +27,14 @@ MACHINE_EXTRA_RRECOMMENDS = " kernel-modules"
 # Remove files from comercial license recipes
 #DMO_REMOVE_FILES_FROM_COMMERCIAL_RECIPES = "1"
 
+QT_MODULE_BRANCH = "5.5"
+PREFERRED_VERSION_gstreamer1.0 = "1.5.2"
+PREFERRED_VERSION_gstreamer1.0-meta-base = "1.5.2"
+PREFERRED_VERSION_gstreamer1.0-plugins-bad = "1.5.2"
+PREFERRED_VERSION_gstreamer1.0-plugins-base = "1.5.2"
+PREFERRED_VERSION_gstreamer1.0-plugins-good = "1.5.2"
+PREFERRED_VERSION_gstreamer1.0-plugins-ugly = "1.5.2"
+
 PREFERRED_PROVIDER_jpeg = "jpeg"
 PREFERRED_PROVIDER_jpeg-native = "jpeg-native"
 
