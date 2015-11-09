@@ -1,7 +1,7 @@
 From 9b812ecbc5e595fc759bce0eb1ca0fec69de7919 Mon Sep 17 00:00:00 2001
 From: Patrick Stumpf <pstumpf@data-modul.com>
 Date: Tue, 30 Jun 2015 14:18:13 +0200
-Subject: [PATCH 2/7] gstreamer: get right window position
+Subject: [PATCH 02/10] gstreamer: get right window position
 
 This is a fix to get the right window coordinates for the gstreamer v4l2sink
 crop window. The patch is probably a temporary solution.
@@ -161,5 +161,5 @@ index a1cafdd..01454ae 100644
      GstCaps *caps = qt_gst_pad_get_current_caps(pad);
  
 -- 
-2.4.5
+2.5.2
 

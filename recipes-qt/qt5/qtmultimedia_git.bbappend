@@ -11,6 +11,8 @@ SRC_URI_append_mx6 += "\
 	    file://0006-gstreamer-fix-stop-function.patch \
 	    file://0007-gstreamer-detect-v4l2-device.patch \
 	    file://0008-gstreamer-fix-overlay-window-coordinates.patch \
+            file://0009-gstreamer-distinguish-audio-and-video-pipelines.patch \
+            file://0010-gstreamer-register-typefind-function-on-pause.patch \
 "
 
 LIC_FILES_CHKSUM_remove = "file://LICENSE.LGPLv3;md5=b8c75190712063cde04e1f41b6fdad98"

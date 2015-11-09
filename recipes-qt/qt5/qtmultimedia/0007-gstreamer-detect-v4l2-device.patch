@@ -1,7 +1,7 @@
 From 2e4c3c9dd8f0c51624845134ab524e397c36e5aa Mon Sep 17 00:00:00 2001
 From: Zahari Doychev <zahari.doychev@linux.com>
 Date: Tue, 14 Jul 2015 13:08:28 +0200
-Subject: [PATCH 7/7] gstreamer: detect v4l2 device
+Subject: [PATCH 07/10] gstreamer: detect v4l2 device
 
 The converter and the overlay v4l2 devices are  being detected. The code takes
 always the first ipu so in the case of quad and HDMI it will not work. We
@@ -231,5 +231,5 @@ index 4c79b4b..4b6d447 100644
  #if defined(HAVE_GST_APPSRC)
      QGstAppSrc *m_appSrc;
 -- 
-2.4.5
+2.5.2
 

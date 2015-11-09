@@ -1,7 +1,7 @@
 From 72f802dd0a2d4334acc203477e5e1cdee63188da Mon Sep 17 00:00:00 2001
 From: Zahari Doychev <zahari.doychev@linux.com>
 Date: Fri, 28 Aug 2015 14:32:13 +0200
-Subject: [PATCH] gstreamer: fix overlay window coordinates
+Subject: [PATCH 08/10] gstreamer: fix overlay window coordinates
 
 All main window children have to be searched to find the correct window
 coordinates.
@@ -213,5 +213,5 @@ index 4b6d447..5cd2da1 100644
  
  
 -- 
-2.5.0
+2.5.2
 

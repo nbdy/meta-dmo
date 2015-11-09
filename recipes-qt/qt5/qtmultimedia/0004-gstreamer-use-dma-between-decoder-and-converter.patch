@@ -1,7 +1,7 @@
 From cf2863e57a1dd0e7ecc9b4691f339f9a7151cf1e Mon Sep 17 00:00:00 2001
 From: Zahari Doychev <zahari.doychev@linux.com>
 Date: Thu, 2 Jul 2015 09:18:40 +0200
-Subject: [PATCH 4/7] gstreamer: use dma between decoder and converter
+Subject: [PATCH 04/10] gstreamer: use dma between decoder and converter
 
 This patch enables the usage of dma buffers between the imx6 decoder and
 converter. This improves the playback performance.
@@ -90,5 +90,5 @@ index c68dbe3..3e75f1e 100644
          gst_bin_remove(GST_BIN(m_videoOutputBin), m_videoSink);
  
 -- 
-2.4.5
+2.5.2
 

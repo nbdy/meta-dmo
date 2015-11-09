@@ -1,7 +1,7 @@
 From 9212a05c8df6d53943cebf73fe4d22e5a5ec6b7a Mon Sep 17 00:00:00 2001
 From: Patrick Stumpf <pstumpf@data-modul.com>
 Date: Thu, 2 Jul 2015 09:16:14 +0200
-Subject: [PATCH 3/7] gstreamer: fix for qml window crop coordinates
+Subject: [PATCH 03/10] gstreamer: fix for qml window crop coordinates
 
 This fix allows to get the qml window coordinates and pass them to the gst
 pipeline.
@@ -85,5 +85,5 @@ index 01454ae..c68dbe3 100644
  	}
  	if(!success)
 -- 
-2.4.5
+2.5.2
 

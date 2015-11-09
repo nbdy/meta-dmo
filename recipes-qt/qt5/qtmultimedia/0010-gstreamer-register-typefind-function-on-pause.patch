@@ -1,0 +1,42 @@
+From 947576386c73cd2c14c3d40d53f52a056bbffd1e Mon Sep 17 00:00:00 2001
+From: Zahari Doychev <zahari.doychev@linux.com>
+Date: Mon, 28 Sep 2015 15:29:30 +0200
+Subject: [PATCH 10/10] gstreamer: register typefind function on pause
+
+The type find functions is being registered on pause too not only in the
+constructor to avoid dangling pointer dereference when the last objected
+containing the typefind function is already destroyed but the callback is
+still being used.
+
+Signed-off-by: Zahari Doychev <zahari.doychev@linux.com>
+---
+ src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp b/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp
+index b298ba3..2242da0 100644
+--- a/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp
++++ b/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp
+@@ -1194,10 +1194,17 @@ bool QGstreamerPlayerSession::pause()
+ #endif
+     if (m_playbin) {
+         m_pendingState = QMediaPlayer::PausedState;
+-        if (m_pendingVideoSink != 0) {
++
++	/* This avoids crashing in playlistTypeFindFunction when the object
++	   containing the last regsitered function is destroyed. */
++	gboolean result = gst_type_find_register(0, "playlist", GST_RANK_MARGINAL, playlistTypeFindFunction, 0, 0, this, 0);
++	Q_ASSERT(result == TRUE);
++	Q_UNUSED(result);
++
++	if (m_pendingVideoSink != 0) {
+ 		return true;
+ 	}
+-        if (gst_element_set_state(m_playbin, GST_STATE_PAUSED) == GST_STATE_CHANGE_FAILURE) {
++	if (gst_element_set_state(m_playbin, GST_STATE_PAUSED) == GST_STATE_CHANGE_FAILURE) {
+             if (!m_isPlaylist) {
+                 qWarning() << "GStreamer; Unable to pause -" << m_request.url().toString();
+                 m_pendingState = m_state = QMediaPlayer::StoppedState;
+-- 
+2.5.2
+

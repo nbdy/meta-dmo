@@ -1,7 +1,7 @@
 From b07cc5c39545bf3beb6b817b6559c94154f1b596 Mon Sep 17 00:00:00 2001
 From: Zahari Doychev <zahari.doychev@linux.com>
 Date: Fri, 3 Jul 2015 15:05:48 +0200
-Subject: [PATCH 6/7] gstreamer: fix stop function
+Subject: [PATCH 06/10] gstreamer: fix stop function
 
 Retain v4l2sink when finishing video output. This fixes the stop function
 and enables to load properly new videos. The setup of dma decoder buffers
@@ -196,5 +196,5 @@ index 8d45d15..13a41c4 100644
  
      g_free(elementName);
 -- 
-2.4.5
+2.5.2
 

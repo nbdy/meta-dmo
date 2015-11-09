@@ -1,0 +1,116 @@
+From 4985e2c85d7607523b81162b0a03c71839cd60a4 Mon Sep 17 00:00:00 2001
+From: Zahari Doychev <zahari.doychev@linux.com>
+Date: Mon, 28 Sep 2015 15:20:46 +0200
+Subject: [PATCH 09/10] gstreamer: distinguish audio and video pipelines
+
+Add checks to avoid adding video elements and calling video functions when
+using audio pipelines. This fixes also gstreamer error messages.
+
+Signed-off-by: Zahari Doychev <zahari.doychev@linux.com>
+---
+ .../mediaplayer/qgstreamerplayersession.cpp        | 32 ++++++++++++++++------
+ 1 file changed, 23 insertions(+), 9 deletions(-)
+
+diff --git a/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp b/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp
+index aa85b16..b298ba3 100644
+--- a/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp
++++ b/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp
+@@ -126,7 +126,10 @@ QGstreamerPlayerSession::QGstreamerPlayerSession(QObject *parent)
+ #if !GST_CHECK_VERSION(1,0,0)
+      m_usingColorspaceElement(false),
+ #endif
++#if defined(ZDO_TEST)
++     m_videoConverter(0),
+      m_v4l2sink(0),
++#endif
+      m_pendingVideoSink(0),
+      m_nullVideoSink(0),
+      m_audioSink(0),
+@@ -917,12 +920,14 @@ void QGstreamerPlayerSession::finishVideoOutputChange()
+ #endif
+ 
+ #if defined(ZDO_TEST)
+-    GstPad *srcPad = gst_element_get_static_pad(m_videoConverter, "src");
++    GstPad *srcPad = NULL;
++    if (m_videoConverter)
++	srcPad = gst_element_get_static_pad(m_videoConverter, "src");
+ #else
+     GstPad *srcPad = gst_element_get_static_pad(m_videoIdentity, "src");
+ #endif
+ 
+-    if (!gst_pad_is_blocked(srcPad)) {
++    if (srcPad && !gst_pad_is_blocked(srcPad)) {
+         //pad is not blocked, it's possible to swap outputs only in the null state
+         qWarning() << "Pad is not blocked yet, could not switch video sink";
+ #if defined(ZDO_TEST)
+@@ -946,7 +951,7 @@ void QGstreamerPlayerSession::finishVideoOutputChange()
+         qDebug() << "Abort, no change";
+         //video output was change back to the current one,
+         //no need to torment the pipeline, just unblock the pad
+-        if (gst_pad_is_blocked(srcPad))
++        if (srcPad && gst_pad_is_blocked(srcPad))
+ #if GST_CHECK_VERSION(1,0,0)
+             gst_pad_remove_probe(srcPad, this->pad_probe_id);
+ #else
+@@ -954,7 +959,8 @@ void QGstreamerPlayerSession::finishVideoOutputChange()
+ #endif
+ 
+ 	m_pendingVideoSink = 0;
+-	gst_object_unref(GST_OBJECT(srcPad));
++	if (srcPad)
++	    gst_object_unref(GST_OBJECT(srcPad));
+         return;
+     }
+ 
+@@ -969,8 +975,10 @@ void QGstreamerPlayerSession::finishVideoOutputChange()
+ #else
+     {
+ #endif
+-        gst_element_set_state(m_videoSink, GST_STATE_NULL);
++	gst_element_set_state(m_videoSink, GST_STATE_NULL);
+ #if defined(ZDO_TEST)
++	if (!srcPad)
++			return;
+ 	qWarning() << Q_FUNC_INFO << "skip unlinking converter and video sink";
+ #else
+ 	gst_element_unlink(m_videoIdentity, m_videoSink);
+@@ -993,7 +1001,9 @@ void QGstreamerPlayerSession::finishVideoOutputChange()
+ #endif
+     m_pendingVideoSink = 0;
+ 
++#if !defined(ZDO_TEST)
+     gst_bin_add(GST_BIN(m_videoOutputBin), m_videoSink);
++#endif
+ 
+     addVideoBufferProbe();
+ 
+@@ -1149,7 +1159,8 @@ bool QGstreamerPlayerSession::play()
+         m_pendingState = QMediaPlayer::PlayingState;
+ #if defined(ZDO_TEST)
+ 	/* setup IPU overlay output */
+-	g_object_set(m_v4l2sink,
++	if (m_v4l2sink)
++		g_object_set(m_v4l2sink,
+ 		     "device", m_OvlDeviceName.c_str(),
+ 		     "io-mode", 5,
+ 		     "sync", TRUE,
+@@ -2006,10 +2017,13 @@ void QGstreamerPlayerSession::handleElementAdded(GstBin *bin, GstElement *elemen
+         //Don't touch other bins since they may have unrelated queues
+         g_signal_connect(element, "element-added",
+                          G_CALLBACK(handleElementAdded), session);
+-    } else if (g_strrstr(elementName,"video4dec") || g_strrstr(elementName,"video7dec")) {
+-	/* setup dma buffers to avoid memcpy */
+-	setup_hw_decoder(element);
+     }
++#if defined(ZDO_TEST)
++    else if (g_strrstr(elementName,"video4dec") || g_strrstr(elementName,"video7dec")) {
++		/* setup dma buffers to avoid memcpy */
++		setup_hw_decoder(element);
++    }
++#endif
+ 
+     g_free(elementName);
+ }
+-- 
+2.5.2
+

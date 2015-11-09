@@ -1,7 +1,7 @@
 From 0857b05963db26879fe10c71a4c54bc94264ef90 Mon Sep 17 00:00:00 2001
 From: Zahari Doychev <zahari.doychev@linux.com>
 Date: Tue, 23 Jun 2015 14:31:42 +0200
-Subject: [PATCH 1/7] gstreamer: hack v4l2sink in playbin
+Subject: [PATCH 01/10] gstreamer: hack v4l2sink in playbin
 
 This is a workaround that forces usage of v4l2sink and v4l2convert in the
 playbin pipelin.
@@ -183,5 +183,5 @@ index 8032f2c..888a553 100644
      GstElement* m_colorSpace;
      bool m_usingColorspaceElement;
 -- 
-2.4.5
+2.5.2
 
