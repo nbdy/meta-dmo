@@ -54,7 +54,9 @@ IMAGE_CMD_dmosdcard () {
         mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${dtb} ::/
     done
     mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${DEFAULT_KERNEL_DEVICETREE} ::/oftree
-    mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/${INITRAMFS_IMAGE}-${MACHINE}.cpio.gz ::/initramfs
+    if [ ! -z "${INITRAMFS_IMAGE}" ]; then
+        mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/${INITRAMFS_IMAGE}-${MACHINE}.cpio.gz ::/initramfs
+    fi
 
     # Creat the overlay partition
     [ -e ${WORKDIR}/overlay.img ] && rm ${WORKDIR}/overlay.img
