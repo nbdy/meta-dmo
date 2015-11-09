@@ -1,6 +1,6 @@
 require barebox.inc
 
-PV = "2015.08.0+git${SRCPV}"
+PV = "2016.02.0+git${SRCPV}"
 SRC_URI = "git://git@emb.data-modul.com/development/barebox;branch=zdo/201602/next-release;protocol=ssh;name=mx6"
 
 SRCREV_mx6="${AUTOREV}"
