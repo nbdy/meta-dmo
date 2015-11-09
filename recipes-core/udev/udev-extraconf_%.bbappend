@@ -7,7 +7,7 @@ do_install_append () {
     install -m 0644 ${WORKDIR}/90-video.rules ${D}${sysconfdir}/udev/rules.d/90-video.rules
 }
 
-do_install_append_mx6() {
+do_install_append_imx6-dmo-edm-qmx() {
     echo "/dev/mmcblk1p1" >> ${D}/${sysconfdir}/udev/mount.blacklist
     echo "/dev/mmcblk1p4" >> ${D}/${sysconfdir}/udev/mount.blacklist
 }
