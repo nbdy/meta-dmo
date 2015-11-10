@@ -196,18 +196,26 @@ dmo_imageRemoveLibavX264Files () {
     fi
 }
 
+LOCAL_MACHINE_imx6-dmo-edm-qmx = "imx6"
+LOCAL_MACHINE_dmo-edm-comb-bw6 = "x86"
+
 do_deploy () {
     dmo_do_checksum ${DEPLOY_DIR_IMAGE} ${IMAGE_NAME}".homefs.ext4"
     dmo_do_checksum ${DEPLOY_DIR_IMAGE} ${IMAGE_NAME}".rootfs.ext4"
     dmo_do_checksum ${DEPLOY_DIR_IMAGE} ${IMAGE_NAME}".rootfs.manifest"
     dmo_do_checksum ${DEPLOY_DIR_IMAGE} ${IMAGE_NAME}".rootfs.tar.bz2"
-    dmo_do_checksum ${DEPLOY_DIR_IMAGE} ${IMAGE_NAME}".with-homefs.sdcard2"
-    dmo_do_checksum ${DEPLOY_DIR_IMAGE} ${IMAGE_NAME}".without-homefs.sdcard2"
-    dmo_do_checksum ${DEPLOY_DIR_IMAGE} ${IMAGE_NAME}".without-overlayfs.sdcard2"
+    if [ "imx6" == "${LOCAL_MACHINE}" ]; then
+        dmo_do_checksum ${DEPLOY_DIR_IMAGE} ${IMAGE_NAME}".with-homefs.sdcard2"
+        dmo_do_checksum ${DEPLOY_DIR_IMAGE} ${IMAGE_NAME}".without-homefs.sdcard2"
+        dmo_do_checksum ${DEPLOY_DIR_IMAGE} ${IMAGE_NAME}".without-overlayfs.sdcard2"
+    elif [ "x86" == "${LOCAL_MACHINE}" ]; then
+        dmo_do_checksum ${DEPLOY_DIR_IMAGE} ${IMAGE_NAME}".hddimg"
+        dmo_do_checksum ${DEPLOY_DIR_IMAGE} ${IMAGE_NAME}".iso"
+    fi
 }
 
 do_deploy[dirs] = "${S}"
-addtask deploy before do_build after do_rootfs
+addtask deploy before do_build after do_bootimg
 
 ssh_allow_empty_password_append() {
     if [ -e ${IMAGE_ROOTFS}${sysconfdir}/ssh/sshd_config_readonly ]; then
