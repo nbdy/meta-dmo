@@ -121,7 +121,9 @@ IMAGE_INSTALL_append_mx6dl = " \
 IMAGE_INSTALL_append_mx6 = " \
     imx-gpu-viv \
     imx-gpu-viv-demos \
-    ${@bb.utils.contains('DISTRO', 'dmo-x11', 'xf86-video-imxfb-vivante', '', d)} \
+"
+IMAGE_INSTALL_append_mx6_dmo-x11 = " \
+    xf86-video-imxfb-vivante \
 "
 IMAGE_INSTALL_append_dmo-edm-comb-bw6 = " \
     alsa-utils \
