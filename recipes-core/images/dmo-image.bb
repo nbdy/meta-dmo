@@ -198,7 +198,7 @@ dmo_imageRemoveLibavX264Files () {
     fi
 }
 
-LOCAL_MACHINE_imx6-dmo-edm-qmx = "imx6"
+LOCAL_MACHINE_imx6 = "imx6"
 LOCAL_MACHINE_dmo-edm-comb-bw6 = "x86"
 
 do_deploy () {
@@ -210,14 +210,20 @@ do_deploy () {
         dmo_do_checksum ${DEPLOY_DIR_IMAGE} ${IMAGE_NAME}".with-homefs.sdcard2"
         dmo_do_checksum ${DEPLOY_DIR_IMAGE} ${IMAGE_NAME}".without-homefs.sdcard2"
         dmo_do_checksum ${DEPLOY_DIR_IMAGE} ${IMAGE_NAME}".without-overlayfs.sdcard2"
-    elif [ "x86" == "${LOCAL_MACHINE}" ]; then
+    fi
+}
+
+do_deployiso() {
+    if [ "x86" == "${LOCAL_MACHINE}" ]; then
         dmo_do_checksum ${DEPLOY_DIR_IMAGE} ${IMAGE_NAME}".hddimg"
         dmo_do_checksum ${DEPLOY_DIR_IMAGE} ${IMAGE_NAME}".iso"
     fi
 }
 
 do_deploy[dirs] = "${S}"
-addtask deploy before do_build after do_bootimg
+do_deployiso[dirs] = "${S}"
+addtask deploy before do_build after do_rootfs
+addtask deployiso before do_build after do_bootimg
 
 ssh_allow_empty_password_append() {
     if [ -e ${IMAGE_ROOTFS}${sysconfdir}/ssh/sshd_config_readonly ]; then
