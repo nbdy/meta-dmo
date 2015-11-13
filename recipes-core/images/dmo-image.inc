@@ -75,7 +75,7 @@ dmo_imageRemoveLibavX264Files () {
     fi
 }
 
-LOCAL_MACHINE_imx6 = "imx6"
+LOCAL_MACHINE_mx6 = "imx6"
 LOCAL_MACHINE_dmo-edm-comb-bw6 = "x86"
 
 do_deploy () {
