@@ -1,8 +1,9 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
 SRC_URI_append = " \
-                    file://0001-fix-udevd-automount.patch \
-                    "
+    file://0001-fix-udevd-automount.patch \
+    file://0020-Revert-root-home-for-rescue-shells.patch \
+"
 SRC_URI_append_mx6 = "file://eth0.network"
 SRC_URI_append_corei7-64-intel-common = "file://eno1.network"
 
@@ -24,6 +25,8 @@ do_install_append() {
     if ${@bb.utils.contains('PACKAGECONFIG', 'resolved', 'true', 'false', d)}; then
         ln -s /var/run/systemd/resolve/resolv.conf ${D}/${sysconfdir}/resolv.conf  
     fi
+    install -m 0755 -d ${D}/root
+    install -m 0755 -d ${D}/home/root
 }
 
 pkg_postinst_${PN}() {
@@ -38,4 +41,6 @@ pkg_postinst_${PN}() {
         fi
     fi
 }
+
+FILES_${PN}_append += "/root /home /home/root"
 

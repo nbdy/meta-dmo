@@ -1,0 +1,45 @@
+Index: git/units/console-shell.service.m4.in
+===================================================================
+--- git.orig/units/console-shell.service.m4.in
++++ git/units/console-shell.service.m4.in
+@@ -15,8 +15,8 @@ After=rc-local.service
+ Before=getty.target
+ 
+ [Service]
+-Environment=HOME=@roothomedir@
+-WorkingDirectory=@roothomedir@
++Environment=HOME=/root
++WorkingDirectory=/root
+ ExecStart=-@SULOGIN@
+ ExecStopPost=-@SYSTEMCTL@ poweroff
+ Type=idle
+Index: git/units/emergency.service.in
+===================================================================
+--- git.orig/units/emergency.service.in
++++ git/units/emergency.service.in
+@@ -14,8 +14,8 @@ Conflicts=rescue.service
+ Before=shutdown.target
+ 
+ [Service]
+-Environment=HOME=@roothomedir@
+-WorkingDirectory=@roothomedir@
++Environment=HOME=/root
++WorkingDirectory=/root
+ ExecStartPre=-/bin/plymouth --wait quit
+ ExecStartPre=-/bin/echo -e 'Welcome to emergency mode! After logging in, type "journalctl -xb" to view\\nsystem logs, "systemctl reboot" to reboot, "systemctl default" or ^D to\\ntry again to boot into default mode.'
+ ExecStart=-/bin/sh -c "@SULOGIN@; @SYSTEMCTL@ --job-mode=fail --no-block default"
+Index: git/units/rescue.service.in
+===================================================================
+--- git.orig/units/rescue.service.in
++++ git/units/rescue.service.in
+@@ -14,8 +14,8 @@ After=sysinit.target plymouth-start.serv
+ Before=shutdown.target
+ 
+ [Service]
+-Environment=HOME=@roothomedir@
+-WorkingDirectory=@roothomedir@
++Environment=HOME=/root
++WorkingDirectory=/root
+ ExecStartPre=-/bin/plymouth quit
+ ExecStartPre=-/bin/echo -e 'Welcome to emergency mode! After logging in, type "journalctl -xb" to view\\nsystem logs, "systemctl reboot" to reboot, "systemctl default" or ^D to\\nboot into default mode.'
+ ExecStart=-/bin/sh -c "@SULOGIN@; @SYSTEMCTL@ --job-mode=fail --no-block default"
