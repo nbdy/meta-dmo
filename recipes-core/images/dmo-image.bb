@@ -45,6 +45,7 @@ IMAGE_INSTALL = " \
     tslib-calibrate \
     tslib-tests \
     udev-extraconf \
+    usbutils \
     util-linux \
     wget \
     wireless-tools \
