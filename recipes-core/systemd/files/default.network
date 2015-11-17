@@ -1,5 +1,5 @@
 [Match]
-Name=eno1
+Name=e*
 
 [Network]
 #DHCP setup

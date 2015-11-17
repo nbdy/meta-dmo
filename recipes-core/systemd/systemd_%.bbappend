@@ -3,25 +3,14 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 SRC_URI_append = " \
     file://0001-fix-udevd-automount.patch \
     file://0020-Revert-root-home-for-rescue-shells.patch \
+    file://default.network \
 "
-SRC_URI_append_mx6 = "file://eth0.network"
-SRC_URI_append_corei7-64-intel-common = "file://eno1.network"
-
 FILES_${PN}_append = "${sysconfdir}/resolv.conf"
 
-do_install_append_mx6() {
-    if ${@bb.utils.contains('PACKAGECONFIG', 'networkd', 'true', 'false', d)}; then
-        install -m 644 ${WORKDIR}/eth0.network ${D}/${sysconfdir}/systemd/network/ 
-    fi
-}
-
-do_install_append_corei7-64-intel-common() {
-    if ${@bb.utils.contains('PACKAGECONFIG', 'networkd', 'true', 'false', d)}; then
-        install -m 644 ${WORKDIR}/eno1.network ${D}/${sysconfdir}/systemd/network/ 
-    fi
-}
-
 do_install_append() {
+    if ${@bb.utils.contains('PACKAGECONFIG', 'networkd', 'true', 'false', d)}; then
+        install -m 644 ${WORKDIR}/default.network ${D}/${sysconfdir}/systemd/network/ 
+    fi
     if ${@bb.utils.contains('PACKAGECONFIG', 'resolved', 'true', 'false', d)}; then
         ln -s /var/run/systemd/resolve/resolv.conf ${D}/${sysconfdir}/resolv.conf  
     fi
