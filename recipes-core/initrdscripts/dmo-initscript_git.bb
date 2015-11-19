@@ -7,8 +7,8 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/COPYING.MIT;md5=3da9cfbcb788c80a0384
 
 RDEPENDS_${PN} = "bash udev"
 
-SRC_URI = "git://git@emb.data-modul.com/development/initscripts;branch=master;protocol=ssh;name=initrd"
-SRCREV_initrd = "${AUTOREV}"
+SRC_URI = "git://git@emb.data-modul.com/development/initscripts;branch=master;protocol=ssh"
+SRCREV = "${AUTOREV}"
 
 S = "${WORKDIR}/git"
 PV = "1.0+git${SRCPV}"
