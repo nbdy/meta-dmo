@@ -45,3 +45,6 @@ PREFERRED_VERSION_canutils = "git"
 # We disable the vivante kernel modul, as we are using our own kernel
 MACHINE_USES_VIVANTE_KERNEL_DRIVER_MODULE = "0"
 
+# Chromium is currently not running with GCC 5.2 so we switch back to 4.9
+GCCVERSION = "4.9%"
+
