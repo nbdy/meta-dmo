@@ -17,8 +17,9 @@ DEPENDS = "qtbase qtbase-native qtdeclarative"
 RDEPENDS_${PN} = "qtbase qtdeclarative qtdeclarative-tools qtquickcontrols-qmlplugins"
 
 SRC_URI = " \
-            git://git@emb.data-modul.com/userrepos/pst/qmlvideotest;protocol=ssh \
-            "
+    git://git@emb.data-modul.com/userrepos/pst/qmlvideotest;protocol=ssh \
+    file://qmlvideo.sh \
+"
 SRCREV = "${AUTOREV}"
 PV = "0.1.2+git${SRCPV}"
 
@@ -27,10 +28,11 @@ S="${WORKDIR}/git"
 do_install() {
     install -d ${D}/usr/share/qmlvideotest
     install -m 755 ./qmlvideotest.qml ${D}/usr/share/qmlvideotest
+    install -d ${D}/usr/bin
+    install -m 755 ${WORKDIR}/qmlvideo.sh ${D}/usr/bin
 }
 
 PACKAGES = "${PN}"
 
-FILES_${PN} += "/usr/share/qmlvideotest"
-
+FILES_${PN} += "/usr/share/qmlvideotest /usr/bin"
 
