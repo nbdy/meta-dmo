@@ -1,0 +1,15 @@
+diff --git a/src/lib/app/qzcommon.h b/src/lib/app/qzcommon.h
+index 73f8615..79154a3 100644
+--- a/src/lib/app/qzcommon.h
++++ b/src/lib/app/qzcommon.h
+@@ -52,6 +52,10 @@
+ #define QL1C(x) QLatin1Char(x)
+ #endif
+ 
++#ifndef QTWEBKIT_VERSION_CHECK
++#define QTWEBKIT_VERSION_CHECK(major, minor, patch) ((major<<16)|(minor<<8)|(patch))
++#endif
++
+ namespace Qz
+ {
+ // Version of session.dat file

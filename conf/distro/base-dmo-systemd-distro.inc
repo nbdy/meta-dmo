@@ -35,6 +35,8 @@ PREFERRED_VERSION_gstreamer1.0-plugins-base = "1.5.2"
 PREFERRED_VERSION_gstreamer1.0-plugins-good = "1.5.2"
 PREFERRED_VERSION_gstreamer1.0-plugins-ugly = "1.5.2"
 
+PREFERRED_VERSION_qupzilla = "1.8.8"
+
 PREFERRED_PROVIDER_jpeg = "jpeg"
 PREFERRED_PROVIDER_jpeg-native = "jpeg-native"
 
