@@ -28,21 +28,21 @@ MACHINE_EXTRA_RRECOMMENDS = " kernel-modules"
 #DMO_REMOVE_FILES_FROM_COMMERCIAL_RECIPES = "1"
 
 QT_MODULE_BRANCH = "5.5"
-PREFERRED_VERSION_gstreamer1.0 = "1.5.2"
-PREFERRED_VERSION_gstreamer1.0-meta-base = "1.5.2"
-PREFERRED_VERSION_gstreamer1.0-plugins-bad = "1.5.2"
-PREFERRED_VERSION_gstreamer1.0-plugins-base = "1.5.2"
-PREFERRED_VERSION_gstreamer1.0-plugins-good = "1.5.2"
-PREFERRED_VERSION_gstreamer1.0-plugins-ugly = "1.5.2"
+PREFERRED_VERSION_gstreamer1.0 ?= "1.5.2"
+PREFERRED_VERSION_gstreamer1.0-meta-base ?= "1.5.2"
+PREFERRED_VERSION_gstreamer1.0-plugins-bad ?= "1.5.2"
+PREFERRED_VERSION_gstreamer1.0-plugins-base ?= "1.5.2"
+PREFERRED_VERSION_gstreamer1.0-plugins-good ?= "1.5.2"
+PREFERRED_VERSION_gstreamer1.0-plugins-ugly ?= "1.5.2"
 
-PREFERRED_VERSION_qupzilla = "1.8.8"
+PREFERRED_VERSION_qupzilla ?= "1.8.8"
 
-PREFERRED_PROVIDER_jpeg = "jpeg"
-PREFERRED_PROVIDER_jpeg-native = "jpeg-native"
+PREFERRED_PROVIDER_jpeg ?= "jpeg"
+PREFERRED_PROVIDER_jpeg-native ?= "jpeg-native"
 
-PREFERRED_VERSION_kern-tools-native_git = "0.2+git83f468ab8ef748a8880cba7d26779c35abfcc0bf"
+PREFERRED_VERSION_kern-tools-native_git ?= "0.2+git83f468ab8ef748a8880cba7d26779c35abfcc0bf"
 
-PREFERRED_VERSION_canutils = "git"
+PREFERRED_VERSION_canutils ?= "git"
 
 # We disable the vivante kernel modul, as we are using our own kernel
 MACHINE_USES_VIVANTE_KERNEL_DRIVER_MODULE = "0"
