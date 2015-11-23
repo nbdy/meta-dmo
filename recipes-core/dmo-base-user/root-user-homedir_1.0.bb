@@ -13,7 +13,10 @@ INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 
 do_install () {
     install -m 700 -d ${D}/home/root
-    install -m 700 ${WORKDIR}/xinitrc ${D}/home/root/.xinitrc
+
+    if [ ${@base_contains('DISTRO_FEATURES', 'x11', 'true', '',  d)} == true ]; then
+        install -m 700 ${WORKDIR}/xinitrc ${D}/home/root/.xinitrc
+    fi
 
     chown -R root:root ${D}/home/root
 }
