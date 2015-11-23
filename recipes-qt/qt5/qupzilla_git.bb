@@ -25,11 +25,12 @@ LIC_FILES_CHKSUM = " \
     file://GPLv3;md5=8f0e2cd40e05189ec81232da84bd6e1a \
     file://COPYRIGHT;md5=1d4ea452ed7ae778545f2dda5963c9fd \
 "
+PV = "1.8.6_qtwebengine+git${SRCPV}"
 
 SRC_URI = " \
     git://github.com/QupZilla/${PN}.git \
 "
-SRCREV = "${AUTOREV}"
+SRCREV = "94d89e4fa68cea8957a51fefb0ff57d3786feb34"
 
 S="${WORKDIR}/git"
 
