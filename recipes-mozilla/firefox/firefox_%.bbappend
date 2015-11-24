@@ -1,0 +1,9 @@
+DEPENDS_remove = "pulseaudio startup-notification libxt libxi gtk+ libnotify"
+DEPENDS += "${@base_contains('DISTRO_FEATURES', 'pulseaudio', 'pulseaudio', '', d)}"
+DEPENDS_append += "gstreamer1.0"
+
+mozilla_do_configure_prepend() {
+    echo "${@base_contains('DISTRO_FEATURES', 'pulseaudio', '', 'ac_add_options --disable-pulseaudio', d)}" >> ${MOZCONFIG}
+    echo "ac_add_options --enable-gstreamer=1.0" >> ${MOZCONFIG}
+}
+
