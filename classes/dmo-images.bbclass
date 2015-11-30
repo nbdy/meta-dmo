@@ -61,7 +61,7 @@ IMAGE_CMD_dmosdcard () {
     # Creat the overlay partition
     [ -e ${WORKDIR}/overlay.img ] && rm ${WORKDIR}/overlay.img
     truncate -s $(expr 1024 \* 716799) ${WORKDIR}/overlay.img
-    mkfs.ext3 -F ${WORKDIR}/overlay.img
+    mkfs.ext4 -F ${WORKDIR}/overlay.img
     
     # Burn Partition
     dd if=${WORKDIR}/boot.img    of=${SDCARD_WITH_HOMEFS} conv=notrunc seek=1 bs=$(expr 1024    \* 1024) && sync && sync
