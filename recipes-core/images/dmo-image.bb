@@ -57,8 +57,6 @@ IMAGE_INSTALL_append_dmo-x11 = " \
     chromium \
     mesa-demos \
     packagegroup-xfce-base \
-    slim \
-    slim-systemd \
     unclutter \
     xdg-utils \
     xf86-input-evdev \
@@ -67,6 +65,7 @@ IMAGE_INSTALL_append_dmo-x11 = " \
     xinput-calibrator \
     xmodmap \
     xrdb \
+    xserver-nodm-init \
     xserver-xorg \
     xserver-xorg-extension-dbe \
     xserver-xorg-extension-extmod \
