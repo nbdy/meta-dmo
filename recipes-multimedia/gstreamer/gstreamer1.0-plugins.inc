@@ -45,7 +45,7 @@ def get_gst_srcuri(d):
     if pv == "git":
         s = "git://anongit.freedesktop.org/gstreamer/%s;branch=%s" % (gstpkg_basename, branch)
     else:
-        s = "http://gstreamer.freedesktop.org/src/%s/%s-%s.tar.xz" % (gstpkg_basename, gstpkg_basename, pv)
+        s = "git://gstreamer.freedesktop.org/gstreamer/%s;branch=%s;tag=%s" % (gstpkg_basename, branch, pv)
     return s
 
 delete_liblink_m4_file() {

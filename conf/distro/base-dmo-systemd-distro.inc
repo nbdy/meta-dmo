@@ -28,12 +28,12 @@ MACHINE_EXTRA_RRECOMMENDS = " kernel-modules"
 #DMO_REMOVE_FILES_FROM_COMMERCIAL_RECIPES = "1"
 
 QT_MODULE_BRANCH = "5.5"
-PREFERRED_VERSION_gstreamer1.0 ?= "1.5.2"
-PREFERRED_VERSION_gstreamer1.0-meta-base ?= "1.5.2"
-PREFERRED_VERSION_gstreamer1.0-plugins-bad ?= "1.5.2"
-PREFERRED_VERSION_gstreamer1.0-plugins-base ?= "1.5.2"
-PREFERRED_VERSION_gstreamer1.0-plugins-good ?= "1.5.2"
-PREFERRED_VERSION_gstreamer1.0-plugins-ugly ?= "1.5.2"
+PREFERRED_VERSION_gstreamer1.0 ?= "1.6.1"
+PREFERRED_VERSION_gstreamer1.0-meta-base ?= "1.6.1"
+PREFERRED_VERSION_gstreamer1.0-plugins-bad ?= "1.6.1"
+PREFERRED_VERSION_gstreamer1.0-plugins-base ?= "1.6.1"
+PREFERRED_VERSION_gstreamer1.0-plugins-good ?= "1.6.1"
+PREFERRED_VERSION_gstreamer1.0-plugins-ugly ?= "1.6.1"
 
 PREFERRED_VERSION_qupzilla ?= "1.8.9"
 
