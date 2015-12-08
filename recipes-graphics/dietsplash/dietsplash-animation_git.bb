@@ -9,6 +9,7 @@ SRC_URI = " \
     file://logo_dm.ppm \
     file://desc.txt \
     file://part0 \
+    file://0001-reset-tty-after-dietsplash.patch \
 "
 
 SRCREV = "7974771dc123c3a975f6a79a7f5a6c15a69f7b74"

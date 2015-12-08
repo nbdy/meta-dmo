@@ -1,0 +1,12 @@
+diff --git a/units/dietsplash-quit.service.in b/units/dietsplash-quit.service.in
+index e00137f..0f050ff 100644
+--- a/units/dietsplash-quit.service.in
++++ b/units/dietsplash-quit.service.in
+@@ -6,3 +6,7 @@ After=dev-tty1.device
+ [Service]
+ ExecStart=-@bindir@/dietsplashctl 100 ""
+ Type=oneshot
++TTYPath=/dev/tty1
++TTYReset=yes
++TTYVHangup=yes
++TTYVTDisallocate=yes
