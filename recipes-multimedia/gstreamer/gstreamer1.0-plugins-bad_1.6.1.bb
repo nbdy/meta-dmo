@@ -10,6 +10,8 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=73a5855a8119deb017f5f13cf327095d \
 GSTREAMER_1_0_GIT_BRANCH = "1.6"
 S = "${WORKDIR}/git"
 
+SRC_URI_remove_mx6 = " file://0001-PATCH-install-gstaggregator-and-gstvideoaggregator-h.patch"
+
 PACKAGECONFIG[sbc] = "--enable-sbc,--disable-sbc,sbc"
 PACKAGECONFIG[hls] = "--enable-hls,--disable-hls,gnutls"
 
