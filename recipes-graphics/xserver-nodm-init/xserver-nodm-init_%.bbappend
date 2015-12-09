@@ -2,6 +2,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
 SRC_URI_append += " \
     file://10xinit.sh \
+    file://0001-fix-systemd-service-installation.patch \
 "
 
 do_install_append() {

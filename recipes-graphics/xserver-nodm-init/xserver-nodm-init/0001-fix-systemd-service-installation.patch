@@ -1,0 +1,9 @@
+Index: 2.0-r22/xserver-nodm.service
+===================================================================
+--- 2.0-r22.orig/xserver-nodm.service
++++ 2.0-r22/xserver-nodm.service
+@@ -7,3 +7,4 @@ ExecStart=/etc/X11/Xserver
+ 
+ [Install]
+ Alias=display-manager.service
++WantedBy=multi-user.target
