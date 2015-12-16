@@ -12,6 +12,7 @@ IMAGE_INSTALL = " \
     e2fsprogs-e2fsck \
     e2fsprogs-mke2fs \
     e2fsprogs-tune2fs \
+    ethtool \
     fb-test \
     gstreamer1.0 \
     gstreamer1.0-plugins-bad-meta \
