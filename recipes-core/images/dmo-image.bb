@@ -56,6 +56,7 @@ IMAGE_INSTALL = " \
 "
 IMAGE_INSTALL_append_dmo-x11 = " \
     chromium \
+    firefox \
     mesa-demos \
     packagegroup-xfce-base \
     unclutter \
@@ -77,6 +78,7 @@ IMAGE_INSTALL_append_dmo-qt = " \
     dmlauncher \
     ew15demo \
     qmlvideo \
+    qupzilla \
     qt3d \
     qtbase \
     qtbase-examples \
