@@ -21,22 +21,31 @@
 
 
 HOMEPAGE="https://emb.data-modul.com"
-FILES_${PN} += '/usr/share/dmlauncher/apps/'
+FILES_${PN} += '/usr/share/dmlauncher/apps/ /usr/share/dmlauncher/icons/'
 DMO_LAUNCHER_DESC ?= ''
 DMO_LAUNCHER_ICONPATH ?= ''
 
-def writeappfile(targetdir, execpath, name, desc, icon):
-
-    appfile = targetdir + name + '.app'
+def writeappfile(workdir, targetdir, icondir, execpath, name, desc, icon, iconfile):
+    import shutil
 
     if not execpath:
         bb.error("DMO_LAUNCHER_EXEC is not set")
+        return
 
     if not name:
         bb.error("DMO_LAUNCHER_NAME is not set")
+        return
 
     if not os.path.exists(targetdir):
         os.makedirs(targetdir)
+
+    if iconfile:
+        if not os.path.exists(icondir):
+            os.makedirs(icondir)
+
+        shutil.copy2(workdir + '/' + iconfile, icondir)
+
+    appfile = targetdir + name + '.app'
 
     fp = open(appfile, 'w')
     fp.write('Exec=' + execpath + '\n')
@@ -49,8 +58,10 @@ def writeappfile(targetdir, execpath, name, desc, icon):
 python do_dmo_launcher_app() { 
     workdir = d.getVar('WORKDIR', True)
     targetpath = '/usr/share/dmlauncher/apps/'
+    iconpath = '/usr/share/dmlauncher/icons/'
     imagedir = workdir + '/image'
     targetdir = imagedir + targetpath
+    icondir = imagedir + iconpath
 
     launcher = d.getVar('DMO_LAUNCHER')
     if launcher:
@@ -61,14 +72,16 @@ python do_dmo_launcher_app() {
                 name = d.getVarFlag('DMO_LAUNCHER_NAME', e)
                 desc = d.getVarFlag('DMO_LAUNCHER_DESC', e) or ""
                 iconpath = d.getVarFlag('DMO_LAUNCHER_ICONPATH', e) or ""
-                writeappfile(targetdir, execpath, name, desc, iconpath)
+                iconfile = d.getVarFlag('DMO_LAUNCHER_ICONFILE', e) or ""
+                writeappfile(workdir, targetdir, icondir, execpath, name, desc, iconpath, iconfile)
     else:
         execpath = d.getVar('DMO_LAUNCHER_EXEC')
-        name = d.getVar('DMO_LAUNCHER_NAME')
-        desc = d.getVar('DMO_LAUNCHER_DESC') or ""
-        iconpath = d.getVar('DMO_LAUNCHER_ICONPATH') or ""
-        writeappfile(targetdir, execpath, name, desc, iconpath)
-
+        if execpath:
+            name = d.getVar('DMO_LAUNCHER_NAME')
+            desc = d.getVar('DMO_LAUNCHER_DESC') or ""
+            iconpath = d.getVar('DMO_LAUNCHER_ICONPATH') or ""
+            iconfile = d.getVar('DMO_LAUNCHER_ICONFILE') or ""
+            writeappfile(workdir, targetdir, icondir, execpath, name, desc, iconpath, iconfile)
 }
 
 
