@@ -6,7 +6,7 @@ inherit qmake5
 inherit dmo-launcher-app
 
 DMO_LAUNCHER_EXEC = "/usr/bin/ew15demo"
-DMO_LAUNCHER_NAME = "ew15Demo"
+DMO_LAUNCHER_NAME = "Multitouch-Demo"
 DMO_LAUNCHER_DESC = "Embedde World Multitouch Demo"
 DMO_LAUNCHER_ICONPATH = "/usr/share/cinematicexperience-1.0/content/images/qt_logo.png"
 
@@ -28,8 +28,9 @@ S = "${WORKDIR}/git"
 
 do_install() {
     install -d ${D}/usr/bin
+    install -d ${D}/usr/share/ew15demo/pictures
     install -m 755 ./ew15demo ${D}/usr/bin
-
+    install ${S}/qml/photo/surfaceimages/* ${D}/usr/share/ew15demo/pictures
 }
 
 PACKAGES = "${PN} ${PN}-dbg"
