@@ -3,7 +3,7 @@
 
 require qupzilla.inc
 
-DEPS_appends += "qtwebkit"
+DEPS_append += "qtwebkit"
 
 SRC_URI = " \
     https://github.com/${MY_PN}/${PN}/releases/download/v${PV}/${MY_P}.tar.xz \
