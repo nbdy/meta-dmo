@@ -14,7 +14,7 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/COPYING.MIT;md5=3da9cfbcb788c80a0384361b4de20420"
 SECTION = "graphics"
 DEPENDS = "qtbase qtbase-native qtdeclarative"
-RDEPENDS_${PN} = "qtbase qtdeclarative qtdeclarative-tools qtquickcontrols-qmlplugins"
+RDEPENDS_${PN} = "qtbase qtdeclarative qtdeclarative-tools qtquickcontrols-qmlplugins bash"
 
 SRC_URI = " \
     git://git@emb.data-modul.com/userrepos/pst/qmlvideotest;protocol=ssh \
