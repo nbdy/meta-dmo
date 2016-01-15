@@ -3,8 +3,8 @@
 
 inherit dmo-launcher-app
 
-DMO_LAUNCHER_EXEC = "/usr/bin/qt5/qmlscene /usr/share/qmlvideotest/qmlvideotest.qml"
-DMO_LAUNCHER_NAME = "qmlvideotest"
+DMO_LAUNCHER_EXEC = "/usr/bin/qt5/qmlscene /usr/share/qmlvideotest/qmlvideotest.qml --fullscreen"
+DMO_LAUNCHER_NAME = "QT-Videoplayer-demo"
 DMO_LAUNCHER_DESC = "Qml video test application"
 DMO_LAUNCHER_ICONPATH = "/usr/share/cinematicexperience-1.0/content/images/qt_logo.png"
 
