@@ -20,6 +20,7 @@ SRC_URI = " \
     git://git@emb.data-modul.com/userrepos/pst/qmlvideotest;protocol=ssh \
     file://qmlvideo.sh \
 "
+
 SRCREV = "${AUTOREV}"
 PV = "0.1.2+git${SRCPV}"
 
