@@ -17,11 +17,11 @@ DEPENDS = "qtbase qtbase-native qtdeclarative"
 RDEPENDS_${PN} = "qtbase qtdeclarative qtdeclarative-tools qtquickcontrols-qmlplugins bash"
 
 SRC_URI = " \
-    git://git@emb.data-modul.com/userrepos/pst/qmlvideotest;protocol=ssh \
+    git://git@emb.data-modul.com/userrepos/pst/qmlvideotest;protocol=ssh;name=dmo \
     file://qmlvideo.sh \
 "
-
-SRCREV = "${AUTOREV}"
+SRCREV_FORMAT ?= "dmo"
+SRCREV_dmo = "${AUTOREV}"
 PV = "0.1.2+git${SRCPV}"
 
 S="${WORKDIR}/git"
