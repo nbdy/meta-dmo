@@ -6,7 +6,8 @@ inherit dmo-launcher-app
 DMO_LAUNCHER_EXEC = "/usr/bin/qt5/qmlscene /usr/share/qmlvideotest/qmlvideotest.qml --fullscreen"
 DMO_LAUNCHER_NAME = "QT-Videoplayer-demo"
 DMO_LAUNCHER_DESC = "Qml video test application"
-DMO_LAUNCHER_ICONPATH = "/usr/share/cinematicexperience-1.0/content/images/qt_logo.png"
+DMO_LAUNCHER_ICONPATH = "/usr/share/dmlauncher/icons/qtvideoplayer.jpg"
+DMO_LAUNCHER_ICONFILE = "qtvideoplayer.jpg"
 
 DESCRIPTION = "Data Modul qml vidoe test application"
 HOMEPAGE = "http://www.data-modul.com"
@@ -19,6 +20,7 @@ RDEPENDS_${PN} = "qtbase qtdeclarative qtdeclarative-tools qtquickcontrols-qmlpl
 SRC_URI = " \
     git://git@emb.data-modul.com/userrepos/pst/qmlvideotest;protocol=ssh;name=dmo \
     file://qmlvideo.sh \
+    file://qtvideoplayer.jpg \
 "
 SRCREV_FORMAT ?= "dmo"
 SRCREV_dmo = "${AUTOREV}"
