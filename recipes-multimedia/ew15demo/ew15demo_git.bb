@@ -8,7 +8,8 @@ inherit dmo-launcher-app
 DMO_LAUNCHER_EXEC = "/usr/bin/ew15demo"
 DMO_LAUNCHER_NAME = "Multitouch-Demo"
 DMO_LAUNCHER_DESC = "Embedde World Multitouch Demo"
-DMO_LAUNCHER_ICONPATH = "/usr/share/cinematicexperience-1.0/content/images/qt_logo.png"
+DMO_LAUNCHER_ICONPATH = "/usr/share/dmlauncher/icons/EW15demo.jpg"
+DMO_LAUNCHER_ICONFILE = "EW15demo.jpg"
 
 DESCRIPTION = "Data Modul qt5 multitouch demo"
 HOMEPAGE = "http://www.data-modul.com"
@@ -20,6 +21,7 @@ RDEPENDS_${PN} = "qtbase qtdeclarative"
 
 SRC_URI = " \
             git://git@emb.data-modul.com/userrepos/pst/ew15demo;protocol=ssh \
+            file://EW15demo.jpg \
             "
 SRCREV = "${AUTOREV}"
 PV = "1.0+git${SRCPV}"
