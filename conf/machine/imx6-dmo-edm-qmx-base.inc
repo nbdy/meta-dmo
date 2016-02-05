@@ -33,3 +33,15 @@ DMOFTP_append = "/edm-qmx6/source/"
 
 MACHINEOVERRIDES.=":imx6-dmo-edm-qmx"
 
+# The image source can be set as url path or file.
+# If the splash image is defined with file, it needs to be placed in dhe dietsplash
+# folder.
+SPLASH_SCREEN_IMAGE ?= "file://Logo_DM.jpg"
+
+# It seems, that the logo size is capped somwhere around WXGA (1280x800) or to
+# be a bit more prezice, the byte size.
+# The convert tool rssizes the image to match either the height or the width
+# depending on the source image (portrait/landscapea)
+# To force the given image, add an ! to the dimension. e.g. 800x480!
+SPLASH_SCREEN_DIMENSION ?= "800x480"
+
