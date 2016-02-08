@@ -6,7 +6,6 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/dietsplash:"
 
 SRC_URI = " \
     git://github.com/OSSystems/dietsplash.git;protocol=http;branch=animation \
-    file://logo_dm.ppm \
     file://desc.txt \
     file://part0 \
     file://0001-reset-tty-after-dietsplash.patch \
@@ -15,7 +14,6 @@ SRC_URI = " \
 SRCREV = "7974771dc123c3a975f6a79a7f5a6c15a69f7b74"
 
 EXTRA_OECONF_append += " \
-    --with-bg=${WORKDIR}/logo_dm.ppm \
     --enable-animation \
     --with-animation=/usr/share/dietsplash/data/dm_animation/ \
 "
