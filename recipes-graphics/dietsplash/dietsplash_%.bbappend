@@ -14,9 +14,8 @@ EXTRA_OECONF_append = "\
 "
 
 do_configure_prepend(){
-    INDEX=`expr index "${SPLASH_SCREEN_IMAGE}" / + 1`
     LOGO=${SPLASH_SCREEN_IMAGE}
-    SPLASHLOGO=${LOGO:$INDEX}
+    SPLASHLOGO=${LOGO##*/}
 
     convert.im6 ${WORKDIR}/$SPLASHLOGO -compress none -resize ${SPLASH_SCREEN_DIMENSION} ${WORKDIR}/logo.ppm
 }
