@@ -6,7 +6,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
 SRC_URI_append += " \
     file://0001-reset-tty-after-dietsplash.patch \
-    ${SPLASH_SCREEN_IMAGE} \
+    ${SPLASH_SCREEN_IMAGE};md5sum=${SPLASH_IMAGE_MD5SUM};sha256sum=${SPLASH_IMAGE_SHA256SUM} \
 "
 
 EXTRA_OECONF_append = "\
