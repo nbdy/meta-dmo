@@ -8,6 +8,7 @@ IMAGE_INSTALL = " \
     bluez5 \
     canutils \
     coreutils \
+    dietsplash \
     dmo-gst-videoscripts \
     e2fsprogs-e2fsck \
     e2fsprogs-mke2fs \
