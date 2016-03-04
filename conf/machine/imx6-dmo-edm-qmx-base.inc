@@ -36,10 +36,7 @@ MACHINEOVERRIDES.=":imx6-dmo-edm-qmx"
 # The image source can be set as url path or file.
 # If the splash image is defined with file, it needs to be placed in dhe dietsplash
 # folder.
-SPLASH_SCREEN_IMAGE ?= "file://Logo_DM.jpg"
-
-SPLASH_IMAGE_MD5SUM ?= "8b560a679af07bbb7b392ff3943a7948"
-SPLASH_IMAGE_SHA256SUM ?= "3eaca5d3755791d276bc4aacad9aa76a272d8d07b34d8fbad8b02889f0bfb562"
+SPLASH_SCREEN_IMAGE ?= "Logo_DM_HD_bw.png"
 
 # It seems, that the logo size is capped somwhere around WXGA (1280x800) or to
 # be a bit more prezice, the byte size.
