@@ -45,6 +45,7 @@ inherit kernel
 inherit dmo-checksum
 inherit fsl-vivante-kernel-driver-handler
 require recipes-kernel/linux/linux-yocto.inc
+inherit dmo-splashlogo
 
 KCONFIG_MODE="--alldefconfig"
 KBUILD_DEFCONFIG_mx6 ?= "imx_v6_v7_defconfig"
