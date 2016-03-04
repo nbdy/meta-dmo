@@ -1,21 +1,12 @@
-RCONFLICTS_${PN} = "dietsplash-animation"
+inherit dmo-splashlogo
 
-DEPENDS_append += "imagemagick-native"
+RCONFLICTS_${PN} = "dietsplash-animation"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
 SRC_URI_append += " \
     file://0001-reset-tty-after-dietsplash.patch \
-    ${SPLASH_SCREEN_IMAGE};md5sum=${SPLASH_IMAGE_MD5SUM};sha256sum=${SPLASH_IMAGE_SHA256SUM} \
 "
 
-EXTRA_OECONF_append = "\
-    --with-bg=${WORKDIR}/logo.ppm \
-"
+EXTRA_OECONF_append += "${@base_contains('SPLASH_SCREEN_TYPE', 'dietsplash', '--with-bg=${WORKDIR}/logo.ppm', '', d)}"
 
-do_configure_prepend(){
-    LOGO=${SPLASH_SCREEN_IMAGE}
-    SPLASHLOGO=${LOGO##*/}
-
-    convert.im6 ${WORKDIR}/$SPLASHLOGO -compress none -resize ${SPLASH_SCREEN_DIMENSION} ${WORKDIR}/logo.ppm
-}
