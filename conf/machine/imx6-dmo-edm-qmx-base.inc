@@ -43,7 +43,7 @@ SPLASH_SCREEN_IMAGE ?= "Logo_DM_HD_bw.png"
 # The convert tool rssizes the image to match either the height or the width
 # depending on the source image (portrait/landscapea)
 # To force the given image, add an ! to the dimension. e.g. 800x480!
-SPLASH_SCREEN_DIMENSION ?= "800x480!"
+SPLASH_SCREEN_DIMENSION ?= "800x480"
 
 SPLASH_SCREEN_PATH = "${COREBASE}/meta-dmo/conf/logos/"
 
