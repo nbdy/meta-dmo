@@ -10,7 +10,7 @@ USE_KERNEL = "${@base_contains('SPLASH_SCREEN_TYPE', 'kernel', 'true', '', d)}"
 do_dmo_convert_logo() {
     cp ${SPLASH_SCREEN_PATH}${SPLASH_SCREEN_IMAGE} ${WORKDIR}
 
-    convert.im6 ${WORKDIR}/${SPLASH_SCREEN_IMAGE} -resize ${SPLASH_SCREEN_DIMENSION} -compress none -colors 224 ${WORKDIR}/logo.ppm 
+    ${STAGING_BINDIR_NATIVE}/convert.im6 ${WORKDIR}/${SPLASH_SCREEN_IMAGE} -resize ${SPLASH_SCREEN_DIMENSION} -compress none -colors 224 ${WORKDIR}/logo.ppm 
     
     if [[ "${USE_KERNEL}" = "true" && "${PN}" != "dietsplash" ]]; then
         cp ${WORKDIR}/logo.ppm ${S}/drivers/video/logo/logo_linux_clut224.ppm
@@ -24,5 +24,5 @@ do_dmo_convert_logo() {
     fi
 }
 
-addtask do_dmo_convert_logo before do_configure after do_patch
+addtask do_dmo_convert_logo after do_configure before do_compile
 
