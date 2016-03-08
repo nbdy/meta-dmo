@@ -5,6 +5,17 @@ SRC_URI_append = " \
     file://0020-Revert-root-home-for-rescue-shells.patch \
     file://default.network \
 "
+SRC_URI_append += " \
+${@bb.utils.contains \
+    ( \
+        'IMAGE_FEATURES' \
+        , 'read-only-rootfs' \
+        , 'file://0030-remove-mtab-symlink-creation.patch' \
+        ,'' \
+        , d \
+    ) \
+}"
+
 FILES_${PN}_append = "${sysconfdir}/resolv.conf"
 
 do_install_append() {
