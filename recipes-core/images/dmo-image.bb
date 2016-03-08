@@ -35,7 +35,7 @@ IMAGE_INSTALL = " \
     obexd \
     openobex \
     openssh \
-    packagegroup-core-boot \
+    packagegroup-core-full-cmdline \
     pciutils \
     powertop \
     procps \
