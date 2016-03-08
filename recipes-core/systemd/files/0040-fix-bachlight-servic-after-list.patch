@@ -1,0 +1,13 @@
+Index: git/units/systemd-backlight@.service.in
+===================================================================
+--- git.orig/units/systemd-backlight@.service.in
++++ git/units/systemd-backlight@.service.in
+@@ -11,7 +11,7 @@ Documentation=man:systemd-backlight@.ser
+ DefaultDependencies=no
+ RequiresMountsFor=/var/lib/systemd/backlight
+ Conflicts=shutdown.target
+-After=systemd-remount-fs.service
++After=systemd-remount-fs.service systemd-tmpfiles-setup.service
+ Before=sysinit.target shutdown.target
+
+ [Service]

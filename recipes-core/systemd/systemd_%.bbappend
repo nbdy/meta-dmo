@@ -10,7 +10,7 @@ ${@bb.utils.contains \
     ( \
         'IMAGE_FEATURES' \
         , 'read-only-rootfs' \
-        , 'file://0030-remove-mtab-symlink-creation.patch' \
+        , 'file://0030-remove-mtab-symlink-creation.patch file://0040-fix-bachlight-servic-after-list.patch' \
         ,'' \
         , d \
     ) \
