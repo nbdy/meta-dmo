@@ -59,4 +59,4 @@ do_deploy () {
         dmo_do_checksum ${DEPLOY_DIR_IMAGE} ${BAREBOX_IMAGE}
 }
 do_deploy[dirs] = "${S}"
-addtask deploy before do_build after do_compile
+addtask deploy before do_install after do_compile
