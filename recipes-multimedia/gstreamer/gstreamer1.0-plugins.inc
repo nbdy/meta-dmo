@@ -8,6 +8,7 @@ inherit autotools pkgconfig
 
 GSTREAMER_1_0_DEBUG ?= "--disable-debug"
 GSTREAMER_1_0_GIT_BRANCH ?= "master"
+GSTREAMER_TAR ?= "false"
 EXTRA_OECONF = "--disable-valgrind ${GSTREAMER_1_0_DEBUG} "
 
 acpaths = "-I ${S}/common/m4 -I ${S}/m4"
@@ -41,9 +42,12 @@ def get_gst_srcuri(d):
     gstpkg_basename = "gst-" + bpn[len(prefix):]
     pv = d.getVar("PV", True)
     branch = d.getVar("GSTREAMER_1_0_GIT_BRANCH", True)
+    tar = d.getVar("GSTREAMER_TAR", True)
 
     if pv == "git":
         s = "git://anongit.freedesktop.org/gstreamer/%s;branch=%s" % (gstpkg_basename, branch)
+    elif tar == "true":
+        s = "http://gstreamer.freedesktop.org/src/%s/%s-%s.tar.xz" % (gstpkg_basename, gstpkg_basename, pv)
     else:
         s = "git://gstreamer.freedesktop.org/gstreamer/%s;branch=%s;tag=%s" % (gstpkg_basename, branch, pv)
     return s

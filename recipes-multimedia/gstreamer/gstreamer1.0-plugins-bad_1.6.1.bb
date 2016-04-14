@@ -8,7 +8,11 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=73a5855a8119deb017f5f13cf327095d \
                     file://gst/tta/crc32.h;beginline=12;endline=29;md5=27db269c575d1e5317fffca2d33b3b50"
 
 GSTREAMER_1_0_GIT_BRANCH = "1.6"
-S = "${WORKDIR}/git"
+GSTREAMER_TAR = "true"
+S = "${WORKDIR}/gst-plugins-bad-${PV}"
+
+SRC_URI[md5sum] = "c92d7d32de68e7293712bf9b6c99dc77"
+SRC_URI[sha256sum] = "e176a9af125f6874b3d6724aa7566a198fa225d3ece0a7ac2f2b51c57e525466"
 
 SRC_URI_remove_mx6 = " file://0001-PATCH-install-gstaggregator-and-gstvideoaggregator-h.patch"
 
