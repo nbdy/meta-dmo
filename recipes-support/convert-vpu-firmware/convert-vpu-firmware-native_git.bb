@@ -10,7 +10,7 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/COPYING.MIT;md5=3da9cfbcb788c80a0384361b4de20420"
 SECTION = "converter"
 DEPENDS = ""
-SRCREV = "${AUTOREV}"
+SRCREV = "0d4c4f7d120e6ae7f283c04b13a7eea4de730dde"
 PV = "0.1+git${SRCPV}"
 
 SRC_URI = "git://git@emb.data-modul.com/development/tools/convert-vpu-firmware;protocol=ssh"
