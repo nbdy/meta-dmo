@@ -9,6 +9,7 @@ require conf/machine/include/tune-cortexa9.inc
 EXTRA_IMAGEDEPENDS = "virtual/bootloader virtual/kernel"
 
 # Which type should be the image?
+IMAGE_CLASSES += "dmo-images"
 IMAGE_FSTYPES = "tar.bz2 ext4 dmosdcard"
 IMAGE_TYPEDEP_dmosdcard = "ext4"
 
