@@ -5,12 +5,12 @@ require qupzilla.inc
 
 DEPS_append += "qtwebengine"
 
-PV = "1.9.0_qtwebengine+git${SRCPV}"
+PV = "2.0.0_qtwebengine+git${SRCPV}"
 
 SRC_URI = " \
     git://github.com/QupZilla/${PN}.git \
 "
-SRCREV = "94d89e4fa68cea8957a51fefb0ff57d3786feb34"
+SRCREV = "e5460538c8cd6e6c321a69804e06a65631205234"
 
 S="${WORKDIR}/git"
 
