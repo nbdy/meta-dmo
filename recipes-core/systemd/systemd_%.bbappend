@@ -1,7 +1,7 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+DEPENDS_append += "libgpg-error"
 
 SYSTEMD_NETWORK_FILE ?= "default.network"
-
 SRC_URI_append = " \
     file://0001-fix-udevd-automount.patch \
     file://0020-Revert-root-home-for-rescue-shells.patch \
