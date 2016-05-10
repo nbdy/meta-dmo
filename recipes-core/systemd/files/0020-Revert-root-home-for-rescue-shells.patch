@@ -2,12 +2,12 @@ Index: git/units/console-shell.service.m4.in
 ===================================================================
 --- git.orig/units/console-shell.service.m4.in
 +++ git/units/console-shell.service.m4.in
-@@ -15,8 +15,8 @@ After=rc-local.service
+@@ -15,8 +15,8 @@ )m4_dnl
  Before=getty.target
  
  [Service]
 -Environment=HOME=@roothomedir@
--WorkingDirectory=@roothomedir@
+-WorkingDirectory=-@roothomedir@
 +Environment=HOME=/root
 +WorkingDirectory=/root
  ExecStart=-@SULOGIN@
@@ -22,7 +22,7 @@ Index: git/units/emergency.service.in
  
  [Service]
 -Environment=HOME=@roothomedir@
--WorkingDirectory=@roothomedir@
+-WorkingDirectory=-@roothomedir@
 +Environment=HOME=/root
 +WorkingDirectory=/root
  ExecStartPre=-/bin/plymouth --wait quit
@@ -37,7 +37,7 @@ Index: git/units/rescue.service.in
  
  [Service]
 -Environment=HOME=@roothomedir@
--WorkingDirectory=@roothomedir@
+-WorkingDirectory=-@roothomedir@
 +Environment=HOME=/root
 +WorkingDirectory=/root
  ExecStartPre=-/bin/plymouth quit
