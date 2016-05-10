@@ -49,6 +49,6 @@ do_deployiso() {
 
 do_deploy[dirs] = "${S}"
 do_deployiso[dirs] = "${S}"
-addtask deploy before do_build after do_rootfs
-addtask deployiso before do_build after do_bootimg
+addtask deploy before do_build after do_image_complete
+addtask deployiso before do_build after do_image_complete
 
