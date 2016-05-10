@@ -56,7 +56,6 @@ IMAGE_INSTALL = " \
     ${CORE_IMAGE_EXTRA_INSTALL} \
 "
 IMAGE_INSTALL_append_dmo-x11 = " \
-    chromium \
     firefox \
     mesa-demos \
     packagegroup-xfce-base \
