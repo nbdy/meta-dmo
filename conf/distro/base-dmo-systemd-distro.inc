@@ -35,7 +35,7 @@ PREFERRED_VERSION_gstreamer1.0-plugins-base ?= "1.6.3"
 PREFERRED_VERSION_gstreamer1.0-plugins-good ?= "1.6.3"
 PREFERRED_VERSION_gstreamer1.0-plugins-ugly ?= "1.6.3"
 
-PREFERRED_VERSION_qupzilla ?= "1.8.9"
+PREFERRED_VERSION_qupzilla ?= "2.0.0%"
 
 PREFERRED_PROVIDER_jpeg ?= "jpeg"
 PREFERRED_PROVIDER_jpeg-native ?= "jpeg-native"
