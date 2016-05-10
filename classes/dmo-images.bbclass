@@ -19,10 +19,7 @@ SDCARD_LINK_WITHOUT_HOMEFS = "${DEPLOY_DIR_IMAGE}/${IMAGE_LINK_NAME}.without-hom
 SDCARD_LINK_WITHOUT_OVERLAY = "${DEPLOY_DIR_IMAGE}/${IMAGE_LINK_NAME}.without-overlayfs.sdcard2"
 
 IMAGE_DEPENDS_dmosdcard = "parted-native dosfstools-native mtools-native \
-                        virtual/kernel ${IMAGE_BOOTLOADER}"
-
-do_rootfs[depends] += "${IMAGE_BOOTLOADER}:do_deploy"
-do_rootfs[depends] += "virtual/kernel:do_deploy"
+                        virtual/kernel:do_deploy ${IMAGE_BOOTLOADER}:do_deploy"
 
 IMAGE_CMD_dmosdcard () {
     if [ -z "${SDCARD_ROOTFS}" ]; then
