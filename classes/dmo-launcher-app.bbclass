@@ -63,24 +63,24 @@ python do_dmo_launcher_app() {
     targetdir = imagedir + targetpath
     icondir = imagedir + iconpath
 
-    launcher = d.getVar('DMO_LAUNCHER')
+    launcher = d.getVar('DMO_LAUNCHER', False)
     if launcher:
         launcher_split = (d.getVar('DMO_LAUNCHER', True)).split()
         if launcher_split:
             for e in launcher_split:
-                execpath = d.getVarFlag('DMO_LAUNCHER_EXEC', e)
-                name = d.getVarFlag('DMO_LAUNCHER_NAME', e)
-                desc = d.getVarFlag('DMO_LAUNCHER_DESC', e) or ""
-                iconpath = d.getVarFlag('DMO_LAUNCHER_ICONPATH', e) or ""
-                iconfile = d.getVarFlag('DMO_LAUNCHER_ICONFILE', e) or ""
+                execpath = d.getVarFlag('DMO_LAUNCHER_EXEC', e, False)
+                name = d.getVarFlag('DMO_LAUNCHER_NAME', e, False)
+                desc = d.getVarFlag('DMO_LAUNCHER_DESC', e, False) or ""
+                iconpath = d.getVarFlag('DMO_LAUNCHER_ICONPATH', e, False) or ""
+                iconfile = d.getVarFlag('DMO_LAUNCHER_ICONFILE', e, False) or ""
                 writeappfile(workdir, targetdir, icondir, execpath, name, desc, iconpath, iconfile)
     else:
-        execpath = d.getVar('DMO_LAUNCHER_EXEC')
+        execpath = d.getVar('DMO_LAUNCHER_EXEC', False)
         if execpath:
-            name = d.getVar('DMO_LAUNCHER_NAME')
-            desc = d.getVar('DMO_LAUNCHER_DESC') or ""
-            iconpath = d.getVar('DMO_LAUNCHER_ICONPATH') or ""
-            iconfile = d.getVar('DMO_LAUNCHER_ICONFILE') or ""
+            name = d.getVar('DMO_LAUNCHER_NAME', False)
+            desc = d.getVar('DMO_LAUNCHER_DESC', False) or ""
+            iconpath = d.getVar('DMO_LAUNCHER_ICONPATH', False) or ""
+            iconfile = d.getVar('DMO_LAUNCHER_ICONFILE', False) or ""
             writeappfile(workdir, targetdir, icondir, execpath, name, desc, iconpath, iconfile)
 }
 
