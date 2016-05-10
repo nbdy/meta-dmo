@@ -36,6 +36,7 @@ MY_P="${MY_PN}-${PV}"
 EXTRA_QMAKEVARS_PRE += "QMAKE_LRELEASE+=${OE_QMAKE_PATH_EXTERNAL_HOST_BINS}/lrelease"
 
 FILES_${PN} += "/usr/share/"
+FILES_${PN}_x86_64 += "/usr/lib/x86-linux-gnu/"
 
 do_configure_prepend() {
     if [ ${@base_contains('DISTRO_FEATURES', 'x11', '', 'true',  d)} == true ]; then
