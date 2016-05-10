@@ -16,11 +16,10 @@ diff --git a/src/plugins/gstreamer/common.pri b/src/plugins/gstreamer/common.pri
 index eb6a299..87ac8f6 100644
 --- a/src/plugins/gstreamer/common.pri
 +++ b/src/plugins/gstreamer/common.pri
-@@ -1,5 +1,5 @@
+@@ -1,4 +1,4 @@
  
 -QT += core-private multimedia-private network
 +QT += core-private multimedia-private network quick
- CONFIG += no_private_qt_headers_warning
  
  qtHaveModule(widgets) {
 diff --git a/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp b/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp
