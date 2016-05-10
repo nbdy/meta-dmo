@@ -121,6 +121,7 @@ IMAGE_INSTALL_append_mx6_dmo-x11 = " \
 IMAGE_INSTALL_append_dmo-edm-comb-bw6 = " \
     alsa-utils \
     gstreamer-vaapi-1.0 \
+    intel-microcode \
     libva-intel-driver \
     mesa-megadriver \
     xf86-video-intel \
