@@ -2,13 +2,13 @@ require linux-dmo.inc
 
 # Override SRC_URI in a bbappend file to point at a different source
 # tree if you do not want to build from Linus' tree.
-SRC_URI = "git://git@emb.data-modul.com/development/linux;branch=zdo/201602/release;protocol=ssh;name=kernel \
+SRC_URI = "git://git@emb.data-modul.com/userrepos/rya/linux;branch=rya/temp-gpu-viv-p8;protocol=ssh;name=kernel \
     file://debug.cfg \
     file://hardware.cfg \
     file://zconfig.cfg \
 "
 
-LINUX_VERSION ?= "4.1.0"
+LINUX_VERSION ?= "4.1.18"
 LINUX_VERSION_EXTENSION = "+git${SRCPV}"
 
 # Override SRCREV to point to a different commit in a bbappend file to
