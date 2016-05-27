@@ -7,16 +7,16 @@ dmo_do_checksum() {
     file_path=$1
 
     if [ "$file_path" = "" ]; then
-        bberror "File path missing"
+        bberror "dmo-checksum.bbclass: File path missing"
         exit 1
     fi
 
     if [ "$file_name" = "" ]; then
-        bberror "File name missing"
+        bberror "dmo-checksum.bbclass: File name missing"
         exit 1
     fi
 
-    bbnote "Generate checksum for" $file_name "in" $file_path
+    bbnote "dmo-checksum.bbclass: Generate checksum for" $file_name "in" $file_path
     workingdir=$PWD
 
     cd $file_path
