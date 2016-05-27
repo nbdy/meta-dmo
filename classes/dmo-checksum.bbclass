@@ -23,7 +23,7 @@ dmo_do_checksum() {
     if [ -e $file_name ]; then
         md5sum $file_name > $file_name".md5sum"
     else
-        bberror "File" $file_name "does not exist!"
+        bbwarn "dmo-checksum.bbclass: File" $file_name "does not exist!"
     fi
 
     cd $workingdir
