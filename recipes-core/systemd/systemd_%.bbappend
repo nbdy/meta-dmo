@@ -1,9 +1,11 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
+SYSTEMD_NETWORK_FILE ?= "default.network"
+
 SRC_URI_append = " \
     file://0001-fix-udevd-automount.patch \
     file://0020-Revert-root-home-for-rescue-shells.patch \
-    file://default.network \
+    file://${SYSTEMD_NETWORK_FILE} \
 "
 SRC_URI_append += " \
 ${@bb.utils.contains \
@@ -20,7 +22,7 @@ FILES_${PN}_append = "${sysconfdir}/resolv.conf"
 
 do_install_append() {
     if ${@bb.utils.contains('PACKAGECONFIG', 'networkd', 'true', 'false', d)}; then
-        install -m 644 ${WORKDIR}/default.network ${D}/${sysconfdir}/systemd/network/ 
+        install -m 644 ${WORKDIR}/${SYSTEMD_NETWORK_FILE} ${D}/${sysconfdir}/systemd/network/
     fi
     if ${@bb.utils.contains('PACKAGECONFIG', 'resolved', 'true', 'false', d)}; then
         ln -s /var/run/systemd/resolve/resolv.conf ${D}/${sysconfdir}/resolv.conf  
