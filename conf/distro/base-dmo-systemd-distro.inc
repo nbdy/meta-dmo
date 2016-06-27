@@ -27,6 +27,20 @@ MACHINE_EXTRA_RRECOMMENDS = " kernel-modules"
 # Remove files from comercial license recipes
 #DMO_REMOVE_FILES_FROM_COMMERCIAL_RECIPES = "1"
 
+PACKAGECONFIG_GL ?= "${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'gles2', '', d)}"
+PACKAGECONFIG_append_pn-gstreamer1.0-plugins-bad += " \
+    ${PACKAGECONFIG_GL} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'bluetooth', 'bluez', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'directfb', 'directfb', '', d)} \
+    orc curl uvch264 neon sndfile \
+    hls sbc dash bz2 smoothstreaming faad faac\
+    "
+PACKAGECONFIG_append_pn-gstreamer1.0-plugins-base = " \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'x11', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'alsa', 'alsa', '', d)} \
+    orc ivorbis ogg theora vorbis \
+    "
 QT_MODULE_BRANCH = "5.6"
 PREFERRED_VERSION_gstreamer1.0 ?= "1.6.3"
 PREFERRED_VERSION_gstreamer1.0-meta-base ?= "1.6.3"
