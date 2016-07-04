@@ -13,6 +13,7 @@ SRC_URI_append_mx6 += "\
 	    file://0008-gstreamer-fix-overlay-window-coordinates.patch \
             file://0009-gstreamer-distinguish-audio-and-video-pipelines.patch \
             file://0010-gstreamer-register-typefind-function-on-pause.patch \
+            file://0011-plugins-gstreamer-enable-video-seek-mode.patch \
 "
 
 do_patch_append_mx6() {

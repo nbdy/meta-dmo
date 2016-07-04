@@ -1,0 +1,29 @@
+From 032ab095403020aa219a828d8517cedda3ff8bca Mon Sep 17 00:00:00 2001
+From: Zahari Doychev <zahari.doychev@linux.com>
+Date: Mon, 4 Jul 2016 11:02:09 +0200
+Subject: [PATCH] plugins: gstreamer: enable video seek mode
+
+The new versions of the gstreamer v4l2 decoder plugins support seeking.
+
+Signed-off-by: Zahari Doychev <zahari.doychev@linux.com>
+---
+ src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp b/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp
+index c089e06..ecc482c 100644
+--- a/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp
++++ b/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp
+@@ -1292,9 +1292,6 @@ void QGstreamerPlayerSession::setSeekable(bool seekable)
+ #ifdef DEBUG_PLAYBIN
+         qDebug() << Q_FUNC_INFO << seekable;
+ #endif
+-#if defined(ZDO_TEST)
+-	seekable = false;
+-#endif
+     if (seekable != m_seekable) {
+         m_seekable = seekable;
+         emit seekableChanged(m_seekable);
+-- 
+2.8.3
+
