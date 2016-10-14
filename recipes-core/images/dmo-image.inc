@@ -1,7 +1,7 @@
 require dmo-base-image.inc
 inherit dmo-images
 
-ROOTFS_POSTINSTALL_COMMAND += " create_homefs_and_image; "
+ROOTFS_POSTINSTALL_COMMAND_mx6 += " create_homefs_and_image; "
 
 # set size and factor of ROOTFS
 IMAGE_ROOTFS_SIZE = "2883584"
@@ -29,11 +29,11 @@ create_homefs_and_image () {
 }
 
 do_deploy () {
-    dmo_do_checksum ${DEPLOY_DIR_IMAGE} ${IMAGE_NAME}".homefs.ext4"
     dmo_do_checksum ${DEPLOY_DIR_IMAGE} ${IMAGE_NAME}".rootfs.ext4"
     dmo_do_checksum ${DEPLOY_DIR_IMAGE} ${IMAGE_NAME}".rootfs.manifest"
     dmo_do_checksum ${DEPLOY_DIR_IMAGE} ${IMAGE_NAME}".rootfs.tar.bz2"
     if [ "imx6" == "${LOCAL_MACHINE}" ]; then
+        dmo_do_checksum ${DEPLOY_DIR_IMAGE} ${IMAGE_NAME}".homefs.ext4"
         dmo_do_checksum ${DEPLOY_DIR_IMAGE} ${IMAGE_NAME}".with-homefs.sdcard2"
         dmo_do_checksum ${DEPLOY_DIR_IMAGE} ${IMAGE_NAME}".without-homefs.sdcard2"
         dmo_do_checksum ${DEPLOY_DIR_IMAGE} ${IMAGE_NAME}".without-overlayfs.sdcard2"
