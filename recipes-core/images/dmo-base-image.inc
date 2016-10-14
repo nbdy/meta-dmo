@@ -48,7 +48,7 @@ dmo_imageRemoveLibavX264Files () {
 }
 
 LOCAL_MACHINE_mx6 = "imx6"
-LOCAL_MACHINE_dmo-edm-comb-bw6 = "x86"
+LOCAL_MACHINE_dmo-edm-comb = "x86"
 
 ssh_allow_empty_password_append() {
     if [ -e ${IMAGE_ROOTFS}${sysconfdir}/ssh/sshd_config_readonly ]; then
