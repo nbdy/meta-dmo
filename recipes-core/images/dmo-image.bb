@@ -117,7 +117,7 @@ IMAGE_INSTALL_append_mx6_dmo-x11 = " \
     firefox \
     xf86-video-imxfb-vivante \
 "
-IMAGE_INSTALL_append_dmo-edm-comb-bw6 = " \
+IMAGE_INSTALL_append_dmo-edm-comb_dmo-x11 = " \
     alsa-utils \
     gstreamer-vaapi-1.0 \
     intel-microcode \
