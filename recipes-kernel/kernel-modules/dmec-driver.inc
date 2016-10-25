@@ -9,8 +9,9 @@ DEPENDS = "virtual/kernel"
 
 inherit module
 KERNEL_MODULE_AUTOLOAD = "dmec i2c-dmec rtm-dmec gpio-dmec wdt-dmec"
+DMEC_TAG ?= ""
 
-SRC_URI = "git://github.com/data-modul/dmec;protocol=git;tag=v2016.10.04;branch=${DMEC_BRANCH}"
+SRC_URI = "git://github.com/data-modul/dmec;protocol=git;branch=${DMEC_BRANCH}${DMEC_TAG}"
 
 S = "${WORKDIR}/git"
 
