@@ -1,13 +1,6 @@
 # Copyright (C) 2015 Sebastian Wezel <swezel@data-modul.com>
 # Released under the MIT license (see COPYING.MIT for the terms)
 
-inherit dmo-launcher-app
-
-DMO_LAUNCHER_EXEC = "/usr/bin/qupzilla"
-DMO_LAUNCHER_NAME = "QupZilla"
-DMO_LAUNCHER_DESC = "Qt based webbrowser"
-DMO_LAUNCHER_ICONPATH = "/usr/share/pixmaps/qupzilla.png"
-
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
 inherit qmake5
