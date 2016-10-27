@@ -1,6 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/qtmultimedia:"
 
-PACKAGECONFIG_append_mx6 += "gstreamer"
+PACKAGECONFIG_append += "gstreamer"
 
 SRC_URI_append_mx6 += "\
 	    file://0001-gstreamer-hack-v4l2sink-in-playbin.patch \
