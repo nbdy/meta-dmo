@@ -1,20 +1,12 @@
+There are two machine setups to choose from:
+	* dmo-edm-comb-bw6 for broadwell
+	* dmo-edm-comb-bs6 for braswell 
 
-- If your target machine is dmo-edm-qmx6: ------------------------------------
-- To build a image with the vivante gpu driver you need to accept the FSL EULA.
-- You can find the EULA in meta-fsl-arm layer in the EULA - textfile.
--
-- To agree this you have to need to add a
--
--	ACCEPT_FSL_EULA = "1"
--
-- in your conf/local.conf.
-
-
-following command builds the image
+Following command builds the image
 
 	* dmo-image
 
-depending on the selected distro configuration, the image will contain
+Depending on the selected distro configuration, the image will contain
 different preinstalled software.
 There are currently three different distro configurations
 	
