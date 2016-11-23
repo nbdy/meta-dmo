@@ -6,6 +6,7 @@ HOMEPAGE = "www.data-modul.com"
 LICENSE = "CLOSED"
 SECTION = "kernel"
 PARALLEL_MAKE = ""
+RDEPENDS_${PN} += "dmec-driver"
 
 SRC_URI = "git://github.com/data-modul/eAPI;protocol=git;tag=dmo-v${PV}"
 
