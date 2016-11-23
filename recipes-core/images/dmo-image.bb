@@ -123,4 +123,9 @@ IMAGE_INSTALL_append_dmo-edm-comb_dmo-x11 = " \
     xf86-video-intel \
     xserver-xorg-extension-glx \
 "
+IMAGE_INSTALL_append_dmo-edm-comb = " \
+    dmec-driver \
+    eapi-lib \
+    eapi-app \
+"
 
