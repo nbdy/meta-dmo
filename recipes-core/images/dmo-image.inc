@@ -43,6 +43,7 @@ do_deploy () {
 do_deployiso() {
     if [ "x86" == "${LOCAL_MACHINE}" ]; then
         dmo_do_checksum ${DEPLOY_DIR_IMAGE} ${IMAGE_NAME}".hddimg"
+        dmo_do_checksum ${DEPLOY_DIR_IMAGE} ${IMAGE_NAME}".hdddirect"
         dmo_do_checksum ${DEPLOY_DIR_IMAGE} ${IMAGE_NAME}".iso"
     fi
 }
