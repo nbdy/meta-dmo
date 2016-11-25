@@ -9,6 +9,7 @@ IMAGE_LINGUAS = " "
 LICENSE = "GPLv2"
 
 DEPENDS += "e2fsprogs-native"
+IMAGE_DEPENDS_dmo-edm-comb += "intel-microcode:do_deploy"
 
 ROOTFS_POSTPROCESS_COMMAND += " dmo_imageRemoveLibavX264Files; "
 ROOTFS_POSTPROCESS_COMMAND_remove = " rootfs_update_timestamp ;" 
