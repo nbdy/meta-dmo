@@ -3,6 +3,8 @@
 #@DESCRIPTION: Machine configuration for Data-Modul eDM-comb
 
 require conf/machine/intel-corei7-64.conf
+do_rootfs[depends] += "intel-microcode:do_deploy"
+do_rootfs[depends] += "grub-efi:do_populate_lic"
 
 IMAGE_BOOTLOADER = "gummiboot"
 
