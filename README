@@ -10,23 +10,27 @@ This layer depends on:
 
   URI: git://git.yoctoproject.org/poky
   layers: meta, meta-selftest, meta-skeleton, meta-yocto, meta-yocto-bsp, bitbake
-  branch: daisy
+  branch: krogoth
 
   URI: git://github.com/OSSystems/meta-browser
   layers: meta-browser
-  branch: master
+  branch: krogoth
 
   URI: git://github.com/data-modul/meta-fsl-arm
   layers: meta-fsl-arm
-  branch: daisy
+  branch: krogoth
+
+  URI: git://git.yoctoproject.org/meta-intel
+  layers: meta-intel
+  branch: krogoth
 
   URI: git://git.openembedded.org/meta-openembedded
   layers: meta-efl, meta-filesystems, meta-gnome, meta-gpe, meta-initramfs, meta-multimedia, meta-networking, meta-oe, meta-perl, meta-ruby, meta-systemd, meta-webserver, meta-xfce
-  branch: daisy
+  branch: krogoth
 
   URI: git@github.com:meta-qt5/meta-qt5.git
   layers: meta-qt5
-  branch: daisy
+  branch: krogoth
 
 
 Patches
@@ -34,4 +38,4 @@ Patches
 
 Please submit any patches against this BSP to the maintainer(s):
 
-Maintainer: Silvio Fricke <silvio.fricke@gmail.com>
+Maintainer: Sebastian Wezel <swezel@data-modul.com>
