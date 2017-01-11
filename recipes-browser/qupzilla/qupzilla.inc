@@ -14,10 +14,10 @@ DEPS = " \
     qtbase \
     qtscript \
 "
-DEPS += "${@base_contains('DISTRO_FEATURES', 'x11', 'libx11', '',  d)}"
+DEPS += "${@base_contains('DISTRO_FEATURES', 'x11', 'libx11 qtx11extras', '',  d)}"
 
 RDEPENDS_{PN} = "${DEPS}"
-DEPENDS = "${DEPS} qtx11extras qttools-native"
+DEPENDS = "${DEPS} qttools-native"
 
 LIC_FILES_CHKSUM = " \
     file://GPLv3;md5=8f0e2cd40e05189ec81232da84bd6e1a \
