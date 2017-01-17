@@ -3,7 +3,7 @@ HOMEPAGE = "http://slim.berlios.de"
 LICENSE = "GPLv2"
 
 DEPENDS = "virtual/libx11 libxft libxmu libpng jpeg freetype sessreg ttf-bitstream-vera"
-DEPENDS += " ${@base_contains('DISTRO_FEATURES', 'pam', 'libpam', '', d)}"
+DEPENDS += " ${@bb.utils.contains('DISTRO_FEATURES', 'pam', 'libpam', '', d)}"
 RDEPENDS_${PN} += "libxft"
 
 inherit cmake

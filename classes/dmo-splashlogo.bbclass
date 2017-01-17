@@ -4,8 +4,8 @@ HOMEPAGE="https://emb.data-modul.com"
 
 DEPENDS_append += "imagemagick-native"
 
-USE_DIETSPLASH = "${@base_contains('SPLASH_SCREEN_TYPE', 'dietsplash', 'true', '', d)}"
-USE_KERNEL = "${@base_contains('SPLASH_SCREEN_TYPE', 'kernel', 'true', '', d)}"
+USE_DIETSPLASH = "${@bb.utils.contains('SPLASH_SCREEN_TYPE', 'dietsplash', 'true', '', d)}"
+USE_KERNEL = "${@bb.utils.contains('SPLASH_SCREEN_TYPE', 'kernel', 'true', '', d)}"
 
 do_dmo_convert_logo() {
     cp ${SPLASH_SCREEN_PATH}${SPLASH_SCREEN_IMAGE} ${WORKDIR}

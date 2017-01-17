@@ -14,7 +14,7 @@ INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 do_install () {
     install -m 700 -d ${D}/home/root
 
-    if [ ${@base_contains('DISTRO_FEATURES', 'x11', 'true', '',  d)} == true ]; then
+    if [ ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'true', '',  d)} == true ]; then
         install -m 700 ${WORKDIR}/xinitrc ${D}/home/root/.xinitrc
     fi
 

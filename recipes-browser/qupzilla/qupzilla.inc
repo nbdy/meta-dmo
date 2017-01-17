@@ -14,7 +14,7 @@ DEPS = " \
     qtbase \
     qtscript \
 "
-DEPS += "${@base_contains('DISTRO_FEATURES', 'x11', 'libx11 qtx11extras', '',  d)}"
+DEPS += "${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'libx11 qtx11extras', '',  d)}"
 
 RDEPENDS_{PN} = "${DEPS}"
 DEPENDS = "${DEPS} qttools-native"
@@ -31,7 +31,7 @@ EXTRA_QMAKEVARS_PRE += "QMAKE_LRELEASE+=${OE_QMAKE_PATH_EXTERNAL_HOST_BINS}/lrel
 FILES_${PN} += "/usr/share/"
 
 do_configure_prepend() {
-    if [ ${@base_contains('DISTRO_FEATURES', 'x11', '', 'true',  d)} == true ]; then
+    if [ ${@bb.utils.contains('DISTRO_FEATURES', 'x11', '', 'true',  d)} == true ]; then
         export NO_X11=true
     fi
 }
