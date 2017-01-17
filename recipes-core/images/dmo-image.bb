@@ -78,12 +78,6 @@ IMAGE_INSTALL_append_dmo-qt = " \
     qt3d \
     qtbase \
     qtbase-examples \
-    qtbase-fonts \
-    qtbase-fonts-pfa \
-    qtbase-fonts-pfb \
-    qtbase-fonts-qpf \
-    qtbase-fonts-ttf-dejavu \
-    qtbase-fonts-ttf-vera \
     qtbase-mkspecs \
     qtbase-plugins \
     qtbase-tools \
