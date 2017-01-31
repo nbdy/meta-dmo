@@ -5,5 +5,4 @@ include dmec-driver.inc
 
 DMEC_BRANCH = "master"
 
-DMEC_TAG = ";tag=v2016.10.04"
-
+SRCREV = "${AUTOREV}"
