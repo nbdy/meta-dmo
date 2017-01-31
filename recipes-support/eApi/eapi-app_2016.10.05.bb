@@ -9,8 +9,9 @@ DEPENDS = "eapi-lib"
 RDEPENDS_${PN} = "eapi-lib"
 PARALLEL_MAKE = ""
 
-SRC_URI = "git://github.com/data-modul/eAPIApp;protocol=git;tag=dmo-v${PV}"
-
+#SRC_URI = "git://github.com/data-modul/eAPIApp;protocol=git;tag=dmo-v${PV}"
+SRC_URI = "git://git@emb.data-modul.com/development/tools/eApi-App;protocol=ssh;branch=swe/master"
+SRCREV = "${AUTOREV}"
 S = "${WORKDIR}/git/make"
 
 do_compile_prepend() {
