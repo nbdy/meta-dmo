@@ -12,6 +12,8 @@ IMAGE_FSTYPES += "tar.bz2 hdddirect"
 
 MACHINEOVERRIDES .= ":dmo-edm-comb"
 
+PACKAGECONFIG_append_pn-gstreamer1.0-plugins-bad += "opengl"
+
 # The image source can be set as url path or file.
 # If the splash image is defined with file, it needs to be placed in dhe dietsplash
 # folder.
