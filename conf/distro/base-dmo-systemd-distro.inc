@@ -41,15 +41,7 @@ PACKAGECONFIG_append_pn-gstreamer1.0-plugins-base = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'alsa', 'alsa', '', d)} \
     orc ivorbis ogg theora vorbis \
     "
-QT_MODULE_BRANCH = "5.6"
-PREFERRED_VERSION_gstreamer1.0 ?= "1.6.3"
-PREFERRED_VERSION_gstreamer1.0-meta-base ?= "1.6.3"
-PREFERRED_VERSION_gstreamer1.0-plugins-bad ?= "1.6.3"
-PREFERRED_VERSION_gstreamer1.0-plugins-base ?= "1.6.3"
-PREFERRED_VERSION_gstreamer1.0-plugins-good ?= "1.6.3"
-PREFERRED_VERSION_gstreamer1.0-plugins-ugly ?= "1.6.3"
-
-PREFERRED_VERSION_qupzilla ?= "2.0.1%"
+PREFERRED_VERSION_qupzilla ?= "2.0.2%"
 
 PREFERRED_PROVIDER_jpeg ?= "jpeg"
 PREFERRED_PROVIDER_jpeg-native ?= "jpeg-native"
@@ -60,7 +52,4 @@ PREFERRED_VERSION_canutils ?= "git"
 
 # We disable the vivante kernel modul, as we are using our own kernel
 MACHINE_USES_VIVANTE_KERNEL_DRIVER_MODULE = "0"
-
-# Chromium is currently not running with GCC 5.2 so we switch back to 4.9
-GCCVERSION = "4.9%"
 
