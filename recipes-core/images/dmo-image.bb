@@ -122,5 +122,6 @@ IMAGE_INSTALL_append_dmo-edm-comb = " \
     dmec-driver \
     eapi-lib \
     eapi-app \
+    eapi-gui \
 "
 
