@@ -7,6 +7,7 @@ do_rootfs[depends] += "intel-microcode:do_deploy"
 do_rootfs[depends] += "grub-efi:do_populate_lic"
 
 IMAGE_BOOTLOADER = "gummiboot"
+EFI_PROVIDER = "grub-efi"
 
 IMAGE_FSTYPES += "tar.bz2 hdddirect"
 
