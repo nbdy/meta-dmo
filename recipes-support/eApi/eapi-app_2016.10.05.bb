@@ -3,6 +3,6 @@
 
 require eapi-app.inc
 
-#SRC_URI = "git://github.com/data-modul/eAPIApp;protocol=git;tag=dmo-v${PV}"
+SRC_URI = "git://github.com/data-modul/eAPIApp;protocol=git;tag=dmo-v${PV}"
 S = "${WORKDIR}/git/make"
 
