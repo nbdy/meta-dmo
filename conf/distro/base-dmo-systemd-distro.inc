@@ -42,6 +42,9 @@ PACKAGECONFIG_append_pn-gstreamer1.0-plugins-base = " \
     orc ivorbis ogg theora vorbis \
     "
 PREFERRED_VERSION_qupzilla ?= "2.0.2%"
+PREFERRED_VERSION_eapi-app ?= "1.0+git%"
+PREFERRED_VERSION_eapi-lib ?= "1.0+git%"
+PREFERRED_VERSION_eapi-gui ?= "1.0+git%"
 
 PREFERRED_PROVIDER_jpeg ?= "jpeg"
 PREFERRED_PROVIDER_jpeg-native ?= "jpeg-native"
