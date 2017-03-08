@@ -8,11 +8,6 @@ SECTION = "kernel"
 PARALLEL_MAKE = ""
 RDEPENDS_${PN} += "dmec-driver"
 
-#SRC_URI = "git://github.com/data-modul/eAPI;protocol=git;tag=dmo-v${PV}"
-SRC_URI = "git://git@emb.data-modul.com/development/tools/eApi;protocol=ssh;branch=master"
-SRCREV = "${AUTOREV}"
-S = "${WORKDIR}/git/make"
-
 do_install() {
     install -d ${D}/${libdir}
     install -d ${D}/${includedir}
