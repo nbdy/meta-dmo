@@ -51,13 +51,13 @@ KCONFIG_MODE="--alldefconfig"
 KBUILD_DEFCONFIG_mx6 ?= "imx_v6_v7_defconfig"
 
 do_deploy_append() {
-    dmo_do_checksum ${DEPLOYDIR} ${KERNEL_IMAGE_BASE_NAME}".bin"
+    dmo_do_checksum ${DEPLOYDIR} ${KERNEL_IMAGETYPE}-${KERNEL_IMAGE_BASE_NAME}".bin"
     dmo_do_checksum ${DEPLOYDIR} ${MODULE_TARBALL_BASE_NAME}
 
     if test -n "${KERNEL_DEVICETREE}"; then
         for DTB in ${KERNEL_DEVICETREE}; do
             DTB_BASE_NAME=`basename ${DTB} .dtb`
-            DTB_NAME=`echo ${KERNEL_IMAGE_BASE_NAME} | sed "s/${MACHINE}/${DTB_BASE_NAME}/g"`
+            DTB_NAME=`echo ${KERNEL_IMAGETYPE}-${KERNEL_IMAGE_BASE_NAME} | sed "s/${MACHINE}/${DTB_BASE_NAME}/g"`
             dmo_do_checksum ${DEPLOYDIR} ${DTB_NAME}".dtb"
         done
     fi
