@@ -1,5 +1,7 @@
 require dmo-image.inc
 
+SPLASH_SW = "${@bb.utils.contains('SPLASH_SCREEN_TYPE', 'dietsplash', 'dietsplash', '', d)}"
+
 # hardware independent packages
 IMAGE_INSTALL = " \
     bash \
@@ -8,7 +10,6 @@ IMAGE_INSTALL = " \
     bluez5 \
     canutils \
     coreutils \
-    dietsplash \
     dmo-gst-videoscripts \
     e2fsprogs-e2fsck \
     e2fsprogs-mke2fs \
@@ -54,6 +55,7 @@ IMAGE_INSTALL = " \
     wpa-supplicant \
     ${ROOTFS_PKGMANAGE_BOOTSTRAP} \
     ${CORE_IMAGE_EXTRA_INSTALL} \
+    ${SPLASH_SW} \
 "
 IMAGE_INSTALL_append_dmo-x11 = " \
     chromium \
