@@ -3,10 +3,9 @@
 
 require eapi-gui.inc
 
-SRC_URI = "git://git@emb.data-modul.com/userrepos/swe/eAPI-Gui;protocol=ssh;branch=swe/master"
+SRC_URI = "git://git@emb.data-modul.com/userrepos/rya/eAPI-Gui;protocol=ssh;tag=dmo-v${PV}"
 
 SRCREV = "${AUTOREV}"
-PV = "1.0+git${SRCPV}"
 
 S = "${WORKDIR}/git"
 
