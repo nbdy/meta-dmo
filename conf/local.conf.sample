@@ -58,7 +58,8 @@ PARALLEL_MAKE ?= "-j ${@oe.utils.cpu_count()}"
 #MACHINE ?= "edgerouter"
 #
 # Supported machines from Data-Modul layer meta-dmo
-MACHINE ??= "dmo-edm-comb-bw6"
+MACHINE ??= "dmo-edm-comb-sl6"
+#MACHINE ??= "dmo-edm-comb-bw6"
 #MACHINE ??= "dmo-edm-comb-bs6"
 
 #

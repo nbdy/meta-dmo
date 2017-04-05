@@ -1,23 +1,22 @@
-There are two machine setups to choose from:
+There are three machine setups to choose from, set the MACHINE value in the
+conf/local.conf to the target machine.
+
 	* dmo-edm-comb-bw6 for broadwell
 	* dmo-edm-comb-bs6 for braswell 
-
-Following command builds the image
-
-	* dmo-image
+	* dmo-edm-comb-sl6 for skylake
 
 Depending on the selected distro configuration, the image will contain
 different preinstalled software.
-There are currently three different distro configurations
-	
-	* dmo-distro
-	* dmo-distro-qt 
-	* dmo-distro-x11
-
-In the "dmo-distro" is the minimal configuration.
-The "dmo-distro-qt" is a qt5 only distro, where x11 is disabled.
-And the "dmo-distro-x11" is a full image, containing x11 and qt5.
-
+There are currently three different distro configurations, set the DISTRO
+value in the conf/local.conf to the target distro conf.
 The "dmo-distro-x11" is set as default, to use the "dmo-distro-qt" you have to
 change the DISTRO parameter in your conf/local.conf.
+	
+	* dmo-distro		minimal configuration
+	* dmo-distro-qt		qt5 only distro, x11 is disabled
+	* dmo-distro-x11	image containig x11 and qt5
+
+Following command builds the image
+
+	* bitbake dmo-image
 
