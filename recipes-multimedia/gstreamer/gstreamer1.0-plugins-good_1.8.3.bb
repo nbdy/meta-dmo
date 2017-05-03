@@ -9,6 +9,8 @@ SRC_URI = " \
     file://0001-gstrtpmp4gpay-set-dafault-value-for-MPEG4-without-co.patch \
     file://avoid-including-sys-poll.h-directly.patch \
     file://ensure-valid-sentinel-for-gst_structure_get.patch \
+"
+SRC_URI_mx6 = " \
     file://0001-Revert-v4l2src-check-for-valid-size-on-raw-video-buf.patch \
 "
 
@@ -17,4 +19,4 @@ SRC_URI[sha256sum] = "a1d6579ba203a7734927c24b90bf6590d846c5a5fcec01a48201018c8a
 
 S = "${WORKDIR}/gst-plugins-good-${PV}"
 
-EXTRA_OECONF += " --enable-v4l2-probe "
+EXTRA_OECONF_mx6 += " --enable-v4l2-probe "
