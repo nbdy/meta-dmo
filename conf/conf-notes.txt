@@ -4,6 +4,7 @@ conf/local.conf to the target machine.
 	* dmo-edm-comb-bw6 for broadwell
 	* dmo-edm-comb-bs6 for braswell 
 	* dmo-edm-comb-sl6 for skylake
+	* dmo-edm-comb-kl6 for kabylake
 
 Depending on the selected distro configuration, the image will contain
 different preinstalled software.
