@@ -6,7 +6,7 @@ DESCRIPTION = "CRT and LCD screen testing utility"
 HOMEPAGE = "http://screentest.sourceforge.net/"
 LICENSE = "GPL-2"
 SECTION = "graphics"
-DEPS = "glib-2.0 libglade gtk+3"
+DEPS = "glib-2.0 libglade gtk+"
 DEPENDS = "${DEPS}"
 RDEPENDS_${PN} = "${DEPS}"
 
