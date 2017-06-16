@@ -1,0 +1,13 @@
+diff --git a/drivers/mxc/gpu-viv/hal/os/linux/kernel/platform/freescale/gc_hal_kernel_platform_imx6q14.c b/drivers/mxc/gpu-viv/hal/os/linux/kernel/platform/freescale/gc_hal_kernel_platform_imx6q14.c
+index d4a04b004407..50b7e82c57bc 100644
+--- a/drivers/mxc/gpu-viv/hal/os/linux/kernel/platform/freescale/gc_hal_kernel_platform_imx6q14.c
++++ b/drivers/mxc/gpu-viv/hal/os/linux/kernel/platform/freescale/gc_hal_kernel_platform_imx6q14.c
+@@ -485,7 +485,7 @@ gckPLATFORM_AdjustParam(
+     Args->gpu3DMinClock = initgpu3DMinClock;
+ 
+   if(Args->physSize == 0)
+-    Args->physSize = 0x80000000;
++     Args->physSize = 0x80000000;
+ 
+     return gcvSTATUS_OK;
+ }
