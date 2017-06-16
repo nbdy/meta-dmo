@@ -28,6 +28,7 @@ IMAGE_INSTALL = " \
     iw \
     kernel-modules \
     kmod \
+    liberation-fonts \
     linux-firmware \
     mtd-utils \
     mtools \
