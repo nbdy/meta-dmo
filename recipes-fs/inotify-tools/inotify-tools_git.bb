@@ -12,8 +12,9 @@ SECTION = "fs tools"
 PV = "3.14+git${SRCPV}"
 
 SRC_URI = " \ 
-            git://github.com/rvoicilas/${PN}.git;protocol=https;branch=master \
-          "
+    git://github.com/rvoicilas/${PN}.git;protocol=https;branch=master \
+    file://0001-fix-misleading-indention.patch \
+"
 
 SRCREV = "${AUTOREV}"
 

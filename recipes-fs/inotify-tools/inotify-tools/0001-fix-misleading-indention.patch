@@ -1,0 +1,17 @@
+diff --git a/src/inotifywait.c b/src/inotifywait.c
+index c5ce5e3..404a85b 100644
+--- a/src/inotifywait.c
++++ b/src/inotifywait.c
+@@ -122,9 +122,9 @@ void validate_format( char * fmt ) {
+ 
+ 
+ void output_event_csv( struct inotify_event * event ) {
+-    char *filename = csv_escape(inotifytools_filename_from_wd(event->wd));
+-    if (filename != NULL)
+-        printf("%s,", filename);
++	char *filename = csv_escape(inotifytools_filename_from_wd(event->wd));
++	if (filename != NULL)
++		printf("%s,", filename);
+ 
+ 	printf("%s,", csv_escape( inotifytools_event_to_str( event->mask ) ) );
+ 	if ( event->len > 0 )
