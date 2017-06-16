@@ -58,9 +58,11 @@ PARALLEL_MAKE ?= "-j ${@oe.utils.cpu_count()}"
 #MACHINE ?= "edgerouter"
 #
 # Supported machines from Data-Modul layer meta-dmo
+#MACHINE ??= "dmo-edm-comb-kl6"
 MACHINE ??= "dmo-edm-comb-sl6"
 #MACHINE ??= "dmo-edm-comb-bw6"
 #MACHINE ??= "dmo-edm-comb-bs6"
+#MACHINE ??= "imx6s-dmo-vertigo"
 
 #
 # Where to place downloads
@@ -111,6 +113,8 @@ MACHINE ??= "dmo-edm-comb-sl6"
 # Ultimately when creating custom policy, people will likely end up subclassing 
 # these defaults.
 #
+#DISTRO ?= "dmo-distro"
+#DISTRO ?= "dmo-distro-qt"
 DISTRO ?= "dmo-distro-x11"
 # As an example of a subclass there is a "bleeding" edge policy configuration
 # where many versions are set to the absolute latest code from the upstream 

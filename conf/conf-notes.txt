@@ -5,6 +5,7 @@ conf/local.conf to the target machine.
 	* dmo-edm-comb-bs6 for braswell 
 	* dmo-edm-comb-sl6 for skylake
 	* dmo-edm-comb-kl6 for kabylake
+	* imx6s-dmo-vertigo for imx6-vertigo
 
 Depending on the selected distro configuration, the image will contain
 different preinstalled software.
