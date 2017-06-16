@@ -10,7 +10,7 @@ SRC_URI = " \
     file://avoid-including-sys-poll.h-directly.patch \
     file://ensure-valid-sentinel-for-gst_structure_get.patch \
 "
-SRC_URI_mx6 = " \
+SRC_URI_append_mx6 += " \
     file://0001-Revert-v4l2src-check-for-valid-size-on-raw-video-buf.patch \
 "
 
