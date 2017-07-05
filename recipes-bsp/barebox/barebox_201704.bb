@@ -4,7 +4,6 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
 SRC_URI = " \
     git://git@emb.data-modul.com/development/barebox;branch=rya/201704/next-release-vertigoBased;protocol=ssh;name=mx6 \
-    file://0002-enable-initrd-for-sdcard-boot.patch \
 "
 
 PV = "2017.04+git${SRCPV}"
