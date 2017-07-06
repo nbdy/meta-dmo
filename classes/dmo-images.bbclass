@@ -6,6 +6,7 @@ inherit image_types
 
 # we need generating the rootfs to every time
 do_rootfs[nostamp] = "1"
+BOOTDD_VOLUME_ID = "Boot_${MACHINE}"
 
 SDCARD_SIZE = "3858432"
 SDCARD_WITH_HOMEFS    = "${IMAGE_NAME}.with-homefs.sdcard2"
