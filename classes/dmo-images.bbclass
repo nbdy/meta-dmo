@@ -8,7 +8,6 @@ inherit image_types
 do_rootfs[nostamp] = "1"
 BOOTDD_VOLUME_ID = "Boot_${MACHINE}"
 
-SDCARD_SIZE = "3858432"
 SDCARD_WITH_HOMEFS    = "${IMAGE_NAME}.with-homefs.sdcard2"
 SDCARD_WITHOUT_HOMEFS = "${IMAGE_NAME}.without-homefs.sdcard2"
 SDCARD_WITHOUT_OVERLAY = "${IMAGE_NAME}.without-overlayfs.sdcard2"
@@ -21,6 +20,27 @@ SDCARD_LINK_WITHOUT_OVERLAY = "${DEPLOY_DIR_IMAGE}/${IMAGE_LINK_NAME}.without-ov
 
 IMAGE_DEPENDS_dmosdcard = "parted-native dosfstools-native mtools-native \
                         virtual/kernel:do_deploy ${IMAGE_BOOTLOADER}:do_deploy"
+
+
+# Bitbake variable ROOTFS_SIZE is calculated in
+# Image._get_rootfs_size method from meta/lib/oe/image.py
+# using IMAGE_ROOTFS_SIZE (<- set in dmo-image.inc), IMAGE_ROOTFS_ALIGNMENT,
+# IMAGE_OVERHEAD_FACTOR and IMAGE_ROOTFS_EXTRA_SPACE
+BOOT_SIZE = "52224"
+OVEL_SIZE = "716800"
+# The HOME_SPACE is defined in the dmo-image.inc
+HOME_SIZE = "${HOMEFS_SPACE}"
+BOOT_START = "1024"
+BOOT_END = "$(expr ${BOOT_START} + ${BOOT_SIZE})"
+ROOT_START = "$(expr ${BOOT_END} + 1)"
+ROOT_END = "$(expr ${ROOT_START} + ${ROOTFS_SIZE})"
+OVEL_START = "$(expr ${ROOT_END} + 1)"
+OVEL_END = "$(expr ${OVEL_START} + ${OVEL_SIZE})"
+HOME_START = "$(expr ${OVEL_END} + 1)"
+HOME_END = "$(expr ${HOME_START} + ${HOME_SIZE})"
+
+SDCARD_SIZE = "$(expr ${BOOT_START} + ${BOOT_SIZE} + ${ROOTFS_SIZE} + ${OVEL_SIZE} + ${HOME_SIZE} + 4)"
+
 
 IMAGE_CMD_dmosdcard () {
     if [ -z "${SDCARD_ROOTFS}" ]; then
@@ -38,10 +58,10 @@ IMAGE_CMD_dmosdcard () {
     # 0010MB - 1000MB - RootFS (ext3)
     # 1000MB - 2000M  - HomeFS (ext3)
     parted -s ${SDCARD_WITH_HOMEFS_FULL} mklabel msdos
-    parted -s ${SDCARD_WITH_HOMEFS_FULL} unit KiB mkpart primary fat32    1024   53248
-    parted -s ${SDCARD_WITH_HOMEFS_FULL} unit KiB mkpart primary         53248 2936832
-    parted -s ${SDCARD_WITH_HOMEFS_FULL} unit KiB mkpart primary       2936832 3653632
-    parted -s ${SDCARD_WITH_HOMEFS_FULL} unit KiB mkpart primary       3653632 3858431
+    parted -s ${SDCARD_WITH_HOMEFS_FULL} unit KiB mkpart primary fat32 ${BOOT_START} ${BOOT_END}
+    parted -s ${SDCARD_WITH_HOMEFS_FULL} unit KiB mkpart primary       ${ROOT_START} ${ROOT_END}
+    parted -s ${SDCARD_WITH_HOMEFS_FULL} unit KiB mkpart primary       ${OVEL_START} ${OVEL_END}
+    parted -s ${SDCARD_WITH_HOMEFS_FULL} unit KiB mkpart primary       ${HOME_START} ${HOME_END}
     parted -s ${SDCARD_WITH_HOMEFS_FULL} print
 
     # put barebox to image
@@ -64,22 +84,22 @@ IMAGE_CMD_dmosdcard () {
 
     # Creat the overlay partition
     [ -e ${WORKDIR}/overlay.img ] && rm ${WORKDIR}/overlay.img
-    truncate -s $(expr 1024 \* 716799) ${WORKDIR}/overlay.img
+    truncate -s $(expr 1024 \* ${OVEL_SIZE}) ${WORKDIR}/overlay.img
     mkfs.ext4 -F ${WORKDIR}/overlay.img
     
     # Burn Partition
-    dd if=${WORKDIR}/boot.img    of=${SDCARD_WITH_HOMEFS_FULL} conv=notrunc seek=1 bs=$(expr 1024    \* 1024) && sync && sync
-    dd if=${SDCARD_ROOTFS}       of=${SDCARD_WITH_HOMEFS_FULL} conv=notrunc seek=1 bs=$(expr 53248   \* 1024) && sync && sync
-    dd if=${WORKDIR}/overlay.img of=${SDCARD_WITH_HOMEFS_FULL} conv=notrunc seek=1 bs=$(expr 2936832 \* 1024) && sync && sync
-    dd if=${HOMEFS_IMAGE_FULL}        of=${SDCARD_WITH_HOMEFS_FULL} conv=notrunc seek=1 bs=$(expr 3653632 \* 1024) && sync && sync
+    dd if=${WORKDIR}/boot.img    of=${SDCARD_WITH_HOMEFS_FULL} conv=notrunc seek=1 bs=$(expr ${BOOT_START} \* 1024) && sync && sync
+    dd if=${SDCARD_ROOTFS}       of=${SDCARD_WITH_HOMEFS_FULL} conv=notrunc seek=1 bs=$(expr ${ROOT_START} \* 1024) && sync && sync
+    dd if=${WORKDIR}/overlay.img of=${SDCARD_WITH_HOMEFS_FULL} conv=notrunc seek=1 bs=$(expr ${OVEL_START} \* 1024) && sync && sync
+    dd if=${HOMEFS_IMAGE_FULL}        of=${SDCARD_WITH_HOMEFS_FULL} conv=notrunc seek=1 bs=$(expr ${HOME_START} \* 1024) && sync && sync
 
     # crop image to get one without homefs, but with same partition table
     cp ${SDCARD_WITH_HOMEFS_FULL} ${SDCARD_WITHOUT_HOMEFS_FULL}
-    truncate -s $(expr 1024 \* 3653632) ${SDCARD_WITHOUT_HOMEFS_FULL}
+    truncate -s $(expr 1024 \* ${HOME_START}) ${SDCARD_WITHOUT_HOMEFS_FULL}
 
     # crop image to get one without overlay and homefs, but with same partition table
     cp ${SDCARD_WITH_HOMEFS_FULL} ${SDCARD_WITHOUT_OVERLAY_FULL}
-    truncate -s $(expr 1024 \* 2936832) ${SDCARD_WITHOUT_OVERLAY_FULL}
+    truncate -s $(expr 1024 \* ${OVEL_START}) ${SDCARD_WITHOUT_OVERLAY_FULL}
 
     rm -f ${SDCARD_LINK_WITH_HOMEFS}
     ln -s ${SDCARD_WITH_HOMEFS} ${SDCARD_LINK_WITH_HOMEFS}

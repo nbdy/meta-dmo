@@ -4,7 +4,7 @@ inherit dmo-images
 ROOTFS_POSTINSTALL_COMMAND_mx6 += " create_homefs_and_image; "
 
 # set size and factor of ROOTFS
-IMAGE_ROOTFS_SIZE = "2883584"
+IMAGE_ROOTFS_SIZE = "2560000"
 IMAGE_OVERHEAD_FACTOR = "1"
 IMAGE_ROOTFS_EXTRA_SPACE = "0"
 
