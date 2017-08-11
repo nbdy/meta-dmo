@@ -7,7 +7,6 @@ SRC_URI = "git://git@emb.data-modul.com/development/linux;protocol=ssh;branch=ry
            file://zconfig.cfg \
            file://develop.cfg \
            file://debug.cfg \
-           file://chimei-g101-dtb.patch \
 "
 
 LINUX_VERSION ?= "4.4.57"
