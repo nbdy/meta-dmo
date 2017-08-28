@@ -5,6 +5,9 @@ Name=e*
 #DHCP setup
 DHCP=v4
 
+[DHCP]
+CriticalConnection=true
+
 #Static setup
 #Address=10.0.0.2/24
 #Gateway=10.0.0.1
