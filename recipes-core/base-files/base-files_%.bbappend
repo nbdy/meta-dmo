@@ -1,6 +1,6 @@
 do_install_append_imx6-dmo-edm-qmx () {
     echo "tmpfs          /media tmpfs defaults 0 2" >> ${D}/${sysconfdir}/fstab
-    echo "/dev/mmcblk1p4 /home  auto  defaults,nofail 0 2" >> ${D}/${sysconfdir}/fstab
+    echo "/dev/mmcblk0p4 /home  auto  defaults,nofail 0 2" >> ${D}/${sysconfdir}/fstab
 }
 
 do_install_append_mx6 (){
