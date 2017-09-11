@@ -81,6 +81,12 @@ IMAGE_CMD_dmosdcard () {
     if [ ! -z "${INITRAMFS_IMAGE}" ]; then
         mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/${INITRAMFS_IMAGE}-${MACHINE}.cpio.gz ::/initramfs
     fi
+    if [ ! -z "${USB_BOOT_SCRIPT}" ] && [ -e ${DEPLOY_DIR_IMAGE}/${USB_BOOT_SCRIPT} ]; then
+        mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/${USB_BOOT_SCRIPT} ::/${USB_BOOT_SCRIPT}
+    fi
+    if [ ! -z "${USB_BOOT_INIFILE}" ] && [ -e ${DEPLOY_DIR_IMAGE}/${USB_BOOT_INIFILE} ]; then
+        mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/${USB_BOOT_INIFILE} ::/${USB_BOOT_INIFILE}
+    fi
 
     # Creat the overlay partition
     [ -e ${WORKDIR}/overlay.img ] && rm ${WORKDIR}/overlay.img
