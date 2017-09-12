@@ -17,7 +17,7 @@ BBENV_BUILD_DIR = "${WORKDIR}/build_env/"
 
 S = "${WORKDIR}/git"
 
-do_configure_prepend_imx6s-dmo-vertigo() {
+do_configure_prepend_mx6() {
     oe_runmake ${BAREBOX_MACHINE}
 }
 
