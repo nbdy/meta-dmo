@@ -11,7 +11,7 @@ BBLAYERS ?= " \
 	##COREBASE##/meta-yocto \
 	##COREBASE##/meta-yocto-bsp \
 	##COREBASE##/meta-intel \
-	##COREBASE##/meta-fsl-arm \
+	##COREBASE##/meta-freescale \
 	##COREBASE##/meta-browser \
 	##COREBASE##/meta-qt5 \
 	##COREBASE##/meta-openembedded/meta-oe \

@@ -11,7 +11,7 @@
 # the option is a question of removing the # character and making any change to the
 # variable as required.
 
-## Read meta-fsl-arm/EULA and agree
+## Read meta-freescale/EULA and agree
 #ACCEPT_FSL_EULA = "1"
 
 #
