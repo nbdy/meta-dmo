@@ -10,7 +10,7 @@ SRC_URI = "git://git@emb.data-modul.com/development/linux;protocol=ssh;branch=sw
 "
 
 LINUX_VERSION ?= "4.4.57"
-LINUX_VERSION_EXTENSION = "+git${SRCPV}"
+LINUX_VERSION_EXTENSION = "+git${@legitimize_package_name('${SRCPV}')}"
 
 # Override SRCREV to point to a different commit in a bbappend file to
 # build a different release of the Linux kernel.
