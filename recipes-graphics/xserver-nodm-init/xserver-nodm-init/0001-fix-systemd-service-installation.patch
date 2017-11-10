@@ -1,7 +1,7 @@
-Index: 2.0-r22/xserver-nodm.service
+Index: 2.0-r22/xserver-nodm.service.in
 ===================================================================
---- 2.0-r22.orig/xserver-nodm.service
-+++ 2.0-r22/xserver-nodm.service
+--- 2.0-r22.orig/xserver-nodm.service.in
++++ 2.0-r22/xserver-nodm.service.in
 @@ -7,3 +7,4 @@ ExecStart=/etc/X11/Xserver
  
  [Install]
