@@ -17,7 +17,7 @@ diff --git a/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp b/src
 index b298ba3..2242da0 100644
 --- a/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp
 +++ b/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.cpp
-@@ -1194,10 +1194,17 @@ bool QGstreamerPlayerSession::pause()
+@@ -1194,08 +1194,15 @@ bool QGstreamerPlayerSession::pause()
  #endif
      if (m_playbin) {
          m_pendingState = QMediaPlayer::PausedState;
@@ -32,11 +32,8 @@ index b298ba3..2242da0 100644
 +	if (m_pendingVideoSink != 0) {
  		return true;
  	}
--        if (gst_element_set_state(m_playbin, GST_STATE_PAUSED) == GST_STATE_CHANGE_FAILURE) {
-+	if (gst_element_set_state(m_playbin, GST_STATE_PAUSED) == GST_STATE_CHANGE_FAILURE) {
-             if (!m_isPlaylist) {
-                 qWarning() << "GStreamer; Unable to pause -" << m_request.url().toString();
-                 m_pendingState = m_state = QMediaPlayer::StoppedState;
--- 
+         if (gst_element_set_state(m_playbin, GST_STATE_PAUSED) == GST_STATE_CHANGE_FAILURE) {
+			 qWarning() << "GStreamer; Unable to pause -" << m_request.url().toString();
+			 m_pendingState = m_state = QMediaPlayer::StoppedState;
 2.5.2
 

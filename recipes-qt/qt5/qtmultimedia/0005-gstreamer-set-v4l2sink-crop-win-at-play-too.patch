@@ -48,27 +48,6 @@ index 3e75f1e..8d45d15 100644
  
  	g_signal_connect(m_playbin, "element-added",
  			G_CALLBACK(element_added_handler), NULL);
-@@ -1048,7 +1050,19 @@ bool QGstreamerPlayerSession::play()
-     m_everPlayed = false;
-     if (m_playbin) {
-         m_pendingState = QMediaPlayer::PlayingState;
--        if (gst_element_set_state(m_playbin, GST_STATE_PLAYING) == GST_STATE_CHANGE_FAILURE) {
-+#if defined(ZDO_TEST)
-+	/* setup IPU overlay output */
-+	g_object_set(m_v4l2sink,
-+		     "device", "/dev/video/by-name/imx-ipuv3-ovl-0",
-+		     "io-mode", 5,
-+		     "sync", TRUE,
-+		     "overlay-top", m_wpos.rx(),
-+		     "overlay-left", m_wpos.ry(),
-+		     "overlay-width", m_wsz.rwidth(),
-+		     "overlay-height", m_wsz.rheight(), NULL);
-+#endif
-+
-+	if (gst_element_set_state(m_playbin, GST_STATE_PLAYING) == GST_STATE_CHANGE_FAILURE) {
-             if (!m_isPlaylist) {
-                 qWarning() << "GStreamer; Unable to play -" << m_request.url().toString();
-                 m_pendingState = m_state = QMediaPlayer::StoppedState;
 diff --git a/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.h b/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.h
 index 888a553..4c79b4b 100644
 --- a/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.h
@@ -90,7 +69,7 @@ index 888a553..4c79b4b 100644
 +    QPoint m_wpos;
 +    QSize  m_wsz;
 +
- #if defined(HAVE_GST_APPSRC)
+ #if QT_CONFIG(gstreamer_app)
      QGstAppSrc *m_appSrc;
  #endif
 -- 

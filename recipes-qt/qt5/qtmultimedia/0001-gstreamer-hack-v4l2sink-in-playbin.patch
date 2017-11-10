@@ -37,13 +37,12 @@ index 4dce341..a1cafdd 100644
       m_pendingVideoSink(0),
       m_nullVideoSink(0),
       m_audioSink(0),
-@@ -161,8 +164,14 @@ QGstreamerPlayerSession::QGstreamerPlayerSession(QObject *parent)
+@@ -161,7 +164,13 @@ QGstreamerPlayerSession::QGstreamerPlayerSession(QObject *parent)
          } else {
              flags |= GST_PLAY_FLAG_NATIVE_VIDEO;
  #endif
 +
          }
- #endif
 +
 +#if defined(ZDO_TEST)
 +	flags |=  GST_PLAY_FLAG_NATIVE_VIDEO;

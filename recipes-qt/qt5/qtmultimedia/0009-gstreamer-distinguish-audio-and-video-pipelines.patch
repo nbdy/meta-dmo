@@ -84,16 +84,6 @@ index aa85b16..b298ba3 100644
  
      addVideoBufferProbe();
  
-@@ -1149,7 +1159,8 @@ bool QGstreamerPlayerSession::play()
-         m_pendingState = QMediaPlayer::PlayingState;
- #if defined(ZDO_TEST)
- 	/* setup IPU overlay output */
--	g_object_set(m_v4l2sink,
-+	if (m_v4l2sink)
-+		g_object_set(m_v4l2sink,
- 		     "device", m_OvlDeviceName.c_str(),
- 		     "io-mode", 5,
- 		     "sync", TRUE,
 @@ -2006,10 +2017,13 @@ void QGstreamerPlayerSession::handleElementAdded(GstBin *bin, GstElement *elemen
          //Don't touch other bins since they may have unrelated queues
          g_signal_connect(element, "element-added",

@@ -189,17 +189,6 @@ index 688e554..aa85b16 100644
  		     "overlay-width", m_wsz.rwidth(),
  		     "overlay-height", m_wsz.rheight(), NULL);
  #else
-@@ -1150,8 +1153,8 @@ bool QGstreamerPlayerSession::play()
- 		     "device", m_OvlDeviceName.c_str(),
- 		     "io-mode", 5,
- 		     "sync", TRUE,
--		     "overlay-top", m_wpos.rx(),
--		     "overlay-left", m_wpos.ry(),
-+		     "overlay-left", m_wpos.rx(),
-+		     "overlay-top", m_wpos.ry(),
- 		     "overlay-width", m_wsz.rwidth(),
- 		     "overlay-height", m_wsz.rheight(), NULL);
- #endif
 diff --git a/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.h b/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.h
 index 4b6d447..5cd2da1 100644
 --- a/src/plugins/gstreamer/mediaplayer/qgstreamerplayersession.h

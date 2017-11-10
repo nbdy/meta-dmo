@@ -16,8 +16,7 @@ diff --git a/src/plugins/gstreamer/common.pri b/src/plugins/gstreamer/common.pri
 index eb6a299..87ac8f6 100644
 --- a/src/plugins/gstreamer/common.pri
 +++ b/src/plugins/gstreamer/common.pri
-@@ -1,4 +1,4 @@
- 
+@@ -1,3 +1,3 @@
 -QT += core-private multimedia-private network
 +QT += core-private multimedia-private network quick
  

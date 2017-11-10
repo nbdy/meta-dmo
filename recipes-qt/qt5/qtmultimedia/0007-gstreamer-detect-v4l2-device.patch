@@ -150,15 +150,6 @@ index 13a41c4..688e554 100644
  		     "io-mode", 5,
  		     "sync", TRUE,
  		     "overlay-top", m_wpos.rx(),
-@@ -1070,7 +1147,7 @@ bool QGstreamerPlayerSession::play()
- #if defined(ZDO_TEST)
- 	/* setup IPU overlay output */
- 	g_object_set(m_v4l2sink,
--		     "device", "/dev/video/by-name/imx-ipuv3-ovl-0",
-+		     "device", m_OvlDeviceName.c_str(),
- 		     "io-mode", 5,
- 		     "sync", TRUE,
- 		     "overlay-top", m_wpos.rx(),
 @@ -1213,7 +1290,10 @@ void QGstreamerPlayerSession::setSeekable(bool seekable)
  #ifdef DEBUG_PLAYBIN
          qDebug() << Q_FUNC_INFO << seekable;
