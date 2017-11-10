@@ -18,8 +18,10 @@ SDCARD_LINK_WITH_HOMEFS    = "${DEPLOY_DIR_IMAGE}/${IMAGE_LINK_NAME}.with-homefs
 SDCARD_LINK_WITHOUT_HOMEFS = "${DEPLOY_DIR_IMAGE}/${IMAGE_LINK_NAME}.without-homefs.sdcard2"
 SDCARD_LINK_WITHOUT_OVERLAY = "${DEPLOY_DIR_IMAGE}/${IMAGE_LINK_NAME}.without-overlayfs.sdcard2"
 
-IMAGE_DEPENDS_dmosdcard = "parted-native dosfstools-native mtools-native \
-                        virtual/kernel:do_deploy ${IMAGE_BOOTLOADER}:do_deploy"
+do_image_dmosdcard[depends] = "parted-native:do_populate_sysroot \
+    dosfstools-native:do_populate_sysroot mtools-native:do_populate_sysroot \
+    coreutils-native:do_populate_sysroot \
+    virtual/kernel:do_deploy ${IMAGE_BOOTLOADER}:do_deploy"
 
 
 # Bitbake variable ROOTFS_SIZE is calculated in
