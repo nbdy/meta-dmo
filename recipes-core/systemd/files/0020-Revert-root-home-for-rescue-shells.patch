@@ -1,18 +1,3 @@
-Index: git/units/console-shell.service.m4.in
-===================================================================
---- git.orig/units/console-shell.service.m4.in
-+++ git/units/console-shell.service.m4.in
-@@ -15,8 +15,8 @@ )m4_dnl
- Before=getty.target
- 
- [Service]
--Environment=HOME=@roothomedir@
--WorkingDirectory=-@roothomedir@
-+Environment=HOME=/root
-+WorkingDirectory=/root
- ExecStart=-@SULOGIN@
- ExecStopPost=-@SYSTEMCTL@ poweroff
- Type=idle
 Index: git/units/emergency.service.in
 ===================================================================
 --- git.orig/units/emergency.service.in
@@ -25,9 +10,9 @@ Index: git/units/emergency.service.in
 -WorkingDirectory=-@roothomedir@
 +Environment=HOME=/root
 +WorkingDirectory=/root
- ExecStartPre=-/bin/plymouth --wait quit
- ExecStartPre=-/bin/echo -e 'Welcome to emergency mode! After logging in, type "journalctl -xb" to view\\nsystem logs, "systemctl reboot" to reboot, "systemctl default" or ^D to\\ntry again to boot into default mode.'
- ExecStart=-/bin/sh -c "@SULOGIN@; @SYSTEMCTL@ --job-mode=fail --no-block default"
+ ExecStart=-@rootlibexecdir@/systemd-sulogin-shell emergency
+ Type=idle
+ StandardInput=tty-force
 Index: git/units/rescue.service.in
 ===================================================================
 --- git.orig/units/rescue.service.in
@@ -40,6 +25,7 @@ Index: git/units/rescue.service.in
 -WorkingDirectory=-@roothomedir@
 +Environment=HOME=/root
 +WorkingDirectory=/root
- ExecStartPre=-/bin/plymouth quit
- ExecStartPre=-/bin/echo -e 'Welcome to emergency mode! After logging in, type "journalctl -xb" to view\\nsystem logs, "systemctl reboot" to reboot, "systemctl default" or ^D to\\nboot into default mode.'
- ExecStart=-/bin/sh -c "@SULOGIN@; @SYSTEMCTL@ --job-mode=fail --no-block default"
+ ExecStart=-@rootlibexecdir@/systemd-sulogin-shell rescue
+ Type=idle
+ StandardInput=tty-force
+
