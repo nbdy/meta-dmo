@@ -12,6 +12,8 @@ PRIORITY = "optional"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://${S}/COPYING;md5=057bf9e50e1ca857d0eb97bfe4ba8e5d"
 
+DEPENDS = "lzop-native coreutils-native"
+
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 inherit kernel-arch
