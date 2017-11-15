@@ -22,7 +22,7 @@ IMAGE_INSTALL = " \
     gstreamer1.0-plugins-good-meta \
     i2c-tools \
     icu \
-    iperf \
+    iperf3 \
     iproute2 \
     iputils \
     iw \
@@ -54,7 +54,6 @@ IMAGE_INSTALL = " \
     wget \
     wireless-tools \
     wpa-supplicant \
-    ${ROOTFS_PKGMANAGE_BOOTSTRAP} \
     ${CORE_IMAGE_EXTRA_INSTALL} \
     ${SPLASH_SW} \
 "
