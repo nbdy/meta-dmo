@@ -2,7 +2,7 @@ require recipes-kernel/linux/linux-dmo.inc
 
 # Override SRC_URI in a bbappend file to point at a different source
 # tree if you do not want to build from Linus' tree.
-SRC_URI = "git://git@emb.data-modul.com/development/linux;protocol=ssh;branch=rya/vertigo/release-4.4.57;name=kernel \
+SRC_URI = "git://git@emb.data-modul.com/development/linux;protocol=ssh;branch=rya/ppc/release-4.4.57;name=kernel \
            file://hardware.cfg \
            file://zconfig.cfg \
            file://develop.cfg \
