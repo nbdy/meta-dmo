@@ -59,11 +59,13 @@ PARALLEL_MAKE ?= "-j ${@oe.utils.cpu_count()}"
 #
 # Supported machines from Data-Modul layer meta-dmo
 #MACHINE ??= "dmo-edm-comb-kl6"
-MACHINE ??= "dmo-edm-comb-sl6"
+#MACHINE ??= "dmo-edm-comb-sl6"
 #MACHINE ??= "dmo-edm-comb-bw6"
 #MACHINE ??= "dmo-edm-comb-bs6"
 #MACHINE ??= "imx6s-dmo-vertigo"
-
+MACHINE ??= "imx6s-dmo-ppc"
+#MACHINE ??= "imx6s-technoalpin-vertigo"
+#MACHINE ??= "imx6s-technoalpin-ppc"
 #
 # Where to place downloads
 #
