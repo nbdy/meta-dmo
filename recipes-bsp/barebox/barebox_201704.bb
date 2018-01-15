@@ -3,13 +3,13 @@ require recipes-bsp/barebox/barebox.inc
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
 SRC_URI = " \
-    git://git@emb.data-modul.com/development/barebox;branch=rya/201704/next-release-vertigoBased;protocol=ssh;name=mx6 \
+    git://git@emb.data-modul.com/development/barebox;branch=rya/imx6-ppc/next-release-2017.04;protocol=ssh;name=mx6 \
 "
 
 PV = "2017.04+git${SRCPV}"
 SRCREV_mx6 = "${AUTOREV}"
 
-COMPATIBLE_MACHINE = "(imx6s-dmo-vertigo|imx6s-technoalpin-vertigo)"
+COMPATIBLE_MACHINE = "(imx6s-dmo-ppc|imx6s-technoalpin-ppc|imx6s-dmo-vertigo|imx6s-technoalpin-vertigo)"
 
 PACKAGES_append += "${PN}-bbenv"
 FILES_${PN}-bbenv = "/bareboxenv"
