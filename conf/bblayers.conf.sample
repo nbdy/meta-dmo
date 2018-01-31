@@ -21,6 +21,7 @@ BBLAYERS ?= " \
 	##COREBASE##/meta-openembedded/meta-xfce \
 	##COREBASE##/meta-openembedded/meta-multimedia \
 	##COREBASE##/meta-openembedded/meta-filesystems \
+	##COREBASE##/meta-openembedded/meta-networking \
 "
 
 BBLAYERS_NON_REMOVABLE ?= " \
