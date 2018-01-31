@@ -8,7 +8,8 @@ BBFILES ?= ""
 BBLAYERS ?= " \
 	##COREBASE##/meta \
 	##COREBASE##/meta-dmo \
-	##COREBASE##/meta-yocto \
+	##COREBASE##/meta-dmo-intern \
+	##COREBASE##/meta-poky \
 	##COREBASE##/meta-yocto-bsp \
 	##COREBASE##/meta-intel \
 	##COREBASE##/meta-freescale \
@@ -24,5 +25,5 @@ BBLAYERS ?= " \
 
 BBLAYERS_NON_REMOVABLE ?= " \
 	##COREBASE##/meta \
-	##COREBASE##/meta-yocto \
+	##COREBASE##/meta-poky \
 "
