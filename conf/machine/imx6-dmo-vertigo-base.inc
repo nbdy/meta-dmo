@@ -1,11 +1,11 @@
 #@TYPE: Machine
 #@NAME: i.MX6Q edm-qmx6
-#@DESCRIPTION: Machine configuration for vetrigo Board
+#@DESCRIPTION: Machine configuration for Data Modul Vetrigo Board
 
 require conf/machine/include/imx-base.inc
 require conf/machine/include/tune-cortexa9.inc
 
-MACHINEOVERRIDES =. "mx6:mx6dl:imx6-dmo-edm-qmx:"
+MACHINEOVERRIDES =. "mx6:mx6dl:mx6q:imx6-dmo-edm-qmx:"
 
 # build this packages, but do not include in image
 EXTRA_IMAGEDEPENDS = "virtual/bootloader virtual/kernel"
@@ -18,24 +18,15 @@ IMAGE_TYPEDEP_dmosdcard = "ext4"
 INITRAMFS_IMAGE = "dmo-image-initramfs"
 
 # barebox configurations
-IMAGE_BOOTLOADER = "barebox"
-BAREBOX_BINARY = "images/barebox-czm-vertigo.img"
-BAREBOX_MACHINE = "czm-vertigo_defconfig"
-PREFERRED_PROVIDER_virtual/bootloader = "barebox"
+IMAGE_BOOTLOADER = "barebox-vertigo"
+BAREBOX_MACHINE = "dmo-vertigo_defconfig"
+PREFERRED_PROVIDER_virtual/bootloader = "barebox-vertigo"
 
 # kernel configuration
 KERNEL_IMAGETYPE = "zImage"
-PREFERRED_PROVIDER_virtual/kernel = "linux-dmo-vertigo"
+PREFERRED_PROVIDER_virtual/kernel ?= "linux-dmo-vertigo"
 
 PREFERRED_VERSION_linux-dmo ?= "4.4.57%"
-KERNEL_DEVICETREE ?= " \
-   imx6s-dmo-vertigo-chimei-g070y2.dtb \
-   imx6s-dmo-vertigo-chimei-g101ICE.dtb \
-   imx6s-dmo-vertigo-auo-g804sn05.dtb \
-"
-DEFAULT_KERNEL_DEVICETREE ?= "imx6s-dmo-vertigo-chimei-g101ICE.dtb"
-
-SOC_FAMILY = "mx6:mx6s:mx6dl"
 
 SERIAL_CONSOLE = "115200 ttymxc0"
 

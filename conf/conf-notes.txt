@@ -1,11 +1,16 @@
 There are three machine setups to choose from, set the MACHINE value in the
 conf/local.conf to the target machine.
 
-	* dmo-edm-comb-bw6 for broadwell
-	* dmo-edm-comb-bs6 for braswell 
-	* dmo-edm-comb-sl6 for skylake
-	* dmo-edm-comb-kl6 for kabylake
-	* imx6s-dmo-vertigo for imx6-vertigo
+	* dmo-edm-comb-bw6	     for broadwell
+	* dmo-edm-comb-bs6	     for braswell 
+	* dmo-edm-comb-sl6	     for skylake
+	* dmo-edm-comb-kl6	     for kabylake
+	* imx6dl-dmo-vertigo	     for imx6dl/s vertigo
+	* imx6q-dmo-vertigo	     for imx6q/d  vertigo
+	* imx6s-dmo-ppc		     for imx6s ppc
+	* imx6dl-technoalpin-vertigo for imx6dl/s technoalpin-vertigo
+	* imx6q-technoalpin-vertigo  for imx6q/d technoalpin-vertigo
+	* imx6s-technoalpin-ppc      for imx6s technoalpin-ppc
 
 Depending on the selected distro configuration, the image will contain
 different preinstalled software.
