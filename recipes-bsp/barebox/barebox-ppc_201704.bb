@@ -9,7 +9,7 @@ SRC_URI = " \
 PV = "2017.04+git${SRCPV}"
 SRCREV_mx6 = "${AUTOREV}"
 
-COMPATIBLE_MACHINE = "(imx6s-dmo-ppc|imx6s-technoalpin-ppc)"
+COMPATIBLE_MACHINE = "(imx6s-dmo-ppc)"
 
 PACKAGES_append += "${PN}-bbenv"
 FILES_${PN}-bbenv = "/bareboxenv"
