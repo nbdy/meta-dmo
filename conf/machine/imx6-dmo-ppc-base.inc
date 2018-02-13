@@ -1,11 +1,11 @@
 #@TYPE: Machine
 #@NAME: i.MX6Q edm-qmx6
-#@DESCRIPTION: Machine configuration for vetrigo Board
+#@DESCRIPTION: Machine configuration for PPC Board
 
 require conf/machine/include/imx-base.inc
 require conf/machine/include/tune-cortexa9.inc
 
-MACHINEOVERRIDES =. "mx6:mx6dl:imx6-dmo-edm-qmx:"
+MACHINEOVERRIDES =. "mx6:mx6dl:mx6q:imx6-dmo-edm-qmx:"
 
 # build this packages, but do not include in image
 EXTRA_IMAGEDEPENDS = "virtual/bootloader virtual/kernel"
@@ -18,24 +18,15 @@ IMAGE_TYPEDEP_dmosdcard = "ext4"
 INITRAMFS_IMAGE = "dmo-image-initramfs"
 
 # barebox configurations
-IMAGE_BOOTLOADER = "barebox"
-BAREBOX_BINARY = "images/barebox-dmo-imx6-ppc.img"
+IMAGE_BOOTLOADER = "barebox-ppc"
 BAREBOX_MACHINE = "dmo-imx6-ppc_defconfig"
-PREFERRED_PROVIDER_virtual/bootloader = "barebox"
+PREFERRED_PROVIDER_virtual/bootloader = "barebox-ppc"
 
 # kernel configuration
 KERNEL_IMAGETYPE = "zImage"
-PREFERRED_PROVIDER_virtual/kernel = "linux-dmo-ppc"
+PREFERRED_PROVIDER_virtual/kernel ?= "linux-dmo-ppc"
 
 PREFERRED_VERSION_linux-dmo ?= "4.4.57%"
-KERNEL_DEVICETREE ?= " \
-   imx6s-dmo-ppc-chimei-g070y2.dtb \
-   imx6s-dmo-ppc-chimei-g101ICE.dtb \
-   imx6s-dmo-ppc-auo-g804sn05.dtb \
-"
-DEFAULT_KERNEL_DEVICETREE ?= "imx6s-dmo-ppc-chimei-g101ICE.dtb"
-
-SOC_FAMILY = "mx6:mx6s:mx6dl"
 
 SERIAL_CONSOLE = "115200 ttymxc0"
 

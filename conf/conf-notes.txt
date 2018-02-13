@@ -7,7 +7,8 @@ conf/local.conf to the target machine.
 	* dmo-edm-comb-kl6	     for kabylake
 	* imx6dl-dmo-vertigo	     for imx6dl/s vertigo
 	* imx6q-dmo-vertigo	     for imx6q/d  vertigo
-	* imx6s-dmo-ppc		     for imx6s ppc
+	* imx6dl-dmo-ppc	     for imx6dl/s ppc
+	* imx6q-dmo-ppc		     for imx6q/d ppc
 	* imx6dl-technoalpin-vertigo for imx6dl/s technoalpin-vertigo
 	* imx6q-technoalpin-vertigo  for imx6q/d technoalpin-vertigo
 	* imx6s-technoalpin-ppc      for imx6s technoalpin-ppc
