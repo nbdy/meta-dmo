@@ -76,6 +76,7 @@ IMAGE_INSTALL_append_dmo-x11 = " \
     xset \
 "
 IMAGE_INSTALL_append_dmo-qt = " \
+    alsa-utils \
     cinematicexperience \
     qupzilla \
     qt3d \
