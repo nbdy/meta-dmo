@@ -5,7 +5,7 @@
 require conf/machine/include/imx-base.inc
 require conf/machine/include/tune-cortexa9.inc
 
-MACHINEOVERRIDES =. "mx6:mx6dl:mx6q:imx6-dmo-edm-qmx:"
+MACHINEOVERRIDES =. "mx6:imx6-dmo-edm-qmx:"
 
 # build this packages, but do not include in image
 EXTRA_IMAGEDEPENDS = "virtual/bootloader virtual/kernel"
