@@ -7,6 +7,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=a6f89e2100d9b6cdffcea4f398e37343 \
 SRC_URI = " \
     http://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-${PV}.tar.xz \
     file://0001-gstrtpmp4gpay-set-dafault-value-for-MPEG4-without-co.patch \
+    file://0002-v4l2videodec-bytesused-warn.patch \
 "
 
 SRC_URI[md5sum] = "a1958df7aa498b42793e2f2048673815"
