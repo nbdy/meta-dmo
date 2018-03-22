@@ -12,6 +12,8 @@ SRC_URI = " \
 "
 SRC_URI_append_mx6 += " \
     file://0001-Revert-v4l2src-check-for-valid-size-on-raw-video-buf.patch \
+    file://gstDeviceMonitor_assert_being_off.patch \
+    file://gstDiscover_empty_caps_SDVideo.patch \
 "
 
 SRC_URI[md5sum] = "473ebb1f15c67de99ddb6e4d027c0876"

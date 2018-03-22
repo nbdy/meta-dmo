@@ -1,0 +1,11 @@
+diff -Naur aa/sys/v4l2/gstv4l2deviceprovider.c bb/sys/v4l2/gstv4l2deviceprovider.c
+--- aa/sys/v4l2/gstv4l2deviceprovider.c	2016-06-08 12:53:02.000000000 +0200
++++ bb/sys/v4l2/gstv4l2deviceprovider.c	2018-03-22 10:37:27.799360317 +0100
+@@ -535,7 +535,6 @@
+       klass = "Video/Sink";
+       break;
+     default:
+-      g_assert_not_reached ();
+       break;
+   }
+ 
