@@ -8,6 +8,13 @@ IMAGE_INSTALL = " \
     blanking \
     bluez-hcidump \
     bluez5 \
+    bluez5-testtools \
+    bluez5-noinst-tools \
+    bluez5-obex \
+    gstreamer1.0-plugins-bad-bluez \
+    openobex \
+    obexftp \
+    obexd \
     canutils \
     coreutils \
     dmo-gst-videoscripts \
@@ -35,8 +42,6 @@ IMAGE_INSTALL = " \
     mtools \
     nfs-utils \
     nfs-utils-client \
-    obexd \
-    openobex \
     openssh \
     packagegroup-core-full-cmdline \
     pciutils \
