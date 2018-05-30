@@ -20,6 +20,7 @@ INITRAMFS_IMAGE = "dmo-image-initramfs"
 # barebox configurations
 IMAGE_BOOTLOADER = "barebox-ppc"
 BAREBOX_MACHINE = "dmo-imx6-ppc_defconfig"
+BAREBOX_BINARY = "images/barebox-dmo-ppc.img"
 PREFERRED_PROVIDER_virtual/bootloader = "barebox-ppc"
 
 # kernel configuration

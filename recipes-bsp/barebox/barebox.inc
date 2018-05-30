@@ -23,8 +23,8 @@ inherit dmo-checksum
 EXTRA_OEMAKE = "CROSS_COMPILE=${TARGET_PREFIX}"
 
 BAREBOX_BINARY ?= "barebox.bin"
-BAREBOX_IMAGE ?= "barebox-${MACHINE}-${PV}-${PR}.bin"
-BAREBOX_SYMLINK ?= "barebox-${MACHINE}.bin"
+BAREBOX_IMAGE ?= "barebox-${PV}-${PR}.bin"
+BAREBOX_SYMLINK ?= "barebox.bin"
 
 INSANE_SKIP_${PN} = "True"
 OVERLAYFS_PARTITION ?= "/dev/mmcblk0p3"
