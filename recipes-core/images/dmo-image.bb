@@ -28,6 +28,7 @@ IMAGE_INSTALL = " \
     gstreamer1.0-plugins-bad-meta \
     gstreamer1.0-plugins-base-meta \
     gstreamer1.0-plugins-good-meta \
+    hdparm \
     i2c-tools \
     icu \
     iperf3 \
@@ -42,14 +43,18 @@ IMAGE_INSTALL = " \
     mtools \
     nfs-utils \
     nfs-utils-client \
+    obexd \
+    openobex \
     openssh \
     packagegroup-core-full-cmdline \
     pciutils \
     powertop \
     procps \
     root-user-homedir \
+    smartmontools \
     systemd-vconsole-setup \
     strace \
+    smartmontools \
     sudo \
     tslib-conf \
     tslib-calibrate \
