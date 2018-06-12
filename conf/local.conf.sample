@@ -66,9 +66,6 @@ PARALLEL_MAKE ?= "-j ${@oe.utils.cpu_count()}"
 #MACHINE ??= "imx6q-dmo-vertigo"
 MACHINE ??= "imx6dl-dmo-ppc"
 #MACHINE ??= "imx6q-dmo-ppc"
-#MACHINE ??= "imx6dl-technoalpin-vertigo"
-#MACHINE ??= "imx6q-technoalpin-vertigo"
-#MACHINE ??= "imx6s-technoalpin-ppc"
 #
 # Where to place downloads
 #

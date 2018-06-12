@@ -9,9 +9,6 @@ conf/local.conf to the target machine.
 	* imx6q-dmo-vertigo	     for imx6q/d  vertigo
 	* imx6dl-dmo-ppc	     for imx6dl/s ppc
 	* imx6q-dmo-ppc		     for imx6q/d ppc
-	* imx6dl-technoalpin-vertigo for imx6dl/s technoalpin-vertigo
-	* imx6q-technoalpin-vertigo  for imx6q/d technoalpin-vertigo
-	* imx6s-technoalpin-ppc      for imx6s technoalpin-ppc
 
 Depending on the selected distro configuration, the image will contain
 different preinstalled software.
