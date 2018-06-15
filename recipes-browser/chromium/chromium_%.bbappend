@@ -4,3 +4,4 @@ DEPENDS += "libxtst"
 
 EXTRA_OEGYP_append += "${@bb.utils.contains('DISTRO_FEATURES', 'pulseaudio', '-Duse_pulseaudio=1', '-Duse_pulseaudio=0', d)}"
 
+INSANE_SKIP_${PN}_append += "already-stripped"

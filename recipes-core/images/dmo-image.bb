@@ -69,6 +69,7 @@ IMAGE_INSTALL = " \
     ${SPLASH_SW} \
 "
 IMAGE_INSTALL_append_dmo-x11 = " \
+    alsa-utils \
     mesa-demos \
     packagegroup-xfce-base \
     unclutter \
