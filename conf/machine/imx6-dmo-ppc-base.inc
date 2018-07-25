@@ -37,21 +37,7 @@ SDCARD_WITH_SEPARATED_BARBOXENV = "false"
 
 DMOFTP_append = "/edm-qmx6/source/"
 
-# The image source can be set as url path or file.
-# If the splash image is defined with file, it needs to be placed in dhe dietsplash
-# folder.
-SPLASH_SCREEN_IMAGE ?= "Logo_DM_HD_bw.png"
-
-# It seems, that the logo size is capped somwhere around WXGA (1280x800) or to
-# be a bit more prezice, the byte size.
-# The convert tool rssizes the image to match either the height or the width
-# depending on the source image (portrait/landscapea)
-# To force the given image, add an ! to the dimension. e.g. 800x480!
-SPLASH_SCREEN_DIMENSION ?= "800x480!"
-
-SPLASH_SCREEN_PATH = "${COREBASE}/meta-dmo/conf/logos/"
-
-SPLASH_SCREEN_TYPE ?= "dietsplash"
+require conf/machine/splash-screen.inc
 
 PREFERRED_VERSION_gstreamer1.0 ?= "1.8.3"
 PREFERRED_VERSION_gstreamer1.0-meta-base ?= "1.8.3"
