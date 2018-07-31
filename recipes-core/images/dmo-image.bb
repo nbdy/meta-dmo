@@ -41,6 +41,7 @@ IMAGE_INSTALL = " \
     linux-firmware \
     mtd-utils \
     mtools \
+    minicom \
     nfs-utils \
     nfs-utils-client \
     obexd \
