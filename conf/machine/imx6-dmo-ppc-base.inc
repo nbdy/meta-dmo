@@ -27,7 +27,7 @@ PREFERRED_PROVIDER_virtual/bootloader = "barebox-ppc"
 KERNEL_IMAGETYPE = "zImage"
 PREFERRED_PROVIDER_virtual/kernel ?= "linux-dmo-ppc"
 
-PREFERRED_VERSION_linux-dmo ?= "4.4.57%"
+PREFERRED_VERSION_linux-dmo ?= "4.9.99%"
 
 SERIAL_CONSOLE = "115200 ttymxc0"
 
