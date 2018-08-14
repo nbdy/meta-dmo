@@ -25,9 +25,9 @@ do_compile_append() {
     bbnote "Build the second environment"
 
     install -d ${BBENV_BUILD_DIR}/env/nv
-    echo "bootB" > ${BBENV_BUILD_DIR}/env/nv/dual.boot
+    echo "HDMI" > ${BBENV_BUILD_DIR}/env/nv/display.type
 
-    ${S}/scripts/bareboxenv -s -p 0x10000 ${BBENV_BUILD_DIR}/env ${BBENV_BUILD_DIR}/envB
+    ${S}/scripts/bareboxenv -s -p 0x10000 ${BBENV_BUILD_DIR}/env ${BBENV_BUILD_DIR}/hdmi_display
 }
 
 do_install_append() {
@@ -35,6 +35,6 @@ do_install_append() {
     bbnote "Install second environment"
     install -d ${D}/bareboxenv
 
-    install -m 0644 ${BBENV_BUILD_DIR}/envB ${D}/bareboxenv/
+    install -m 0644 ${BBENV_BUILD_DIR}/hdmi_display ${D}/bareboxenv/
 }
 
