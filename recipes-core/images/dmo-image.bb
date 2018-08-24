@@ -108,6 +108,11 @@ IMAGE_INSTALL_append_dmo-qt = " \
     qtmultimedia-mkspecs \
     qtmultimedia-plugins \
     qtmultimedia-qmlplugins \
+    qtquickcontrols2 \
+    qtquickcontrols2-dev \
+    qtquickcontrols2-mkspecs \
+    qtquickcontrols2-qmldesigner \
+    qtquickcontrols2-qmlplugins \
 "
 # Hardware depend packages
 IMAGE_INSTALL_append_mx6q = " \
