@@ -5,11 +5,12 @@ require recipes-kernel/linux/linux-dmo.inc
 SRC_URI = "git://git@emb.data-modul.com/development/linux;protocol=ssh;branch=rya/ppc/release-4.4.57;name=kernel"
 FILESEXTRAPATHS_prepend := "${THISDIR}/linux-dmo:"
 
-SRC_URI_append += "file://hardware.cfg \
-           file://zconfig.cfg \
-           file://develop.cfg \
-           file://debug.cfg \
-"
+#SRC_URI_append += "file://hardware.cfg \
+#           file://zconfig.cfg \
+#           file://develop.cfg \
+#           file://debug.cfg \
+#"
+
 
 LINUX_VERSION ?= "4.4.57"
 LINUX_VERSION_EXTENSION = "+git${@legitimize_package_name('${SRCPV}')}"
@@ -26,3 +27,6 @@ COMPATIBLE_MACHINE = "(mx6)"
 
 RDEPENDS_kernel-base = ""
 
+do_configure_prepend() {
+	cat ${S}/arch/${ARCH}/configs/dmo-imx6-ppc_defconfig >>  ${WORKDIR}/defconfig
+}
