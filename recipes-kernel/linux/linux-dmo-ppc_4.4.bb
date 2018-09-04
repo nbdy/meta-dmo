@@ -28,5 +28,5 @@ COMPATIBLE_MACHINE = "(mx6)"
 RDEPENDS_kernel-base = ""
 
 do_configure_prepend() {
-	cat ${S}/arch/${ARCH}/configs/dmo-imx6-ppc_defconfig >>  ${WORKDIR}/defconfig
+	cat ${S}/arch/${ARCH}/configs/dmo-imx6-ppc_defconfig >> ${WORKDIR}/linux-${PACKAGE_ARCH}-${LINUX_KERNEL_TYPE}-build/.config
 }
