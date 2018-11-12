@@ -22,12 +22,17 @@ do_configure_prepend_mx6() {
 }
 
 do_compile_append() {
-    bbnote "Build the second environment"
+    bbnote "Build the display environment variable"
 
     install -d ${BBENV_BUILD_DIR}/env/nv
     echo "HDMI" > ${BBENV_BUILD_DIR}/env/nv/display.type
 
     ${S}/scripts/bareboxenv -s -p 0x10000 ${BBENV_BUILD_DIR}/env ${BBENV_BUILD_DIR}/hdmi_display
+
+    echo "LVDS" > ${BBENV_BUILD_DIR}/env/nv/display.type
+
+    ${S}/scripts/bareboxenv -s -p 0x10000 ${BBENV_BUILD_DIR}/env ${BBENV_BUILD_DIR}/lvds_display
+
 }
 
 do_install_append() {
@@ -36,5 +41,7 @@ do_install_append() {
     install -d ${D}/bareboxenv
 
     install -m 0644 ${BBENV_BUILD_DIR}/hdmi_display ${D}/bareboxenv/
+    install -m 0644 ${BBENV_BUILD_DIR}/lvds_display ${D}/bareboxenv/
+
 }
 
