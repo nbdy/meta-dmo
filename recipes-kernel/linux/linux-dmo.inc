@@ -48,7 +48,7 @@ require recipes-kernel/linux/linux-yocto.inc
 inherit dmo-splashlogo
 
 KCONFIG_MODE="--alldefconfig"
-KBUILD_DEFCONFIG_mx6 ?= "imx_v6_v7_defconfig"
+KBUILD_DEFCONFIG_mx6 ?= "dmo-imx6-ppc_defconfig"
 
 do_deploy_append() {
     dmo_do_checksum ${DEPLOYDIR} ${KERNEL_IMAGETYPE}-${KERNEL_IMAGE_BASE_NAME}".bin"
