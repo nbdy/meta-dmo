@@ -123,7 +123,6 @@ IMAGE_INSTALL_append_mx6dl = " \
     firmware-imx-vpu-imx6d \
 "
 IMAGE_INSTALL_append_mx6 = " \
-    barebox-ppc-bbenv \
     imx-gpu-viv \
     imx-gpu-viv-demos \
 "
