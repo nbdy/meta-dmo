@@ -79,7 +79,6 @@ IMAGE_INSTALL_append_dmo-x11 = " \
     xf86-input-evdev \
     xf86-video-fbdev \
     xhost \
-    xinput-calibrator \
     xmodmap \
     xrdb \
     xserver-nodm-init \
