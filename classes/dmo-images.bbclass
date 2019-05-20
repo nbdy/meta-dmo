@@ -90,6 +90,9 @@ IMAGE_CMD_dmosdcard () {
     if [ ! -z "${USB_BOOT_INIFILE}" ] && [ -e ${DEPLOY_DIR_IMAGE}/${USB_BOOT_INIFILE} ]; then
         mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/${USB_BOOT_INIFILE} ::/${USB_BOOT_INIFILE}
     fi
+    if [ ! -z "${BAREBOX_BIN_TESTSERVER}" ] && [ -e ${DEPLOY_DIR_IMAGE}/${BAREBOX_BIN_TESTSERVER} ]; then
+        mcopy -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/${BAREBOX_BIN_TESTSERVER} ::/${BAREBOX_BIN_TESTSERVER}
+    fi
 
     # Creat the overlay partition
     [ -e ${WORKDIR}/overlay.img ] && rm ${WORKDIR}/overlay.img
