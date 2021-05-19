@@ -3,7 +3,7 @@
 
 require eapi-gui.inc
 
-SRC_URI = "git://git@emb.data-modul.com/userrepos/rya/eAPI-Gui;protocol=ssh;tag=dmo-v${PV}"
+SRC_URI = "git://github.com/data-modul/eAPIApp-Gui.git;protocol=https;tag=dmo-v${PV}"
 
 SRCREV = "${AUTOREV}"
 

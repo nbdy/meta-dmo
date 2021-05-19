@@ -3,7 +3,7 @@
 
 require eapi-lib.inc
 
-SRC_URI = "git://git@emb.data-modul.com/userrepos/rya/eAPI;protocol=ssh;"
+SRC_URI = "git://github.com/data-modul/eAPI.git;protocol=https;"
 SRCREV = "${AUTOREV}"
 PV = "1.0+git${SRCPV}"
 S = "${WORKDIR}/git/make"

@@ -2,7 +2,7 @@ require recipes-kernel/linux/linux-dmo.inc
 
 # Override SRC_URI in a bbappend file to point at a different source
 # tree if you do not want to build from Linus' tree.
-SRC_URI = "git://git@emb.data-modul.com/development/linux;protocol=ssh;branch=rya/ppc/release-4.9.99;name=kernel"
+SRC_URI = "git://github.com/data-modul/linux-imx6.git;protocol=https;branch=imx6-ppc/release-4.9.99;name=kernel"
 FILESEXTRAPATHS_prepend := "${THISDIR}/linux-dmo:"
 
 #SRC_URI_append += "file://hardware.cfg \
